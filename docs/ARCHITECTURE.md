@@ -73,6 +73,17 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Media & file storage (Phase 5)
+
+- `src/lib/storage/local.ts`: local-disk driver rooted at `UPLOAD_DIR` (default `~/digitalsminds-uploads`), with strict key
+  validation (no traversal) and atomic writes. Swappable for object storage later behind the same functions.
+- `src/modules/media/storage-check.ts`: marker file + build ID proves the folder survives deploys; uploads are disabled until then
+  (and if the folder is inside the app or not writable).
+- `src/modules/media/validate.ts` / `images.ts`: content sniffing, size limits, sharp re-encode (metadata stripped).
+- `src/modules/media/service.ts`: upload / replace / delete (blocked while referenced) / list, scoped so Instructors only see their own.
+- Routes: `POST /api/admin/media` (multipart, same-origin, rate-limited), `GET /media/...` (public, DB-checked, immutable),
+  `GET /api/files/[id]` (private, access-checked). Responses send `nosniff`, a sandboxing CSP, and `attachment` for documents.
+
 ## Data model (Phase 2)
 
 Defined in `prisma/schema.prisma` (MySQL/MariaDB), 28 tables.

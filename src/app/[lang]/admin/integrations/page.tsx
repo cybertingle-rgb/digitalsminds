@@ -4,7 +4,9 @@ import { db } from "@/lib/db";
 import { audit } from "@/modules/audit/log";
 import { requirePagePermission } from "@/modules/auth/session";
 import { getGoogleStatus, getSmtpStatus, markGoogleVerified } from "@/modules/settings/integrations";
+import { getStorageStatus } from "@/modules/media/storage-check";
 import { EmailCard } from "./EmailCard";
+import { StorageCard } from "./StorageCard";
 import { GoogleCard } from "./GoogleCard";
 
 export const metadata: Metadata = { title: "Integrations" };
@@ -37,6 +39,7 @@ export default async function IntegrationsPage({ searchParams }: PageProps<"/[la
       </div>
       <EmailCard status={await getSmtpStatus()} adminEmail={user.email} />
       <GoogleCard status={google} origin={siteConfig.url} redirectUri={`${siteConfig.url}/api/auth/callback/google`} flash={flash} />
+      <StorageCard status={await getStorageStatus()} />
     </div>
   );
 }

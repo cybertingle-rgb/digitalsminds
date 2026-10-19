@@ -22,6 +22,8 @@ describe("can", () => {
     expect(can("INSTRUCTOR", "courses.manage.own")).toBe(true);
     expect(can("INSTRUCTOR", "courses.manage.all")).toBe(false);
     expect(can("INSTRUCTOR", "enrollments.decide")).toBe(false);
+    expect(can("INSTRUCTOR", "media.manage.own")).toBe(true);
+    expect(can("INSTRUCTOR", "media.manage.all")).toBe(false);
   });
 
   it("denies unknown or missing roles", () => {

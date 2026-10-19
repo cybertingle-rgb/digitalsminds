@@ -15,6 +15,10 @@ export const actionLabels: Record<string, string> = {
   "team.removed": "Removed a team member",
   "user.suspend": "Suspended an account",
   "user.reactivate": "Reactivated an account",
+  "storage.checked": "Ran the file storage check",
+  "media.upload": "Uploaded a file",
+  "media.replace": "Replaced a file",
+  "media.delete": "Deleted a file",
 };
 
 export function describeAction(action: string): string {

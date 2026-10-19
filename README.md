@@ -66,6 +66,7 @@ See `.env.example`. **Never commit `.env`**; it is git-ignored.
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical URL, e.g. `https://digitalsminds.com`. Used for SEO, sitemap and origin checks. Set at **build** time. |
 | `BETTER_AUTH_SECRET` | **Yes** (runtime) | 32+ random characters. Signs sessions and encrypts secrets saved in the admin panel. Never change it once live. |
 | `ADMIN_SETUP_CODE` | Only for first setup | 16+ random characters for the one-time `/setup` page. Remove after setup. |
+| `UPLOAD_DIR` | No | Upload folder outside the app (default `~/digitalsminds-uploads`). Verified in Admin → Integrations → File storage. |
 | `TRUSTED_PROXY_HOPS` | No | Proxies in front of the app, for rate-limit IPs (default 1). |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | No | Public email shown on the site; defaults to `info@digitalsminds.com`. Set at build time. |
 
@@ -93,6 +94,15 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - **Admin → Team** (Super Admin): invite staff by email (they set their own password via a 3-day link), change roles,
   suspend/reactivate (signs them out everywhere) and remove access. The owner account and the last active Super Admin are protected.
 - Instructors are limited to their assigned courses (`src/modules/auth/scoping.ts`).
+
+## Media uploads
+
+- **Admin → Media**: images (JPG/PNG/WebP ≤ 8 MB) and documents (PDF/DOCX/XLSX/PPTX ≤ 25 MB), public or private.
+- Files are identified by content (magic bytes); SVG, legacy Office and macro files are rejected. Images are re-encoded
+  (EXIF/GPS removed, max 2560 px).
+- Public files: `/media/<year>/<month>/<file>` (immutable cache). Private files: `/api/files/<id>` (access-checked, no cache).
+- Files in use (course thumbnails/resources, blog covers, testimonials, case studies) cannot be deleted; "Replace" keeps links.
+- Uploads stay **off** until Admin → Integrations → File storage confirms the folder survived a redeploy.
 
 ## Languages
 

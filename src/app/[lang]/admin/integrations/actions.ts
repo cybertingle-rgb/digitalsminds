@@ -15,6 +15,7 @@ import {
   setGoogleEnabled,
   smtpInput,
 } from "@/modules/settings/integrations";
+import { runStorageCheck } from "@/modules/media/storage-check";
 
 export type ActionState = { status: "idle" | "success" | "error"; message?: string; fields?: Record<string, string> };
 
@@ -156,4 +157,21 @@ export async function sendTestEmailAction(): Promise<ActionState> {
   await audit({ actorId: user.id, action: "integration.smtp.tested", entityType: "Integration", entityId: "smtp" });
   revalidatePath(PATH);
   return { status: "success", message: `Test email sent to ${user.email}. Check the inbox (and spam folder).` };
+}
+
+// ---------------------------------------------------------------------------
+// File storage
+// ---------------------------------------------------------------------------
+
+export async function runStorageCheckAction(): Promise<ActionState> {
+  const user = await guard();
+  if (denied(user)) return user;
+  const status = await runStorageCheck();
+  await audit({ actorId: user.id, action: "storage.checked", entityType: "Integration", entityId: "storage", metadata: { persistent: status.persistent, writable: status.writable } });
+  revalidatePath(PATH);
+  revalidatePath("/admin/media");
+  if (status.problem) return { status: "error", message: status.problem };
+  if (status.persistent) return { status: "success", message: "Confirmed: the upload folder survives redeploys. Uploads are on." };
+  if (status.devMode) return { status: "success", message: "Development mode: uploads are on. On the live site, redeploy once and run the check again." };
+  return { status: "success", message: "Marker created. Now redeploy the site in Hostinger, then run this check again." };
 }

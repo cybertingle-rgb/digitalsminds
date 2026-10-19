@@ -21,6 +21,8 @@ export const permissions = [
   "courses.manage.own",
   "content.manage",
   "inquiries.manage",
+  "media.manage.all",
+  "media.manage.own",
 ] as const;
 export type Permission = (typeof permissions)[number];
 
@@ -33,9 +35,10 @@ const grants: Record<Role, readonly Permission[]> = {
     "courses.manage.all",
     "content.manage",
     "inquiries.manage",
+    "media.manage.all",
   ],
   // Instructors are further limited to their own courses (CourseInstructor) in later phases.
-  INSTRUCTOR: ["admin.access", "courses.manage.own"],
+  INSTRUCTOR: ["admin.access", "courses.manage.own", "media.manage.own"],
   STUDENT: [],
 };
 

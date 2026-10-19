@@ -37,6 +37,12 @@ Point an uptime monitor at it.
 5. **Admin → Integrations → Google** (optional): follow the on-page steps to create an OAuth client in Google Cloud, paste the Client ID and secret,
    **Connect & test**, then switch on "Show Continue with Google".
 
+6. **File storage (before uploading anything):** Admin → Integrations → File storage → **Run check**, then redeploy in Hostinger,
+   then **Run check** again. When it says "Confirmed", uploads are switched on. If it never confirms, files in that folder are
+   being wiped on deploy: set `UPLOAD_DIR` to another folder outside the app (e.g. `/home/<user>/domains/digitalsminds.com/uploads`)
+   and repeat.
+7. **Backups:** make sure Hostinger's file backups include the upload folder (download a backup once and check), and keep database backups on.
+
 Without `BETTER_AUTH_SECRET` (or with one shorter than 32 characters) the public site, contact form and health check keep working; login, registration and `/setup` show a "not set up yet" notice instead.
 
 ## Option A: Vercel

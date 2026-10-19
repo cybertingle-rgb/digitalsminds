@@ -75,7 +75,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
 - **Testing:** an automated authorisation test per role per endpoint (deny by default).
 - **Acceptance:** a Student or Instructor cannot reach or call anything outside their permissions, even with crafted requests.
 
-## Phase 5: Media and file storage (M), blocked until Hostinger storage is confirmed
+## Phase 5: Media and file storage (M) ✅ (persistence confirmed per deploy by the File storage check)
 - **Deliverables:**
   - Upload pipeline with type/size validation, image processing and preview, and progress and error feedback.
   - Organised folders and a MediaAsset record with metadata.
