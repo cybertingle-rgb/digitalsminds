@@ -25,7 +25,7 @@ function post(body: unknown, headers: Record<string, string> = {}) {
       headers: {
         "content-type": "application/json",
         host: "localhost:3000",
-        "x-forwarded-for": `10.0.0.${ip}`,
+        "x-forwarded-for": `198.51.100.${ip}`,
         ...headers,
       },
       body: typeof body === "string" ? body : JSON.stringify(body),

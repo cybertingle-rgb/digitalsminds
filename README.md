@@ -64,6 +64,9 @@ See `.env.example`. **Never commit `.env`**; it is git-ignored.
 | --- | --- | --- |
 | `DATABASE_URL` | Yes (runtime) | `mysql://USER:PASSWORD@HOST:3306/DATABASE` (URL-encode special characters in the password). Not needed for `next build`. |
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical URL, e.g. `https://digitalsminds.com`. Used for SEO, sitemap and origin checks. Set at **build** time. |
+| `BETTER_AUTH_SECRET` | **Yes** (runtime) | 32+ random characters. Signs sessions and encrypts secrets saved in the admin panel. Never change it once live. |
+| `ADMIN_SETUP_CODE` | Only for first setup | 16+ random characters for the one-time `/setup` page. Remove after setup. |
+| `TRUSTED_PROXY_HOPS` | No | Proxies in front of the app, for rate-limit IPs (default 1). |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | No | Public email shown on the site; defaults to `info@digitalsminds.com`. Set at build time. |
 
 No phone or WhatsApp number is displayed anywhere on the site (owner decision); there is no setting for one.
@@ -78,6 +81,15 @@ No phone or WhatsApp number is displayed anywhere on the site (owner decision); 
 - **Blog posts:** `src/content/blog.ts` (each post has one language).
 
 No testimonials, client logos or statistics are included. Add them only from verified sources.
+
+## Accounts & admin
+
+- Authentication: Better Auth (email/password with email verification, password reset, optional Google sign-in), sessions in MySQL.
+- Roles: Super Admin, Content Manager, Instructor, Student (`src/modules/auth/permissions.ts`); every admin page and action checks permissions on the server.
+- The Super Admin (`info@digitalsminds.com`) is created once at `/setup` using `ADMIN_SETUP_CODE`; the page then disappears.
+- Email (SMTP) and Google sign-in are configured in **Admin → Integrations**; passwords/secrets are encrypted with a key derived from `BETTER_AUTH_SECRET`.
+- Rate limits (per client IP): login 15/min, sign-up 5/10 min, password reset 3/10 min.
+- Sensitive admin actions are written to the `AuditLog` table.
 
 ## Languages
 

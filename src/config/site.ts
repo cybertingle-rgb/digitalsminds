@@ -17,6 +17,12 @@ export const siteConfig = {
   },
   ogImage: { src: "/brand/og-image.png", width: 1200, height: 630 },
 
+  /**
+   * The owner's Super Admin account. It can only be created through the
+   * one-time /setup page (protected by ADMIN_SETUP_CODE), never by sign-up.
+   */
+  superAdminEmail: "info@digitalsminds.com",
+
   contact: {
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "info@digitalsminds.com",
   },

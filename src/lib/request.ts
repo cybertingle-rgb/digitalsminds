@@ -1,7 +1,19 @@
-/** Best-effort client IP from proxy headers (set by Vercel, Nginx, Cloudflare, etc.). */
-export function clientIp(headers: Headers): string {
+/** Header our auth route uses to hand Better Auth the resolved client IP (client-sent copies are stripped). */
+export const CLIENT_IP_HEADER = "x-dm-client-ip";
+
+/**
+ * Client IP for rate limiting. The left-most X-Forwarded-For entries are
+ * whatever the client sent (spoofable); proxies append, so the trustworthy
+ * value is the one added by our own proxy: `hops` from the right (default 1,
+ * override with TRUSTED_PROXY_HOPS if the host chains several proxies).
+ */
+export function clientIp(headers: Headers, hops = Number(process.env.TRUSTED_PROXY_HOPS) || 1): string {
   const forwarded = headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0]!.trim();
+  if (forwarded) {
+    const chain = forwarded.split(",").map((s) => s.trim()).filter(Boolean);
+    const ip = chain[Math.max(0, chain.length - hops)];
+    if (ip) return ip;
+  }
   return headers.get("x-real-ip")?.trim() || "unknown";
 }
 

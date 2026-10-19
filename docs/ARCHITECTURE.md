@@ -51,6 +51,28 @@ src/
 4. Change the schema only through migrations: `npm run db:migrate -- --name <change>`.
 5. Add any new env var to `src/lib/env.ts` (validated) **and** `.env.example`.
 
+## Authentication & authorisation (Phase 3)
+
+```
+Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
+                                               │ strips client-sent x-dm-client-ip,
+                                               │ sets it from the proxy-added X-Forwarded-For hop
+                                               ▼
+                                    getAuth()  (src/lib/auth.ts)
+                                    Better Auth + Prisma adapter, rebuilt when Google
+                                    credentials change (cache on globalThis, 15 s)
+```
+
+- **Email/password**: verification required before login; reset links expire in 1 hour and revoke other sessions.
+- **Google**: credentials from Admin → Integrations (encrypted), shown to students only after an admin's successful "Connect & test".
+- **Hooks** (`databaseHooks`): new users are always `STUDENT`/`ACTIVE`; profile fields are validated server-side; role/status can never be
+  changed through the auth API; the Super Admin email can only be created via `/setup`; suspended users cannot start sessions.
+- **Server-side checks**: `requirePagePermission()` for pages (anonymous → login, no permission → 404) and `assertPermission()` for
+  server actions (`src/modules/auth/session.ts`). The matrix lives in `src/modules/auth/permissions.ts` (deny by default).
+- **Secrets at rest**: `src/lib/secrets.ts`, AES-256-GCM with an HKDF-derived key from `BETTER_AUTH_SECRET`.
+- **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
+- **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
+
 ## Data model (Phase 2)
 
 Defined in `prisma/schema.prisma` (MySQL/MariaDB), 28 tables.

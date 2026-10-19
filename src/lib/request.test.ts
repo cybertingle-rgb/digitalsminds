@@ -21,8 +21,14 @@ describe("isSameOrigin", () => {
 });
 
 describe("clientIp", () => {
-  it("uses the first x-forwarded-for entry", () => {
-    expect(clientIp(new Headers({ "x-forwarded-for": "1.2.3.4, 10.0.0.1" }))).toBe("1.2.3.4");
+  it("uses the entry added by our proxy, not the spoofable left-most one", () => {
+    // Client sent "6.6.6.6"; our proxy appended the real address 1.2.3.4.
+    expect(clientIp(new Headers({ "x-forwarded-for": "6.6.6.6, 1.2.3.4" }))).toBe("1.2.3.4");
+    expect(clientIp(new Headers({ "x-forwarded-for": "1.2.3.4" }))).toBe("1.2.3.4");
+  });
+  it("supports more than one trusted proxy hop", () => {
+    expect(clientIp(new Headers({ "x-forwarded-for": "6.6.6.6, 1.2.3.4, 10.0.0.2" }), 2)).toBe("1.2.3.4");
+    expect(clientIp(new Headers({ "x-forwarded-for": "1.2.3.4" }), 3)).toBe("1.2.3.4");
   });
   it("falls back to unknown", () => {
     expect(clientIp(new Headers())).toBe("unknown");

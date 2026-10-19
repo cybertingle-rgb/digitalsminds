@@ -25,6 +25,20 @@ Set at **runtime**: `DATABASE_URL`, `INQUIRY_WEBHOOK_URL` (optional).
 After deploying, check `GET /api/health`. It should return `{"status":"ok","database":"ok"}`.
 Point an uptime monitor at it.
 
+## First-time accounts & admin setup (after Phase 3 deploys)
+
+1. In Hostinger → Environment variables, add:
+   - `BETTER_AUTH_SECRET`: 32+ random characters (a password manager can generate one). **Keep it forever**; changing it logs everyone out and requires re-entering the saved email password and Google secret.
+   - `ADMIN_SETUP_CODE`: 16+ random characters, used once.
+2. Redeploy, then open `https://digitalsminds.com/setup`: enter your name, a strong password and the setup code. This creates the Super Admin `info@digitalsminds.com`.
+3. Remove `ADMIN_SETUP_CODE` from Hostinger and redeploy (the page is already disabled, this is extra hygiene).
+4. Log in at `/login` → **Admin → Integrations → Email**: create `noreply@digitalsminds.com` in hPanel → Emails, then enter
+   host `smtp.hostinger.com`, port `465`, SSL on, the mailbox and its password. Click **Save & check connection**, then **Send test email**.
+5. **Admin → Integrations → Google** (optional): follow the on-page steps to create an OAuth client in Google Cloud, paste the Client ID and secret,
+   **Connect & test**, then switch on "Show Continue with Google".
+
+Without `BETTER_AUTH_SECRET` the public site still works, but login/admin pages show an error.
+
 ## Option A: Vercel
 
 1. Import the GitHub repo in Vercel (framework is auto-detected).

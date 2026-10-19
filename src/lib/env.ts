@@ -9,6 +9,12 @@ const serverEnvSchema = z.object({
     .string({ error: "DATABASE_URL is required" })
     .refine((v) => /^(mysql|mariadb):\/\//.test(v), "DATABASE_URL must be a MySQL connection string (mysql://...)"),
   INQUIRY_WEBHOOK_URL: z.preprocess(emptyToUndefined, z.url().optional()),
+  /** Signs sessions and derives the key that encrypts stored integration secrets. Never change it once live. */
+  BETTER_AUTH_SECRET: z
+    .string({ error: "BETTER_AUTH_SECRET is required (at least 32 random characters)" })
+    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
+  /** One-time code for /setup (creating the first Super Admin). Remove after setup. */
+  ADMIN_SETUP_CODE: z.preprocess(emptyToUndefined, z.string().min(16, "ADMIN_SETUP_CODE must be at least 16 characters").optional()),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

@@ -47,7 +47,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
 - **Testing:** migrate a copy of production-shape data, then roll forward on fresh and existing databases.
 - **Acceptance:** `migrate deploy` succeeds on Hostinger and existing inquiries are intact.
 
-## Phase 3: Authentication and account recovery (M)
+## Phase 3: Authentication and account recovery (M) ✅
 - **Objectives:** secure sign-up and sign-in for students and staff.
 - **Deliverables:**
   - Better Auth with email/password and Sign in with Google (captures the Google email for Drive sharing).
@@ -62,7 +62,10 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - End-to-end tests: register, verify, login, reset, Google login, rate limit.
 - **Acceptance:** no account can sign in unverified; reset links expire; passwords are hashed and never logged.
 
-## Phase 4: Roles, permissions and security controls (M)
+## Phase 4: Roles, permissions and security controls (M), partly done in Phase 3
+> Done: permission matrix + server-side checks, audit log, admin route protection, rate limiting.
+> Remaining: staff management UI (invite/assign roles), instructor course scoping, CSP update for Drive/GA, per-role authorisation test suite.
+
 - **Deliverables:**
   - A permission matrix for the 4 roles (D10), with server-side `requireRole`/`requirePermission` on every admin page, action and API.
   - Instructors are scoped to their own courses.
