@@ -33,7 +33,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Logo is unaltered and sharp; there is no layout shift.
 - **Checklist:** ☐ tokens ☐ logo assets ☐ fonts ☐ locale routing ☐ RTL ☐ switcher ☐ hreflang ☐ pages restyled ☐ tests
 
-## Phase 2: Data model and migrations (M)
+## Phase 2: Data model and migrations (M) ✅
 - **Objectives:** one coherent schema for the whole launch scope.
 - **Deliverables:**
   - **People:** User, Role, Better Auth tables.

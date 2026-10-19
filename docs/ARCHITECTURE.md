@@ -51,6 +51,28 @@ src/
 4. Change the schema only through migrations: `npm run db:migrate -- --name <change>`.
 5. Add any new env var to `src/lib/env.ts` (validated) **and** `.env.example`.
 
+## Data model (Phase 2)
+
+Defined in `prisma/schema.prisma` (MySQL/MariaDB), 28 tables.
+
+| Area | Models |
+| --- | --- |
+| Accounts (Better Auth) | `User` (+ role, status, Google email, phone, city, preferred language), `Session`, `Account`, `Verification`, `RateLimit` |
+| Courses | `Course` (one teaching language, bilingual listing, paid-ready fields), `CourseInstructor`, `CourseModule`, `Lesson` (video provider + link), `CourseResource` |
+| Learning | `Enrollment` (REQUESTED → APPROVED/REJECTED/REVOKED), `LessonProgress`, `Certificate` (public code) |
+| Communication | `Announcement`, `Notification`, `SupportTicket`, `SupportMessage` |
+| Website content | `Post`, `Faq`, `Testimonial`, `CaseStudy` (consent flag required to publish), `SiteSetting` (key → JSON), `MediaAsset` |
+| Leads | `Inquiry` (+ locale, UTM, follow-up, assignee), `InquiryNote`, `NewsletterSubscriber` |
+| Oversight | `AuditLog` |
+
+Integrity rules (verified by `src/test/schema.integration.test.ts`):
+- One enrollment and at most one certificate per student per course.
+- Courses with enrollments or certificates cannot be deleted; archive them (`status = ARCHIVED`).
+- Media files referenced by a course resource cannot be deleted.
+- Deleting a user removes their sessions, enrollments, progress, tickets and notifications; leads,
+  audit entries, courses and posts they touched are kept with the reference cleared.
+- Bilingual CMS text uses an English column plus an optional `…Ur` column.
+
 ## Internationalisation
 
 - Locales: `en` (default, no URL prefix) and `ur` (`/ur`, right-to-left).

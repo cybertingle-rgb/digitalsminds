@@ -1,6 +1,6 @@
 # Phase 2: Student Portal (plan only)
 
-Status: **not built.** This document defines the modules and integration points so the portal
+Status: **data model built (Phase 2); features not built yet.** This document defines the modules and integration points so the portal
 can be added without restructuring the Phase 1 site. Gate everything behind
 `features.studentPortal` / `features.adminDashboard` in `src/config/features.ts`.
 
@@ -39,86 +39,11 @@ signed cookies (`HttpOnly`, `Secure`, `SameSite=Lax`), password hashing with arg
 email verification, rate-limited login and reset endpoints, and optional Google sign-in.
 New env vars: `AUTH_SECRET`, email provider credentials (e.g. `SMTP_*` or `RESEND_API_KEY`), optional OAuth IDs.
 
-## Proposed data model (add via migrations when Phase 2 starts)
+## Data model
 
-```prisma
-enum Role { STUDENT INSTRUCTOR ADMIN }
-enum CourseStatus { DRAFT PUBLISHED ARCHIVED }
-enum EnrollmentStatus { ACTIVE COMPLETED CANCELLED }
-
-model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  name          String?
-  role          Role     @default(STUDENT)
-  emailVerified DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  enrollments   Enrollment[]
-  progress      LessonProgress[]
-  // + auth library tables: Account, Session, VerificationToken
-}
-
-model Course {
-  id          String       @id @default(cuid())
-  slug        String       @unique
-  title       String
-  summary     String
-  division    String?      // optional link to a service slug in src/content/services.ts
-  status      CourseStatus @default(DRAFT)
-  modules     CourseModule[]
-  enrollments Enrollment[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-model CourseModule {
-  id       String   @id @default(cuid())
-  courseId String
-  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  title    String
-  position Int
-  lessons  Lesson[]
-  @@unique([courseId, position])
-}
-
-model Lesson {
-  id        String   @id @default(cuid())
-  moduleId  String
-  module    CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  slug      String
-  title     String
-  content   String   // rich text / markdown
-  videoUrl  String?
-  position  Int
-  isPreview Boolean  @default(false)
-  progress  LessonProgress[]
-  @@unique([moduleId, position])
-}
-
-model Enrollment {
-  id          String           @id @default(cuid())
-  userId      String
-  courseId    String
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  status      EnrollmentStatus @default(ACTIVE)
-  enrolledAt  DateTime         @default(now())
-  completedAt DateTime?
-  @@unique([userId, courseId])
-}
-
-model LessonProgress {
-  userId      String
-  lessonId    String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  completedAt DateTime @default(now())
-  @@id([userId, lessonId])
-}
-```
-
-Optional later: `Inquiry.assignedToId → User` for lead ownership in the admin dashboard; `Payment`/`Order` for paid courses.
+Implemented in Phase 2. See `prisma/schema.prisma` and the "Data model" section of
+`docs/ARCHITECTURE.md` (users and roles, courses, modules, lessons, resources, enrollments,
+progress, certificates, announcements, notifications, support tickets).
 
 ## Integration points already in place
 

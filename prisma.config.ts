@@ -9,5 +9,11 @@ try {
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: { path: "prisma/migrations" },
-  datasource: { url: process.env.DATABASE_URL },
+  datasource: {
+    url: process.env.DATABASE_URL,
+    // Development only: an empty scratch database Prisma uses to replay the
+    // migration history when generating new migrations. Without it, Prisma 7
+    // diffs from an empty schema and emits CREATE TABLE for existing tables.
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
+  },
 });

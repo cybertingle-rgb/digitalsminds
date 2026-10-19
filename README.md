@@ -34,8 +34,18 @@ npm run dev                  # http://localhost:3000
 | `npm run dev` | Development server |
 | `npm run build` / `npm start` | Production build (applies pending DB migrations first, see below) / server |
 | `npm run lint` · `npm run typecheck` · `npm test` | Quality checks |
-| `npm run db:migrate -- --name <change>` | Create + apply a migration (development) |
+| `npm run db:migrate -- --name <change>` | Create + apply a migration and regenerate the client (development; needs `SHADOW_DATABASE_URL`) |
+| `npm run test:db` | Database integration tests against `TEST_DATABASE_URL` (name must contain "test") |
 | `npm run db:deploy` | Apply pending migrations (production) |
+
+## Database changes (development)
+
+1. Edit `prisma/schema.prisma`.
+2. `npm run db:migrate -- --name <change>` with `SHADOW_DATABASE_URL` set to an empty scratch database.
+   Without it, Prisma 7 generates migrations from an empty schema (`CREATE TABLE` for tables that already exist).
+3. Review the SQL in `prisma/migrations/<timestamp>_<change>/migration.sql`: no `DROP`/`RENAME` without approval.
+4. `npm run test:db`, then commit the schema and migration together.
+5. On deploy, `npm run build` applies pending migrations (see Build notes).
 
 ## Build notes
 
