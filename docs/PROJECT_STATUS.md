@@ -77,4 +77,4 @@ Last updated: 2026-10-19 (Phase 5 complete).
 | 2026-10-19 | Phase 2: data model (28 tables) and additive migration, Better Auth installed, square app icon, DB integration tests, migration workflow fix (shadow DB) | `6309ab8` |
 | 2026-10-19 | Phase 3: Better Auth (email/password, verification, reset, Google), one-time /setup, admin shell with Integrations (encrypted SMTP + Google), permission matrix, audit log, IP-safe rate limiting, 47-check e2e run | `7776223` |
 | 2026-10-19 | Phase 4: Team management, Activity log page, instructor scoping, Drive CSP; fix: missing/short auth secret no longer breaks the contact form and health check | `e5d6608` |
-| 2026-10-19 | Phase 5: media library (uploads with progress, content validation, EXIF stripping, public/private serving, replace, in-use protection, instructor scoping), File storage persistence check | (Phase 5 commit) |
+| 2026-10-19 | Phase 5: media library (uploads with progress, content validation, EXIF stripping, public/private serving, replace, in-use protection, instructor scoping), File storage persistence check | `58e6224` |
