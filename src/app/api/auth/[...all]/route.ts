@@ -1,4 +1,6 @@
+import { NextResponse } from "next/server";
 import { getAuth } from "@/lib/auth";
+import { isAuthConfigured } from "@/lib/env";
 import { CLIENT_IP_HEADER, clientIp } from "@/lib/request";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +11,9 @@ export const dynamic = "force-dynamic";
  * the address our proxy reported.
  */
 async function handle(request: Request) {
+  if (!isAuthConfigured()) {
+    return NextResponse.json({ message: "Accounts are not available yet.", code: "AUTH_NOT_CONFIGURED" }, { status: 503 });
+  }
   const auth = await getAuth();
   const headers = new Headers(request.headers);
   headers.delete(CLIENT_IP_HEADER);

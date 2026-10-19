@@ -14,6 +14,8 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws:" : ""}`,
+  // Course videos are embedded from Google Drive (Phase 8).
+  "frame-src 'self' https://drive.google.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",

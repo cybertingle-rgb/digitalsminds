@@ -21,7 +21,9 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
 
   const nav = [
     { label: "Overview", href: "/admin" },
+    ...(can(user.role, "staff.manage") ? [{ label: "Team", href: "/admin/team" }] : []),
     ...(can(user.role, "integrations.manage") ? [{ label: "Integrations", href: "/admin/integrations" }] : []),
+    ...(can(user.role, "audit.view") ? [{ label: "Activity", href: "/admin/activity" }] : []),
   ];
 
   return (

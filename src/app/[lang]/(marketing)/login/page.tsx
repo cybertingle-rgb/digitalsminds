@@ -6,6 +6,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { FormAlert } from "@/components/forms/Field";
 import { siteConfig } from "@/config/site";
 import { localizePath } from "@/i18n/config";
+import { isAuthConfigured } from "@/lib/env";
 import { noindex, authPage } from "@/modules/auth/pages";
 import { getCurrentUser, safeNext } from "@/modules/auth/session";
 import { getGoogleStatus } from "@/modules/settings/integrations";
@@ -19,6 +20,13 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
   const sp = await searchParams;
   const next = safeNext(typeof sp.next === "string" ? sp.next : null, localizePath("/account", locale));
 
+  if (!isAuthConfigured()) {
+    return (
+      <AuthCard title={t.loginTitle}>
+        <FormAlert tone="info">{t.unavailable}</FormAlert>
+      </AuthCard>
+    );
+  }
   if (await getCurrentUser()) redirect(next);
   const google = await getGoogleStatus();
 

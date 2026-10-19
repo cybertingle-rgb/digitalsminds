@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-19 (Phase 3 complete).
+Last updated: 2026-10-19 (Phase 4 complete).
 
 ## Confirmed decisions
 
@@ -38,6 +38,8 @@ Last updated: 2026-10-19 (Phase 3 complete).
 | 29 | Email settings | SMTP (noreply@digitalsminds.com, created by owner) configured in Admin → Integrations, password encrypted |
 | 30 | Google settings | OAuth client created by owner and entered in Admin → Integrations → Google, "Connect & test", then enabled for students |
 | 31 | Package versions | Pin releases at least ~2 weeks old for security-critical deps (better-auth 1.7.7, nodemailer 10.0.14) |
+| 32 | Team rules | Only Super Admins manage the team; owner account (info@) can't be demoted/suspended; at least one active Super Admin; nobody changes their own access |
+| 33 | Staff invites | Email link (valid 3 days) to set a password; inviting an existing student promotes that account |
 
 ## Open items (waiting on owner)
 
@@ -47,7 +49,9 @@ Last updated: 2026-10-19 (Phase 3 complete).
 - [ ] Privacy Policy and Terms & Conditions text
 - [ ] Urdu translations (provided when the bilingual structure is ready)
 - [ ] Later: GA4 Measurement ID and Search Console verification (Phase 12)
-- [ ] Hostinger env vars `BETTER_AUTH_SECRET` and `ADMIN_SETUP_CODE`, then `/setup`, then Email and Google in Admin → Integrations (docs/DEPLOYMENT.md)
+- [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
+- [ ] **Replace `BETTER_AUTH_SECRET`**: its value was shared in a chat screenshot. Then re-enter any saved SMTP password / Google secret
+- [ ] Remove `ADMIN_SETUP_CODE` from Hostinger; set up Email in Admin → Integrations; reset the temporary owner password via "Forgot password"
 - [ ] Approval to start the next phase (Phase 5 media storage is still blocked on the Hostinger plan / File Manager info)
 
 ## Assumptions (to confirm or correct)
@@ -70,3 +74,4 @@ Last updated: 2026-10-19 (Phase 3 complete).
 | 2026-10-19 | Phase 1: official logos, brand colours, Urdu font, English/Urdu routing with RTL, restyled pages, phone numbers removed | `7a768f4` |
 | 2026-10-19 | Phase 2: data model (28 tables) and additive migration, Better Auth installed, square app icon, DB integration tests, migration workflow fix (shadow DB) | `6309ab8` |
 | 2026-10-19 | Phase 3: Better Auth (email/password, verification, reset, Google), one-time /setup, admin shell with Integrations (encrypted SMTP + Google), permission matrix, audit log, IP-safe rate limiting, 47-check e2e run | `7776223` |
+| 2026-10-19 | Phase 4: Team management, Activity log page, instructor scoping, Drive CSP; fix: missing/short auth secret no longer breaks the contact form and health check | (Phase 4 commit) |

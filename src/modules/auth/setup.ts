@@ -26,8 +26,10 @@ export async function isSetupComplete(): Promise<boolean> {
   return (await db().user.count({ where: { role: "SUPER_ADMIN" } })) > 0;
 }
 
+const MIN_SETUP_CODE = 16;
+
 export function setupCodeConfigured(): boolean {
-  return !!serverEnv().ADMIN_SETUP_CODE;
+  return (serverEnv().ADMIN_SETUP_CODE?.length ?? 0) >= MIN_SETUP_CODE;
 }
 
 /** Constant-time comparison (hash first so lengths match). */
@@ -41,7 +43,9 @@ export type SetupResult = { ok: true } | { ok: false; error: string };
 
 export async function createSuperAdmin(input: z.infer<typeof setupInput>): Promise<SetupResult> {
   const expected = serverEnv().ADMIN_SETUP_CODE;
-  if (!expected) return { ok: false, error: "Setup is disabled. Set ADMIN_SETUP_CODE in the hosting environment." };
+  if (!expected || expected.length < MIN_SETUP_CODE) {
+    return { ok: false, error: "Setup is disabled. Set ADMIN_SETUP_CODE (at least 16 characters) in the hosting environment." };
+  }
   if (!codesMatch(input.code, expected)) return { ok: false, error: "The setup code is incorrect." };
   if (await isSetupComplete()) return { ok: false, error: "Setup has already been completed." };
 

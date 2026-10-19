@@ -7,7 +7,7 @@ import { siteConfig } from "@/config/site";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { db } from "@/lib/db";
-import { serverEnv } from "@/lib/env";
+import { authSecret } from "@/lib/env";
 import { sendMail } from "@/lib/mailer";
 import { CLIENT_IP_HEADER } from "@/lib/request";
 import { actionEmail } from "@/modules/email/templates";
@@ -59,11 +59,10 @@ async function sendAuthEmail(kind: "verify" | "reset", user: { email: string; na
 }
 
 function createAuth(google: GoogleCredentials) {
-  const env = serverEnv();
   return betterAuth({
     appName: "Digitals Minds",
     baseURL: siteConfig.url,
-    secret: env.BETTER_AUTH_SECRET,
+    secret: authSecret(),
     trustedOrigins: [siteConfig.url],
     database: prismaAdapter(db(), { provider: "mysql" }),
     telemetry: { enabled: false },
@@ -92,6 +91,10 @@ function createAuth(google: GoogleCredentials) {
       maxPasswordLength: 128,
       resetPasswordTokenExpiresIn: 60 * 60,
       revokeSessionsOnPasswordReset: true,
+      // A reset (or staff invite) link proves the person controls the mailbox.
+      onPasswordReset: async ({ user }) => {
+        if (!user.emailVerified) await db().user.update({ where: { id: user.id }, data: { emailVerified: true } });
+      },
       sendResetPassword: ({ user, url }) => sendAuthEmail("reset", user, url),
     },
 

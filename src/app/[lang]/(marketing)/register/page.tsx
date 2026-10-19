@@ -3,7 +3,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { FormAlert } from "@/components/forms/Field";
 import { localizePath } from "@/i18n/config";
+import { isAuthConfigured } from "@/lib/env";
 import { authPage, noindex } from "@/modules/auth/pages";
 import { getCurrentUser } from "@/modules/auth/session";
 import { getGoogleStatus } from "@/modules/settings/integrations";
@@ -15,6 +17,13 @@ export default async function RegisterPage({ params }: PageProps<"/[lang]/regist
   const { locale, dict } = await authPage(params);
   const t = dict.auth;
   const account = localizePath("/account", locale);
+  if (!isAuthConfigured()) {
+    return (
+      <AuthCard title={t.registerTitle}>
+        <FormAlert tone="info">{t.unavailable}</FormAlert>
+      </AuthCard>
+    );
+  }
   if (await getCurrentUser()) redirect(account);
   const google = await getGoogleStatus();
 

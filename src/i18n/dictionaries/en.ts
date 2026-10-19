@@ -258,6 +258,7 @@ export const en = {
     resetButton: "Save new password",
     resetInvalid: "This reset link is invalid or has expired. Please request a new one.",
     logout: "Log out",
+    unavailable: "Student accounts are being set up. Please check back soon, or contact us in the meantime.",
     errors: {
       invalidCredentials: "Email or password is incorrect.",
       emailNotVerified: "Please verify your email first. We've sent you a new link.",
@@ -290,6 +291,9 @@ export const en = {
     resetIntro: "We received a request to reset your password. This link expires in 1 hour.",
     resetButton: "Reset password",
     ignore: "If you didn't request this, you can safely ignore this email.",
+    inviteSubject: "You've been invited to the Digitals Minds team",
+    inviteIntro: "You've been added to the Digitals Minds admin team as {role}. Set your password to activate your account. This link expires in 3 days.",
+    inviteButton: "Set your password",
     linkFallback: "If the button doesn't work, copy this link into your browser:",
     signature: "Digitals Minds | Learn | Grow | Earn",
   },

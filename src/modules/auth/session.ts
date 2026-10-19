@@ -2,6 +2,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getAuth } from "@/lib/auth";
+import { isAuthConfigured } from "@/lib/env";
 import { can, type Permission, type Role } from "./permissions";
 
 export type CurrentUser = {
@@ -15,6 +16,7 @@ export type CurrentUser = {
 
 /** The signed-in, active user for this request, or null. */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
+  if (!isAuthConfigured()) return null;
   const auth = await getAuth();
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;

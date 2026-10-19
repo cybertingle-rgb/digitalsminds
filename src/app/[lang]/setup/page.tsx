@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { siteConfig } from "@/config/site";
+import { isAuthConfigured } from "@/lib/env";
 import { isSetupComplete, setupCodeConfigured } from "@/modules/auth/setup";
 import { SetupForm } from "./SetupForm";
 
@@ -22,7 +23,12 @@ export default async function SetupPage({ params }: PageProps<"/[lang]/setup">) 
           This page works once. After the account is created it disappears. You can then set up email and Google sign-in from the admin panel.
         </p>
         <div className="mt-6">
-          {setupCodeConfigured() ? (
+          {!isAuthConfigured() ? (
+            <p role="alert" className="rounded-lg bg-sun-50 p-4 text-sm text-charcoal-900">
+              Accounts are not configured yet. In Hostinger → Environment variables add <strong>BETTER_AUTH_SECRET</strong> (at least 32 random
+              characters from a password generator, keep it forever) and <strong>ADMIN_SETUP_CODE</strong>, redeploy, then reload this page.
+            </p>
+          ) : setupCodeConfigured() ? (
             <SetupForm email={siteConfig.superAdminEmail} />
           ) : (
             <p role="alert" className="rounded-lg bg-sun-50 p-4 text-sm text-charcoal-900">

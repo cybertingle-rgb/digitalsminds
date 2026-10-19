@@ -1,6 +1,6 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:crypto";
-import { serverEnv } from "./env";
+import { authSecret } from "./env";
 
 /**
  * Encryption for secrets stored in the database (SMTP password, Google client
@@ -12,7 +12,7 @@ import { serverEnv } from "./env";
 
 const VERSION = "v1";
 
-function key(secret = serverEnv().BETTER_AUTH_SECRET): Buffer {
+function key(secret = authSecret()): Buffer {
   return Buffer.from(hkdfSync("sha256", secret, "digitalsminds", "settings-encryption-v1", 32));
 }
 

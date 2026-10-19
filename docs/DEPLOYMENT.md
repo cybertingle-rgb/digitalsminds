@@ -37,7 +37,7 @@ Point an uptime monitor at it.
 5. **Admin → Integrations → Google** (optional): follow the on-page steps to create an OAuth client in Google Cloud, paste the Client ID and secret,
    **Connect & test**, then switch on "Show Continue with Google".
 
-Without `BETTER_AUTH_SECRET` the public site still works, but login/admin pages show an error.
+Without `BETTER_AUTH_SECRET` (or with one shorter than 32 characters) the public site, contact form and health check keep working; login, registration and `/setup` show a "not set up yet" notice instead.
 
 ## Option A: Vercel
 

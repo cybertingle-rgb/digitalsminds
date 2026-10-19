@@ -9,12 +9,13 @@ const serverEnvSchema = z.object({
     .string({ error: "DATABASE_URL is required" })
     .refine((v) => /^(mysql|mariadb):\/\//.test(v), "DATABASE_URL must be a MySQL connection string (mysql://...)"),
   INQUIRY_WEBHOOK_URL: z.preprocess(emptyToUndefined, z.url().optional()),
+  // Account-related secrets are validated where they are used (authSecret(),
+  // setupCodeConfigured()) so a missing or short value only disables
+  // login/admin, never the public site, contact form or database access.
   /** Signs sessions and derives the key that encrypts stored integration secrets. Never change it once live. */
-  BETTER_AUTH_SECRET: z
-    .string({ error: "BETTER_AUTH_SECRET is required (at least 32 random characters)" })
-    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
+  BETTER_AUTH_SECRET: z.preprocess(emptyToUndefined, z.string().optional()),
   /** One-time code for /setup (creating the first Super Admin). Remove after setup. */
-  ADMIN_SETUP_CODE: z.preprocess(emptyToUndefined, z.string().min(16, "ADMIN_SETUP_CODE must be at least 16 characters").optional()),
+  ADMIN_SETUP_CODE: z.preprocess(emptyToUndefined, z.string().optional()),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -35,4 +36,23 @@ export function serverEnv(): ServerEnv {
   }
   cached = parsed.data;
   return cached;
+}
+
+export class AuthNotConfiguredError extends Error {
+  constructor() {
+    super("Accounts are not configured: set BETTER_AUTH_SECRET (at least 32 random characters) in the hosting environment.");
+    this.name = "AuthNotConfiguredError";
+  }
+}
+
+/** True when BETTER_AUTH_SECRET is set and long enough for accounts to work. */
+export function isAuthConfigured(): boolean {
+  return (serverEnv().BETTER_AUTH_SECRET?.length ?? 0) >= 32;
+}
+
+/** The auth secret; throws AuthNotConfiguredError if it is missing or too short. */
+export function authSecret(): string {
+  const secret = serverEnv().BETTER_AUTH_SECRET;
+  if (!secret || secret.length < 32) throw new AuthNotConfiguredError();
+  return secret;
 }

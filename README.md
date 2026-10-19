@@ -89,7 +89,10 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - The Super Admin (`info@digitalsminds.com`) is created once at `/setup` using `ADMIN_SETUP_CODE`; the page then disappears.
 - Email (SMTP) and Google sign-in are configured in **Admin → Integrations**; passwords/secrets are encrypted with a key derived from `BETTER_AUTH_SECRET`.
 - Rate limits (per client IP): login 15/min, sign-up 5/10 min, password reset 3/10 min.
-- Sensitive admin actions are written to the `AuditLog` table.
+- Sensitive admin actions are written to the `AuditLog` table and shown in **Admin → Activity**.
+- **Admin → Team** (Super Admin): invite staff by email (they set their own password via a 3-day link), change roles,
+  suspend/reactivate (signs them out everywhere) and remove access. The owner account and the last active Super Admin are protected.
+- Instructors are limited to their assigned courses (`src/modules/auth/scoping.ts`).
 
 ## Languages
 
