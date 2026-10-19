@@ -96,4 +96,4 @@ Last updated: 2026-10-20 (Phase 9 complete).
 | 2026-10-19 | Phase 6: live dashboard, Inquiries (filters, detail, status/assignee/follow-up, notes, delete), lead alert emails, UTM/language capture, safe CSV export | `ee1d546` |
 | 2026-10-19 | Phase 7: course editor, curriculum (modules/lessons, reordering), Drive video links with preview, resources, instructors, publishing checklist and permissions, student preview, 53-check e2e run | `cb36e7c` |
 | 2026-10-19 | Phase 8: course catalogue and pages, free previews, access requests and Enrollments queue, approval/rejection emails, My learning dashboard and profile, lesson player with progress, private files for students, 45-check e2e run | `6008c4d` |
-| 2026-10-20 | Phase 9: student list, search and filters, profiles with progress and history, manual enrollment, edit/suspend (Super Admin), CSV export, 31-check e2e run | _pending_ |
+| 2026-10-20 | Phase 9: student list, search and filters, profiles with progress and history, manual enrollment, edit/suspend (Super Admin), CSV export, 31-check e2e run | `4026856` |
