@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { LinkButton } from "@/components/ui/Button";
-import { NavLinks } from "./NavLinks";
+import { NavLinks, type NavItem } from "./NavLinks";
 
-type Props = { items: readonly { label: string; href: string }[]; cta: { label: string; href: string } };
+type Props = {
+  items: NavItem[];
+  homeHref: string;
+  cta: NavItem;
+  labels: { open: string; close: string; nav: string };
+  extra?: ReactNode;
+};
 
-export function MobileNav({ items, cta }: Props) {
+export function MobileNav({ items, homeHref, cta, labels, extra }: Props) {
   const [open, setOpen] = useState(false);
 
   // Links close the menu via onNavigate; Escape closes it too.
@@ -24,18 +30,19 @@ export function MobileNav({ items, cta }: Props) {
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink hover:bg-surface-alt"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-md text-charcoal-900 hover:bg-charcoal-50"
       >
-        <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+        <span className="sr-only">{open ? labels.close : labels.open}</span>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
           {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
         </svg>
       </button>
       {open && (
         <div id="mobile-menu" className="absolute inset-x-0 top-full border-b border-line bg-white px-4 pb-6 pt-2 shadow-lg">
-          <nav aria-label="Mobile">
-            <NavLinks items={items} vertical onNavigate={() => setOpen(false)} />
+          <nav aria-label={labels.nav}>
+            <NavLinks items={items} homeHref={homeHref} vertical onNavigate={() => setOpen(false)} />
           </nav>
+          {extra && <div className="mt-4 border-t border-line pt-4">{extra}</div>}
           <div onClick={() => setOpen(false)}>
             <LinkButton href={cta.href} className="mt-4 w-full">
               {cta.label}

@@ -11,6 +11,8 @@ export type Block =
 
 export type Post = {
   slug: string;
+  /** Language the post is written in; posts are not translated. */
+  lang: "en" | "ur";
   title: string;
   excerpt: string;
   /** ISO date (YYYY-MM-DD) */
@@ -23,6 +25,7 @@ export type Post = {
 const posts: Post[] = [
   {
     slug: "welcome-to-digitals-minds",
+    lang: "en",
     title: "Welcome to Digitals Minds: Learn | Grow | Earn",
     excerpt: "An introduction to Digitals Minds and the five divisions behind our business growth and brand development initiative.",
     publishedAt: "2026-10-19",
@@ -65,8 +68,8 @@ export function getPost(slug: string): Post | undefined {
   return posts.find((p) => p.slug === slug);
 }
 
-export function formatDate(iso: string) {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+export function formatDate(iso: string, intlLocale = "en-US") {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString(intlLocale, {
     year: "numeric",
     month: "long",
     day: "numeric",

@@ -1,28 +1,34 @@
 @import "tailwindcss";
 
 /*
- * Brand tokens. Replace these values with the official Digitals Minds
- * palette; every component reads colours from here.
+ * Digitals Minds brand tokens, taken from the official logo:
+ *   charcoal #2B323C (logo background) · #373643 (logo lettering) · yellow #FDCF31.
+ * Accessibility: yellow is for backgrounds and accents only. Never use it
+ * as text on white (1.5:1). Small accent text on white uses gold-700 (6.3:1).
  */
 @theme {
-  --color-brand-50: #eef4ff;
-  --color-brand-100: #dbe6fe;
-  --color-brand-200: #bfd3fe;
-  --color-brand-500: #3b6cf6;
-  --color-brand-600: #2553e0;
-  --color-brand-700: #1d41b5;
-  --color-brand-800: #1c388f;
-  --color-brand-900: #142659;
-  --color-brand-950: #0b1533;
+  --color-charcoal-50: #f6f7f9;
+  --color-charcoal-100: #eceef1;
+  --color-charcoal-200: #d7dbe1;
+  --color-charcoal-300: #b4bac4;
+  --color-charcoal-600: #5f6675;
+  --color-charcoal-700: #4a5160;
+  --color-charcoal-800: #373643;
+  --color-charcoal-900: #2b323c;
+  --color-charcoal-950: #1f242c;
 
-  --color-accent-400: #fbbf24;
-  --color-accent-500: #f59e0b;
+  --color-sun-50: #fffaeb;
+  --color-sun-100: #fff3c4;
+  --color-sun-200: #fee88f;
+  --color-sun-400: #fdcf31;
+  --color-sun-500: #f4c01a;
+  --color-gold-700: #7a5b00;
 
-  --color-ink: #0f172a;
-  --color-muted: #475569;
+  --color-ink: #2b323c;
+  --color-muted: #5f6675;
   --color-surface: #ffffff;
-  --color-surface-alt: #f8fafc;
-  --color-line: #e2e8f0;
+  --color-surface-alt: #f6f7f9;
+  --color-line: #e3e6ea;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -34,8 +40,16 @@
   body {
     @apply bg-surface text-ink antialiased;
   }
+  /* Urdu: Naskh for Arabic-script text, system font for any Latin text. */
+  html:lang(ur) body {
+    font-family: var(--font-naskh), var(--font-sans);
+    line-height: 1.9;
+  }
+  html:lang(ur) :is(h1, h2, h3) {
+    line-height: 1.6;
+  }
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-500;
+    @apply outline-2 outline-offset-2 outline-charcoal-900;
   }
 }
 

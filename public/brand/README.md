@@ -1,22 +1,15 @@
 # Official brand assets
 
-Place the **official** Digitals Minds logo files here. Do not substitute a
+These are web versions of the official Digitals Minds logos supplied by the owner.
+The originals are kept unmodified in `assets/brand/originals/`. Do not substitute a
 recreated or AI-generated logo.
 
-Suggested files:
+| File | Made from | Use |
+| --- | --- | --- |
+| `logo.png` (720×349) | `logo-transparent.png`, empty margin cropped, resized | Header, light backgrounds |
+| `logo-on-dark.png` (720×350) | `logo-dark-background.jpg`, cropped, resized | Footer (background `#2B323C` matches the logo exactly) |
+| `og-image.png` (1200×630) | transparent logo centred on white | Social sharing preview |
+| `src/app/icon.png`, `apple-icon.png` | `logo-dark-background.jpg`, resized | Browser tab and home-screen icon |
 
-| File | Use |
-| --- | --- |
-| `logo.svg` (or `.png`) | Header logo on light backgrounds |
-| `logo-inverse.svg` | Footer logo on dark backgrounds (optional) |
-| `og-image.png` (1200×630) | Social sharing preview (optional) |
-
-Then enable the logo in `src/config/site.ts`:
-
-```ts
-logo: { src: "/brand/logo.svg", alt: "Digitals Minds", width: 180, height: 48 },
-```
-
-Use the file's real pixel dimensions (or its aspect ratio) for `width`/`height`.
-For a favicon, add `src/app/icon.png` (or `icon.svg`); Next.js picks it up automatically.
-Brand colours live in `src/app/globals.css` under `@theme`.
+The artwork itself is never altered. If a dedicated square icon version of the logo exists,
+replace `src/app/icon.png` and `apple-icon.png` with it (it will be more legible at small sizes).

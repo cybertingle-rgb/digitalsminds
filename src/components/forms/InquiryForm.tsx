@@ -1,19 +1,32 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
-import { services } from "@/content/services";
+import type { Dictionary } from "@/i18n/dictionaries/en";
 import { inquiryInputSchema } from "@/modules/inquiries/schema";
-import { fieldErrors } from "@/lib/validation";
 
+type Strings = Dictionary["form"];
 type Status = { kind: "idle" } | { kind: "submitting" } | { kind: "success" } | { kind: "error"; message: string };
 
 const inputClass =
-  "mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2.5 text-ink shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 aria-[invalid=true]:border-red-500";
+  "mt-1 block w-full rounded-lg border border-charcoal-200 bg-white px-3 py-2.5 text-charcoal-900 shadow-sm focus:border-charcoal-900 focus:outline-none focus:ring-2 focus:ring-sun-400 aria-[invalid=true]:border-red-600";
 
-export function InquiryForm({ defaultService = "general" }: { defaultService?: string }) {
+const FIELDS = ["name", "email", "phone", "company", "service", "message"] as const;
+type Field = (typeof FIELDS)[number];
+
+type Props = {
+  strings: Strings;
+  services: { slug: string; title: string }[];
+  defaultService?: string;
+};
+
+export function InquiryForm({ strings, services, defaultService = "general" }: Props) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [invalid, setInvalid] = useState<Set<Field>>(new Set());
+
+  function invalidFields(details: Record<string, unknown>) {
+    return new Set(FIELDS.filter((f) => f in details));
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,12 +35,12 @@ export function InquiryForm({ defaultService = "general" }: { defaultService?: s
 
     const parsed = inquiryInputSchema.safeParse(data);
     if (!parsed.success) {
-      setErrors(fieldErrors(parsed.error));
+      setInvalid(new Set(parsed.error.issues.map((i) => i.path[0]).filter((p): p is Field => FIELDS.includes(p as Field))));
       setStatus({ kind: "idle" });
       return;
     }
 
-    setErrors({});
+    setInvalid(new Set());
     setStatus({ kind: "submitting" });
     try {
       const res = await fetch("/api/inquiries", {
@@ -41,60 +54,64 @@ export function InquiryForm({ defaultService = "general" }: { defaultService?: s
         setStatus({ kind: "success" });
         return;
       }
-      if (json?.error?.details) setErrors(json.error.details);
-      setStatus({ kind: "error", message: json?.error?.message ?? "We couldn't send your inquiry. Please try again." });
+      if (json?.error?.details) setInvalid(invalidFields(json.error.details));
+      setStatus({ kind: "error", message: res.status === 429 ? strings.errors.rateLimited : strings.errors.generic });
     } catch {
-      setStatus({ kind: "error", message: "Network error. Please check your connection and try again." });
+      setStatus({ kind: "error", message: strings.errors.network });
     }
   }
 
   if (status.kind === "success") {
     return (
       <div role="status" className="rounded-2xl border border-green-200 bg-green-50 p-8">
-        <h2 className="text-xl font-semibold text-green-900">Thank you, your inquiry has been sent.</h2>
-        <p className="mt-2 text-green-800">We&apos;ll review your message and get back to you soon.</p>
+        <h2 className="text-xl font-semibold text-green-900">{strings.successTitle}</h2>
+        <p className="mt-2 text-green-800">{strings.successText}</p>
         <Button variant="secondary" className="mt-6" onClick={() => setStatus({ kind: "idle" })}>
-          Send another inquiry
+          {strings.sendAnother}
         </Button>
       </div>
     );
   }
 
-  const err = (name: string) => errors[name]?.[0];
-  const describedBy = (name: string) => (err(name) ? `${name}-error` : undefined);
+  const aria = (name: Field) => ({
+    "aria-invalid": invalid.has(name),
+    "aria-describedby": invalid.has(name) ? `${name}-error` : undefined,
+  });
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Full name" name="name" error={err("name")}>
-          <input id="name" name="name" autoComplete="name" required maxLength={120} className={inputClass} aria-invalid={!!err("name")} aria-describedby={describedBy("name")} />
-        </Field>
-        <Field label="Email" name="email" error={err("email")}>
-          <input id="email" name="email" type="email" autoComplete="email" required maxLength={254} className={inputClass} aria-invalid={!!err("email")} aria-describedby={describedBy("email")} />
-        </Field>
-        <Field label="Phone (optional)" name="phone" error={err("phone")}>
-          <input id="phone" name="phone" type="tel" autoComplete="tel" maxLength={40} className={inputClass} aria-invalid={!!err("phone")} aria-describedby={describedBy("phone")} />
-        </Field>
-        <Field label="Company / brand (optional)" name="company" error={err("company")}>
-          <input id="company" name="company" autoComplete="organization" maxLength={160} className={inputClass} aria-invalid={!!err("company")} aria-describedby={describedBy("company")} />
-        </Field>
+        <FormField label={strings.name} name="name" error={invalid.has("name") ? strings.errors.name : undefined}>
+          <input id="name" name="name" autoComplete="name" required maxLength={120} className={inputClass} {...aria("name")} />
+        </FormField>
+        <FormField label={strings.email} name="email" error={invalid.has("email") ? strings.errors.email : undefined}>
+          <input id="email" name="email" type="email" dir="ltr" autoComplete="email" required maxLength={254} className={inputClass} {...aria("email")} />
+        </FormField>
+        <FormField label={strings.phone} name="phone" error={invalid.has("phone") ? strings.errors.phone : undefined}>
+          <input id="phone" name="phone" type="tel" dir="ltr" autoComplete="tel" maxLength={40} className={inputClass} {...aria("phone")} />
+        </FormField>
+        <FormField label={strings.company} name="company" error={invalid.has("company") ? strings.errors.company : undefined}>
+          <input id="company" name="company" autoComplete="organization" maxLength={160} className={inputClass} {...aria("company")} />
+        </FormField>
       </div>
-      <Field label="What can we help with?" name="service" error={err("service")}>
-        <select id="service" name="service" defaultValue={defaultService} className={inputClass} aria-invalid={!!err("service")} aria-describedby={describedBy("service")}>
-          <option value="general">General inquiry / not sure yet</option>
+      <FormField label={strings.service} name="service" error={invalid.has("service") ? strings.errors.service : undefined}>
+        <select id="service" name="service" defaultValue={defaultService} className={inputClass} {...aria("service")}>
+          <option value="general">{strings.serviceGeneral}</option>
           {services.map((s) => (
             <option key={s.slug} value={s.slug}>
               {s.title}
             </option>
           ))}
         </select>
-      </Field>
-      <Field label="Tell us about your project" name="message" error={err("message")}>
-        <textarea id="message" name="message" rows={6} required maxLength={5000} className={inputClass} aria-invalid={!!err("message")} aria-describedby={describedBy("message")} />
-      </Field>
+      </FormField>
+      <FormField label={strings.message} name="message" error={invalid.has("message") ? strings.errors.message : undefined}>
+        <textarea id="message" name="message" rows={6} required maxLength={5000} className={inputClass} {...aria("message")} />
+      </FormField>
 
-      {/* Honeypot: hidden from people and assistive tech, catches naive bots. */}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+      {/* Honeypot: hidden from people and assistive tech, catches naive bots.
+          Clipped in place (sr-only) rather than moved off-screen, which would
+          create scrollable overflow on right-to-left pages. */}
+      <div aria-hidden="true" className="sr-only">
         <label htmlFor="website">Website</label>
         <input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
@@ -106,22 +123,22 @@ export function InquiryForm({ defaultService = "general" }: { defaultService?: s
       )}
 
       <Button type="submit" disabled={status.kind === "submitting"} className="w-full sm:w-auto">
-        {status.kind === "submitting" ? "Sending…" : "Send Inquiry"}
+        {status.kind === "submitting" ? strings.sending : strings.submit}
       </Button>
-      <p className="text-xs text-muted">We only use your details to respond to your inquiry.</p>
+      <p className="text-xs text-muted">{strings.privacy}</p>
     </form>
   );
 }
 
-function Field({ label, name, error, children }: { label: string; name: string; error?: string; children: React.ReactNode }) {
+function FormField({ label, name, error, children }: { label: string; name: string; error?: string; children: ReactNode }) {
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium">
+      <label htmlFor={name} className="block text-sm font-medium text-charcoal-900">
         {label}
       </label>
       {children}
       {error && (
-        <p id={`${name}-error`} className="mt-1 text-sm text-red-600">
+        <p id={`${name}-error`} className="mt-1 text-sm text-red-700">
           {error}
         </p>
       )}

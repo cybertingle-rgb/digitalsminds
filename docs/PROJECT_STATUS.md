@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-19 (requirements discovery).
+Last updated: 2026-10-19 (Phase 1 complete).
 
 ## Confirmed decisions
 
@@ -12,7 +12,7 @@ Last updated: 2026-10-19 (requirements discovery).
 | 3 | Build | `npm run build` uses webpack (Turbopack's PostCSS child process is blocked in Hostinger's build sandbox); `prebuild` applies migrations |
 | 4 | Brand | Official logos supplied by owner (transparent PNG, dark JPG, light JPG). Colours from logo: yellow `#FDCF31`, charcoal `#2B323C`, logo text `#373643`. Logo used unaltered. |
 | 5 | Visual direction | Light and clean, charcoal text, yellow accents/CTAs, dark charcoal footer |
-| 6 | Contact | info@digitalsminds.com · +92 339 0655555 · 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan |
+| 6 | Contact | info@digitalsminds.com · 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan. **No phone or WhatsApp number anywhere on the site or in docs until the owner says otherwise.** |
 | 7 | Course pricing | All free at launch; schema ready for paid courses later |
 | 8 | Enrollment | Student requests access; an admin approves |
 | 9 | Video | Owner's Google Drive links, **restricted to specific Google accounts**. Stored as provider + link so a lesson can switch to another host later. Embedded player + "Open in Google Drive" fallback. |
@@ -30,17 +30,19 @@ Last updated: 2026-10-19 (requirements discovery).
 | 21 | Legal pages | Privacy Policy and Terms text supplied by owner. No refund policy while courses are free. |
 | 22 | Testimonials / case studies | Owner has verified items ready (with client permission) |
 | 23 | Authentication | Better Auth (self-hosted, stores users/sessions in MySQL), email/password + Sign in with Google |
+| 24 | Urdu go-live | `/ur` stays noindex with the language switcher hidden (`features.urduPublic = false`) until the owner's Urdu translation is in place |
 
 ## Open items (waiting on owner)
 
 - [ ] **Hostinger plan name** and a File Manager screenshot of the home folder, to confirm persistent upload storage (blocks the media phase)
-- [ ] Is +92 339 0655555 also the WhatsApp number?
+- [ ] Approve `nodemailer` (free; SMTP email sending) before Phase 3
+- [ ] A dedicated square/icon version of the logo, if one exists (for a sharper browser-tab icon)
 - [ ] Social media profile URLs
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
 - [ ] Privacy Policy and Terms & Conditions text
 - [ ] Urdu translations (provided when the bilingual structure is ready)
 - [ ] Later: GA4 Measurement ID, Search Console verification, Google Cloud OAuth client, SMTP mailbox credentials (set as Hostinger environment variables; never sent in chat)
-- [ ] Approval of the roadmap (docs/ROADMAP.md) and of Phase 1
+- [ ] Approval to start Phase 2 (data model and migrations)
 
 ## Assumptions (to confirm or correct)
 
@@ -58,4 +60,5 @@ Last updated: 2026-10-19 (requirements discovery).
 | 2026-10-19 | Setup, architecture, deployment and portal-plan docs | `d182638` |
 | 2026-10-19 | Switched database to MySQL/MariaDB for Hostinger | `6d7653c` |
 | 2026-10-19 | Fixed Hostinger build (webpack), migrations on build; verified live | `36e0118` |
-| 2026-10-19 | Requirements discovery; this status file and roadmap | (this commit) |
+| 2026-10-19 | Requirements discovery; this status file and roadmap | `129a355` |
+| 2026-10-19 | Phase 1: official logos, brand colours, Urdu font, English/Urdu routing with RTL, restyled pages, phone numbers removed | (Phase 1 commit) |

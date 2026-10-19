@@ -1,0 +1,238 @@
+/**
+ * English interface and page text. This is the source of truth for every
+ * key; ur.ts mirrors its structure. Use {name} placeholders for values that
+ * are filled in at runtime (see `format` in src/i18n/get-dictionary.ts).
+ */
+export const en = {
+  meta: {
+    siteTitle: "Digitals Minds | Learn | Grow | Earn",
+    description:
+      "Digitals Minds is a complete business growth and brand development initiative: digital marketing, product sourcing, media production, startup setup and web & e-commerce under one roof.",
+  },
+  brand: {
+    name: "Digitals Minds",
+    tagline: "Learn | Grow | Earn",
+    positioning: "A Complete Business Growth & Brand Development Initiative",
+    logoAlt: "Digitals Minds logo",
+  },
+  nav: {
+    home: "Home",
+    about: "About",
+    services: "Services",
+    blog: "Blog",
+    contact: "Contact",
+    cta: "Start a Project",
+  },
+  a11y: {
+    skipToContent: "Skip to content",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    mainNav: "Main",
+    mobileNav: "Mobile",
+    breadcrumb: "Breadcrumb",
+    homeLink: "Digitals Minds home",
+    languageSwitcher: "Change language",
+  },
+  common: {
+    learnMore: "Learn more",
+    viewDetails: "View details",
+    requestQuote: "Request a quote",
+    allServices: "All Services",
+  },
+  home: {
+    heroText:
+      "From your first idea to a growing brand: marketing, sourcing, media, business setup and e-commerce, all in one place at Digitals Minds.",
+    heroPrimary: "Get a Free Consultation",
+    heroSecondary: "Explore Services",
+    servicesEyebrow: "What we do",
+    servicesTitle: "Everything your business needs to grow",
+    servicesDescription: "Five specialist divisions working together, so you don't have to coordinate multiple agencies.",
+  },
+  pillars: {
+    eyebrow: "Our approach",
+    items: [
+      { title: "Learn", text: "Build the skills and understanding you need to make confident business decisions." },
+      { title: "Grow", text: "Put the right strategy, brand and systems in place to reach more customers." },
+      { title: "Earn", text: "Turn growth into sustainable revenue with channels that keep working for you." },
+    ],
+  },
+  process: {
+    eyebrow: "How we work",
+    title: "A simple path from idea to growth",
+    steps: [
+      { title: "Tell us your goals", text: "Share where your business is today and where you want it to go." },
+      { title: "Get a clear plan", text: "We recommend the services and next steps that fit your stage and budget." },
+      { title: "Build and launch", text: "Our divisions work together so strategy, brand and execution stay aligned." },
+      { title: "Grow with support", text: "Review progress, learn what works and keep improving." },
+    ],
+  },
+  cta: {
+    title: "Ready to grow your business?",
+    text: "Tell us about your project and we'll get back to you with recommended next steps.",
+    label: "Send an Inquiry",
+  },
+  about: {
+    metaDescription: "About Digitals Minds: a complete business growth and brand development initiative.",
+    eyebrow: "About Digitals Minds",
+    intro:
+      "Digitals Minds brings together the services a business needs to start, grow and scale: from building a brand and sourcing products to marketing, content and online sales.",
+    philosophy:
+      "Our guiding idea is Learn | Grow | Earn: help people gain the knowledge to make good decisions, put growth systems in place, and turn that growth into income.",
+    divisionsTitle: "Our divisions",
+    divisionsDescription: "Each division is a specialist team, and they work as one.",
+    ctaTitle: "Let's build something together",
+  },
+  servicesPage: {
+    metaDescription:
+      "Digital marketing, product sourcing, media production, startup & brand setup, and web & e-commerce services.",
+    eyebrow: "Services",
+    title: "Five divisions. One growth partner.",
+    description: "Pick a single service or combine several. We'll recommend the right mix for your stage.",
+  },
+  servicePage: {
+    requestQuote: "Request a Quote",
+    included: "What's included",
+    idealFor: "Ideal for",
+    explore: "Explore other divisions",
+    interested: "Interested in {service}?",
+  },
+  services: {
+    "digital-marketing-growth": {
+      title: "Digital Marketing & Growth",
+      shortTitle: "Marketing & Growth",
+      summary: "Plan, launch and optimise campaigns that build visibility and bring in customers.",
+      description:
+        "We help businesses get found and chosen online, from strategy through execution, combining organic and paid channels with clear reporting so you always know what your marketing is doing.",
+      offerings: [
+        "Digital marketing strategy and planning",
+        "Social media management and growth",
+        "Paid advertising campaigns",
+        "Search engine optimisation (SEO)",
+        "Content and email marketing",
+        "Analytics, tracking and performance reporting",
+      ],
+      idealFor: ["New brands building an audience", "Businesses ready to scale their online sales"],
+    },
+    "product-sourcing-logistics": {
+      title: "Product Sourcing & Logistics",
+      shortTitle: "Sourcing & Logistics",
+      summary: "Find reliable suppliers and move products from factory to customer.",
+      description:
+        "We support product-based businesses with supplier research, sampling and coordination of the logistics needed to get inventory where it needs to be.",
+      offerings: [
+        "Product research and supplier sourcing",
+        "Sampling and quality checks coordination",
+        "Order and shipment coordination",
+        "Packaging and labelling guidance",
+        "Fulfilment and logistics planning",
+      ],
+      idealFor: ["E-commerce sellers launching new products", "Brands moving to private label"],
+    },
+    "media-content-production": {
+      title: "Media & Content Production",
+      shortTitle: "Media & Content",
+      summary: "Photo, video and creative content that tells your brand's story.",
+      description:
+        "From product shoots to social-ready video, we produce the creative assets your brand needs to stand out across every channel.",
+      offerings: [
+        "Product and brand photography",
+        "Video production and editing",
+        "Short-form social content",
+        "Graphic design and creatives",
+        "Copywriting and scripting",
+      ],
+      idealFor: ["Brands refreshing their visual identity", "Teams that need a steady content pipeline"],
+    },
+    "startup-brand-setup": {
+      title: "Startup & Brand Setup",
+      shortTitle: "Startup & Brand",
+      summary: "Turn an idea into a ready-to-launch business with a clear brand.",
+      description:
+        "We guide founders through the foundations of a new business: positioning, brand identity and the practical setup needed to launch with confidence.",
+      offerings: [
+        "Business idea validation and planning",
+        "Brand strategy, naming and positioning",
+        "Visual identity and brand guidelines",
+        "Business setup guidance",
+        "Go-to-market planning",
+      ],
+      idealFor: ["First-time founders", "Existing businesses launching a new brand"],
+    },
+    "web-ecommerce": {
+      title: "Web & E-Commerce",
+      shortTitle: "Web & E-Commerce",
+      summary: "Fast, modern websites and online stores built to convert.",
+      description:
+        "We design and build websites and online stores that look professional, load quickly and make it easy for customers to buy or get in touch.",
+      offerings: [
+        "Business website design and development",
+        "E-commerce store setup",
+        "Marketplace and storefront setup",
+        "Payment, shipping and integrations",
+        "Maintenance, speed and security improvements",
+      ],
+      idealFor: ["Businesses without a strong online presence", "Sellers ready to own their sales channel"],
+    },
+  },
+  blog: {
+    metaDescription: "Guides and updates on marketing, sourcing, branding, media and e-commerce from Digitals Minds.",
+    eyebrow: "Blog",
+    title: "Insights to help you learn, grow and earn",
+    empty: "New articles are on the way. Check back soon.",
+    allArticles: "All articles",
+  },
+  contact: {
+    metaDescription: "Tell us about your business or project and request a consultation with Digitals Minds.",
+    eyebrow: "Contact",
+    title: "Let's talk about your goals",
+    description:
+      "Share a few details about your business or project and our team will get back to you with recommended next steps.",
+    emailLabel: "Email",
+    officeLabel: "Office",
+    address: ["4th Floor, GM Plaza", "Kohinoor Jaranwala Road", "Faisalabad, Pakistan"],
+  },
+  form: {
+    name: "Full name",
+    email: "Email",
+    phone: "Your phone (optional)",
+    company: "Company / brand (optional)",
+    service: "What can we help with?",
+    serviceGeneral: "General inquiry / not sure yet",
+    message: "Tell us about your project",
+    submit: "Send Inquiry",
+    sending: "Sending…",
+    privacy: "We only use your details to respond to your inquiry.",
+    successTitle: "Thank you, your inquiry has been sent.",
+    successText: "We'll review your message and get back to you soon.",
+    sendAnother: "Send another inquiry",
+    errors: {
+      name: "Please enter your name",
+      email: "Please enter a valid email address",
+      phone: "Please enter a valid phone number",
+      company: "Company name is too long",
+      service: "Please choose a service",
+      message: "Please tell us a little more (at least 10 characters)",
+      generic: "We couldn't send your inquiry. Please try again.",
+      rateLimited: "Too many submissions. Please try again later.",
+      network: "Network error. Please check your connection and try again.",
+    },
+  },
+  footer: {
+    services: "Services",
+    company: "Company",
+    contact: "Contact",
+    copyright: "© {year} Digitals Minds. All rights reserved.",
+  },
+  errors: {
+    notFoundTitle: "Page not found",
+    notFoundText: "The page you're looking for doesn't exist or has moved.",
+    goHome: "Go home",
+    contactUs: "Contact us",
+    errorTitle: "Something went wrong",
+    errorText: "Please try again. If the problem continues, contact us.",
+    tryAgain: "Try again",
+    reference: "Reference",
+  },
+};
+
+export type Dictionary = typeof en;

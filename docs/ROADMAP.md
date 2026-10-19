@@ -17,7 +17,7 @@ Complexity: S (≤1 day) · M (2–4 days) · L (1–2 weeks of focused work).
 ## Phase 0: Discovery and audit ✅
 Repository and hosting audit, build failure fixed and verified live, requirements confirmed (D1–D23).
 
-## Phase 1: Brand design system and bilingual foundation (M)
+## Phase 1: Brand design system and bilingual foundation (M) ✅
 - **Objectives:** apply the real brand and make every page work in English and Urdu.
 - **Deliverables:**
   - The official logo in header, footer, favicon and social preview.

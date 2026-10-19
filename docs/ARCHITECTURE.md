@@ -10,23 +10,29 @@ prisma.config.ts         Prisma CLI config (schema/migrations paths, DATABASE_UR
 public/brand/            Official logo files (add yours here)
 src/
   app/                   Next.js App Router
-    (marketing)/         Public site route group: shared header/footer layout
+    [lang]/              Root layout per language (sets <html lang dir>), 404 page, catch-all
+      (marketing)/       Public site route group: shared header/footer layout
       page.tsx           Home
       about/ services/ services/[slug]/ blog/ blog/[slug]/ contact/
       error.tsx          Error boundary for the public site
     api/
       inquiries/route.ts POST lead capture
       health/route.ts    GET liveness + DB readiness
-    layout.tsx           Root <html>, global metadata
-    not-found.tsx, global-error.tsx, robots.ts, sitemap.ts
+    global-error.tsx, robots.ts, sitemap.ts, icon.png, apple-icon.png, fonts.ts
   components/
     ui/                  Primitives: Button, Container, Section, SectionHeading
     layout/              Header, footer, nav, contact channels
     sections/            Page sections: Hero, Pillars, ServicesGrid, ProcessSteps, CtaBanner
     forms/               InquiryForm (client component)
     brand/               BrandLogo
+  i18n/
+    config.ts            Locales, URL helpers, routing rule (used by src/proxy.ts)
+    dictionaries/        en.ts (all site text) and ur.ts (Urdu, partial; falls back to English)
+    get-dictionary.ts, merge.ts, metadata.ts (canonical, hreflang, noindex)
+  proxy.ts               "/x" renders /en/x, "/en/x" redirects to "/x", "/ur/x" served as-is
+  fonts/                 Self-hosted Noto Naskh Arabic (OFL)
   config/
-    site.ts              Brand identity, nav, CTA, contact channels, logo slot
+    site.ts              Logos, nav structure, email, social links
     features.ts          Flags for Phase 2 modules
   content/               Services and blog content + accessors
   lib/                   Cross-cutting infrastructure (env, db, http errors, rate limit, request helpers)
@@ -44,6 +50,17 @@ src/
 3. Add pages in a route group: `(marketing)` for public pages, and later `(portal)` and `admin` (see STUDENT_PORTAL.md).
 4. Change the schema only through migrations: `npm run db:migrate -- --name <change>`.
 5. Add any new env var to `src/lib/env.ts` (validated) **and** `.env.example`.
+
+## Internationalisation
+
+- Locales: `en` (default, no URL prefix) and `ur` (`/ur`, right-to-left).
+- Pages live under `src/app/[lang]/` and are statically generated for both locales.
+- Components receive `locale` and `dict` props; links are built with `localizePath()`.
+- Missing Urdu strings fall back to English wrapped in Unicode direction isolates, so they display correctly in RTL.
+- Content written in one language (blog posts, and later courses) is marked with its own `lang`/`dir`.
+- Use logical CSS utilities (`ps-`, `me-`, `start-`, `border-s`) instead of left/right so layouts mirror automatically.
+- Known limitation: 404 responses are server-rendered as Next's error shell and completed in the browser
+  (correct language, direction and content with JavaScript). They are `noindex`.
 
 ## Request flow: inquiry
 

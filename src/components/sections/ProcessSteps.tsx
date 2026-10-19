@@ -1,24 +1,18 @@
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import type { Dictionary } from "@/i18n/get-dictionary";
 
-const steps = [
-  { title: "Tell us your goals", text: "Share where your business is today and where you want it to go." },
-  { title: "Get a clear plan", text: "We recommend the services and next steps that fit your stage and budget." },
-  { title: "Build and launch", text: "Our divisions work together so strategy, brand and execution stay aligned." },
-  { title: "Grow with support", text: "Review progress, learn what works and keep improving." },
-];
-
-export function ProcessSteps() {
+export function ProcessSteps({ dict }: { dict: Dictionary }) {
   return (
     <Section>
-      <SectionHeading eyebrow="How we work" title="A simple path from idea to growth" />
+      <SectionHeading eyebrow={dict.process.eyebrow} title={dict.process.title} />
       <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {steps.map((s, i) => (
-          <li key={s.title} className="rounded-2xl border border-line p-6">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
+        {dict.process.steps.map((s, i) => (
+          <li key={i} className="rounded-2xl border border-line p-6">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-sun-400 text-sm font-bold text-charcoal-900">
               {i + 1}
             </span>
-            <h3 className="mt-4 font-semibold">{s.title}</h3>
+            <h3 className="mt-4 font-semibold text-charcoal-900">{s.title}</h3>
             <p className="mt-2 text-sm text-muted">{s.text}</p>
           </li>
         ))}

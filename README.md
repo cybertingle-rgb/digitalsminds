@@ -54,18 +54,28 @@ See `.env.example`. **Never commit `.env`**; it is git-ignored.
 | --- | --- | --- |
 | `DATABASE_URL` | Yes (runtime) | `mysql://USER:PASSWORD@HOST:3306/DATABASE` (URL-encode special characters in the password). Not needed for `next build`. |
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical URL, e.g. `https://digitalsminds.com`. Used for SEO, sitemap and origin checks. Set at **build** time. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` / `_PHONE` / `NEXT_PUBLIC_WHATSAPP_NUMBER` | No | Shown on the site only when set. Set at build time. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | No | Public email shown on the site; defaults to `info@digitalsminds.com`. Set at build time. |
+
+No phone or WhatsApp number is displayed anywhere on the site (owner decision); there is no setting for one.
 | `INQUIRY_WEBHOOK_URL` | No | Receives `{type:"inquiry.created", data}` JSON for each lead (Zapier/Make/Slack/CRM). |
 
 ## Content & branding
 
-- **Logo:** add official files to `public/brand/` and set `logo` in `src/config/site.ts` (see `public/brand/README.md`). Until then the brand name renders as text.
-- **Colours:** `@theme` block in `src/app/globals.css`.
-- **Navigation, tagline, contact, social links:** `src/config/site.ts`.
-- **Services:** `src/content/services.ts` (drives services pages, homepage grid, footer and the form's service list).
-- **Blog posts:** `src/content/blog.ts`.
+- **Logos:** official files in `public/brand/` (web versions) and `assets/brand/originals/` (as supplied). See `public/brand/README.md`.
+- **Colours:** `@theme` block in `src/app/globals.css` (charcoal `#2B323C`, yellow `#FDCF31` from the logo).
+- **All page text:** `src/i18n/dictionaries/en.ts` (English) and `ur.ts` (Urdu). Services text lives there too.
+- **Navigation, email, social links:** `src/config/site.ts`.
+- **Blog posts:** `src/content/blog.ts` (each post has one language).
 
 No testimonials, client logos or statistics are included. Add them only from verified sources.
+
+## Languages
+
+- English is served at `/…`, Urdu at `/ur/…` (right-to-left, Noto Naskh Arabic font, self-hosted).
+- `src/proxy.ts` routes requests: unprefixed paths render the English pages, `/en/…` redirects to the unprefixed URL.
+- Untranslated Urdu text falls back to English automatically.
+- `features.urduPublic` (`src/config/features.ts`) is **off** until the translation is complete: the language
+  switcher is hidden and `/ur` pages are `noindex` and left out of the sitemap, but can be previewed at `/ur`.
 
 ## Leads
 
