@@ -64,4 +64,4 @@ Last updated: 2026-10-19 (Phase 2 complete).
 | 2026-10-19 | Fixed Hostinger build (webpack), migrations on build; verified live | `36e0118` |
 | 2026-10-19 | Requirements discovery; this status file and roadmap | `129a355` |
 | 2026-10-19 | Phase 1: official logos, brand colours, Urdu font, English/Urdu routing with RTL, restyled pages, phone numbers removed | `7a768f4` |
-| 2026-10-19 | Phase 2: data model (28 tables) and additive migration, Better Auth installed, square app icon, DB integration tests, migration workflow fix (shadow DB) | (Phase 2 commit) |
+| 2026-10-19 | Phase 2: data model (28 tables) and additive migration, Better Auth installed, square app icon, DB integration tests, migration workflow fix (shadow DB) | `6309ab8` |
