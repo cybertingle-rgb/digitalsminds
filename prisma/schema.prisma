@@ -1,0 +1,40 @@
+// Digitals Minds database schema.
+// Every change here must ship with a migration: `npm run db:migrate -- --name <change>`.
+// Planned Phase 2 (Student Portal) models are documented in docs/STUDENT_PORTAL.md.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CLOSED
+  SPAM
+}
+
+/// Leads submitted through the website's inquiry/contact forms.
+model Inquiry {
+  id        String        @id @default(cuid())
+  name      String        @db.VarChar(120)
+  email     String        @db.VarChar(254)
+  phone     String?       @db.VarChar(40)
+  company   String?       @db.VarChar(160)
+  /// Service slug from src/content/services.ts, or "general".
+  service   String        @db.VarChar(64)
+  message   String        @db.Text
+  /// Page the form was submitted from, for lead attribution.
+  source    String?       @db.VarChar(200)
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+}

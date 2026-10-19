@@ -1,0 +1,24 @@
+# dependencies
+/node_modules
+
+# next.js / build output
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# generated Prisma client (rebuilt by `npm install` / `npm run db:generate`)
+/src/generated/
+
+# environment & secrets: never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# logs & OS noise
+npm-debug.log*
+.DS_Store
+coverage/
