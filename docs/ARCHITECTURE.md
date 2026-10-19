@@ -73,6 +73,14 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Student management (Phase 9)
+
+- `src/modules/students/service.ts`: search/filters → Prisma `where` (role STUDENT only), profile with per-course progress and
+  history (audit entries for the user and their enrollments), edit details and suspend/reactivate (`students.manage`,
+  Super Admin; suspending deletes sessions), export rows. Edits audit the changed field names, never the values.
+- Manual enrollment: `manualEnroll` in `src/modules/learning/enrollment.ts` (`enrollments.decide`; active students, non-draft courses).
+- Routes: `/admin/students`, `/admin/students/[id]`, `GET /api/admin/students/export` (`students.export`, CSV with formula guard).
+
 ## Learning: catalogue, enrollment, progress (Phase 8)
 
 - `src/modules/learning/catalogue.ts`: published-course listing (Urdu title/summary fall back to English), course loader.

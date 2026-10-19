@@ -123,7 +123,10 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Progress persists across devices.
   - Revoking access removes it immediately.
 
-## Phase 9: Student management (M)
+## Phase 9: Student management (M) ✅
+> Student list with search and filters, profiles with progress and history, manual enrollment, approve/revoke from the
+> profile, edit details and suspend/reactivate (Super Admin), CSV export (Super Admin).
+
 - **Deliverables:** student search and profiles; enrollments and progress; suspend/reactivate; manual enroll/revoke; permitted exports. Audit log entries for each action.
 
 ## Phase 10: Announcements, notifications, support and certificates (M)

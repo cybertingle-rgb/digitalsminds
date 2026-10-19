@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-19 (Phase 8 complete).
+Last updated: 2026-10-20 (Phase 9 complete).
 
 ## Confirmed decisions
 
@@ -52,6 +52,7 @@ Last updated: 2026-10-19 (Phase 8 complete).
 | 43 | Google email | Required on every access request (prefilled from the profile), saved to the student's profile |
 | 44 | Request alerts | Email to the lead-alert address (default info@digitalsminds.com) plus a waiting count on the dashboard |
 | 45 | Learning access | Completion is a "Mark as complete" button; revoking or unpublishing ends access immediately; archived courses stay open to enrolled students |
+| 46 | Student management | Super Admin + Content Manager view students; enrollment staff can enroll directly; editing, suspending and CSV export are Super Admin only. No account deletion yet (ask if needed for privacy requests) |
 
 ## Open items (waiting on owner)
 
@@ -62,11 +63,13 @@ Last updated: 2026-10-19 (Phase 8 complete).
 - [ ] Urdu translations (provided when the bilingual structure is ready)
 - [ ] Later: GA4 Measurement ID and Search Console verification (Phase 12)
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
-- [ ] **Replace `BETTER_AUTH_SECRET`**: its value was shared in a chat screenshot. Then re-enter any saved SMTP password / Google secret
-- [ ] Remove `ADMIN_SETUP_CODE` from Hostinger; set up Email in Admin → Integrations; reset the temporary owner password via "Forgot password"
+- [x] Replaced `BETTER_AUTH_SECRET` (owner confirmed). Re-enter the SMTP password / Google secret in Integrations if they were saved before the change
+- [x] Removed `ADMIN_SETUP_CODE` from Hostinger (owner confirmed)
+- [ ] Set up Email in Admin → Integrations; reset the temporary owner password via "Forgot password"
 - [x] Approval to start Phase 7 (course creation and publishing)
 - [x] Approval to start Phase 8 (catalogue, enrollment requests and approvals, student dashboard, lesson player)
-- [ ] Approval to start Phase 9 (student management: search, profiles, suspend/reactivate, manual enroll, exports)
+- [x] Approval to start Phase 9 (student management: search, profiles, suspend/reactivate, manual enroll, exports)
+- [ ] Approval to start Phase 10 (announcements, notifications, support tickets, certificates, newsletter); needs approval of a PDF library for certificates
 
 ## Assumptions (to confirm or correct)
 
@@ -93,3 +96,4 @@ Last updated: 2026-10-19 (Phase 8 complete).
 | 2026-10-19 | Phase 6: live dashboard, Inquiries (filters, detail, status/assignee/follow-up, notes, delete), lead alert emails, UTM/language capture, safe CSV export | `ee1d546` |
 | 2026-10-19 | Phase 7: course editor, curriculum (modules/lessons, reordering), Drive video links with preview, resources, instructors, publishing checklist and permissions, student preview, 53-check e2e run | `cb36e7c` |
 | 2026-10-19 | Phase 8: course catalogue and pages, free previews, access requests and Enrollments queue, approval/rejection emails, My learning dashboard and profile, lesson player with progress, private files for students, 45-check e2e run | `6008c4d` |
+| 2026-10-20 | Phase 9: student list, search and filters, profiles with progress and history, manual enrollment, edit/suspend (Super Admin), CSV export, 31-check e2e run | _pending_ |

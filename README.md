@@ -126,6 +126,14 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - Revoking access ends it immediately (also remove the student from the Drive sharing). Archived courses stay open to
   students already enrolled.
 
+## Student management
+
+- **Admin → Students** (Super Admin, Content Manager): search by name, email, phone or city; filter by enrollment, course
+  and account status. Profiles show courses with progress and last viewed lesson, the Google email to copy, and a history.
+- Staff who approve enrollments can **enroll a student directly** (they get the approval email) and approve/revoke from the profile.
+- Super Admin only: edit a student's details (e.g. fix a mistyped Google email), suspend/reactivate (signs them out
+  everywhere; progress is kept), and **Export CSV** (honours filters, logged in Activity).
+
 ## Languages
 
 - English is served at `/…`, Urdu at `/ur/…` (right-to-left, Noto Naskh Arabic font, self-hosted).

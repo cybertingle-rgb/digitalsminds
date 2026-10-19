@@ -84,7 +84,7 @@ export default async function AdminOverview() {
             href="/admin/inquiries?followUp=overdue"
           />
         )}
-        {people && <Stat label="Student accounts" value={people.students} hint={`${people.newStudents} new in the last 7 days`} />}
+        {people && <Stat label="Student accounts" value={people.students} hint={`${people.newStudents} new in the last 7 days`} href="/admin/students" />}
         {people && can(user.role, "staff.manage") && <Stat label="Active team members" value={people.staff} href="/admin/team" />}
         {media && (
           <Stat

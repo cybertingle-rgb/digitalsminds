@@ -36,6 +36,9 @@ export const actionLabels: Record<string, string> = {
   "enrollment.approved": "Approved a course access request",
   "enrollment.rejected": "Rejected a course access request",
   "enrollment.revoked": "Revoked a student's course access",
+  "enrollment.manual": "Enrolled a student in a course",
+  "student.updated": "Edited a student's details",
+  "export.students": "Exported students (CSV)",
 };
 
 export function describeAction(action: string): string {

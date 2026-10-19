@@ -208,3 +208,27 @@ export async function courseStudents(courseId: string) {
   const doneBy = new Map(done.map((d) => [d.userId, d._count._all]));
   return { waiting, lessonCount, students: enrolled.map((e) => ({ ...e.user, done: doneBy.get(e.userId) ?? 0 })) };
 }
+
+/**
+ * Staff enroll a student directly (no request needed), e.g. after a phone call.
+ * The student gets the usual approval email.
+ */
+export async function manualEnroll(userId: string, courseId: string, actor: Actor) {
+  if (!can(actor.role, "enrollments.decide")) throw new EnrollmentError("You don't have permission to do that.", 403);
+  const [student, course] = await Promise.all([
+    db().user.findUnique({ where: { id: userId }, select: { role: true, status: true } }),
+    db().course.findUnique({ where: { id: courseId }, select: { status: true, title: true } }),
+  ]);
+  if (!student || student.role !== "STUDENT") throw new EnrollmentError("Student not found.", 404);
+  if (student.status !== "ACTIVE") throw new EnrollmentError("Reactivate this account before enrolling it in a course.");
+  if (!course || course.status === "DRAFT") throw new EnrollmentError("Choose a published or archived course.");
+  const existing = await enrollmentFor(userId, courseId);
+  if (existing?.status === "APPROVED") throw new EnrollmentError("This student is already enrolled in that course.", 409);
+  const data = { status: "APPROVED" as const, decidedAt: new Date(), decidedById: actor.id, decisionNote: null };
+  const enrollment = existing
+    ? await db().enrollment.update({ where: { id: existing.id }, data })
+    : await db().enrollment.create({ data: { userId, courseId, ...data } });
+  await audit({ actorId: actor.id, action: "enrollment.manual", entityType: "Enrollment", entityId: enrollment.id, metadata: { course: course.title, from: existing?.status ?? null } });
+  await sendDecisionEmail(enrollment.id);
+  return enrollment;
+}

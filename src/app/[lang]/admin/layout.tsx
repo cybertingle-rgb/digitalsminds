@@ -23,6 +23,7 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
     { label: "Overview", href: "/admin" },
     ...(can(user.role, "courses.manage.all") || can(user.role, "courses.manage.own") ? [{ label: "Courses", href: "/admin/courses" }] : []),
     ...(can(user.role, "enrollments.decide") ? [{ label: "Enrollments", href: "/admin/enrollments" }] : []),
+    ...(can(user.role, "students.view") ? [{ label: "Students", href: "/admin/students" }] : []),
     ...(can(user.role, "inquiries.manage") ? [{ label: "Inquiries", href: "/admin/inquiries" }] : []),
     ...(can(user.role, "media.manage.all") || can(user.role, "media.manage.own") ? [{ label: "Media", href: "/admin/media" }] : []),
     ...(can(user.role, "staff.manage") ? [{ label: "Team", href: "/admin/team" }] : []),
