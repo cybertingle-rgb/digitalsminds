@@ -69,4 +69,4 @@ Last updated: 2026-10-19 (Phase 3 complete).
 | 2026-10-19 | Requirements discovery; this status file and roadmap | `129a355` |
 | 2026-10-19 | Phase 1: official logos, brand colours, Urdu font, English/Urdu routing with RTL, restyled pages, phone numbers removed | `7a768f4` |
 | 2026-10-19 | Phase 2: data model (28 tables) and additive migration, Better Auth installed, square app icon, DB integration tests, migration workflow fix (shadow DB) | `6309ab8` |
-| 2026-10-19 | Phase 3: Better Auth (email/password, verification, reset, Google), one-time /setup, admin shell with Integrations (encrypted SMTP + Google), permission matrix, audit log, IP-safe rate limiting, 47-check e2e run | (Phase 3 commit) |
+| 2026-10-19 | Phase 3: Better Auth (email/password, verification, reset, Google), one-time /setup, admin shell with Integrations (encrypted SMTP + Google), permission matrix, audit log, IP-safe rate limiting, 47-check e2e run | `7776223` |
