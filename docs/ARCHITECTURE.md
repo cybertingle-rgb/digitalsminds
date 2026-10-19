@@ -73,6 +73,20 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Courses (Phase 7)
+
+- `src/modules/courses/service.ts`: course CRUD, curriculum (modules/lessons with up/down reordering and move-to-module),
+  resources, instructors, publishing. Every function re-checks `canManageCourse` (Instructors: assigned courses only);
+  publish/unpublish/archive need `courses.publish` (Content Manager, Super Admin) and the publishing checklist.
+- Rules: the web address (slug) locks once a course was first published; only unused drafts can be deleted (otherwise archive);
+  lessons/modules with student progress can't be deleted; thumbnails must be public images and resource files must come from
+  the user's own media scope.
+- `src/modules/courses/drive.ts`: only Google Drive file IDs are stored; the embed URL is built by the app
+  (`https://drive.google.com/file/d/<id>/preview`), so pasted links can never put arbitrary pages in an iframe.
+- `src/modules/courses/richtext.tsx`: "simple formatting" (paragraphs, `## ` headings, `- ` bullets, auto-linked https URLs)
+  rendered as React elements, never as HTML.
+- Admin UI: `src/app/[lang]/admin/courses/` (list, new, editor, lesson editor, student preview). Server actions in `actions.ts`.
+
 ## Admin dashboard & leads (Phase 6)
 
 - `src/modules/dashboard/stats.ts`: every figure is a live query, and only those the viewer's role may see.

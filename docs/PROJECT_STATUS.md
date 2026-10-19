@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-19 (Phase 6 complete).
+Last updated: 2026-10-19 (Phase 7 complete).
 
 ## Confirmed decisions
 
@@ -44,6 +44,9 @@ Last updated: 2026-10-19 (Phase 6 complete).
 | 35 | File storage | Uploads on the Hostinger account disk, outside the app (`~/digitalsminds-uploads` or `UPLOAD_DIR`); enabled only after a redeploy proves persistence. Videos stay on Google Drive |
 | 36 | Leads | Super Admin + Content Manager manage leads; CSV export and deletion Super Admin only; alert emails default to info@digitalsminds.com; campaign tags kept in sessionStorage (no cookies) |
 | 37 | Newsletter | Subscriber list/export built together with the public sign-up form (and email confirmation) in Phase 10 |
+| 38 | Course publishing | Instructors create and edit their own courses; only Content Managers and Super Admins publish, unpublish or archive. Publishing needs a lesson in every module and valid video links |
+| 39 | Lesson text | Simple formatting (paragraphs, headings, bullets, links), stored as plain text and never rendered as HTML |
+| 40 | Course videos | Google Drive links only (the app builds the player URL from the file ID); reordering with up/down buttons |
 
 ## Open items (waiting on owner)
 
@@ -56,7 +59,8 @@ Last updated: 2026-10-19 (Phase 6 complete).
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
 - [ ] **Replace `BETTER_AUTH_SECRET`**: its value was shared in a chat screenshot. Then re-enter any saved SMTP password / Google secret
 - [ ] Remove `ADMIN_SETUP_CODE` from Hostinger; set up Email in Admin → Integrations; reset the temporary owner password via "Forgot password"
-- [ ] Approval to start Phase 7 (course creation and publishing)
+- [x] Approval to start Phase 7 (course creation and publishing)
+- [ ] Approval to start Phase 8 (catalogue, enrollment requests and approvals, student dashboard, lesson player)
 
 ## Assumptions (to confirm or correct)
 
@@ -81,3 +85,4 @@ Last updated: 2026-10-19 (Phase 6 complete).
 | 2026-10-19 | Phase 4: Team management, Activity log page, instructor scoping, Drive CSP; fix: missing/short auth secret no longer breaks the contact form and health check | `e5d6608` |
 | 2026-10-19 | Phase 5: media library (uploads with progress, content validation, EXIF stripping, public/private serving, replace, in-use protection, instructor scoping), File storage persistence check | `58e6224` |
 | 2026-10-19 | Phase 6: live dashboard, Inquiries (filters, detail, status/assignee/follow-up, notes, delete), lead alert emails, UTM/language capture, safe CSV export | `ee1d546` |
+| 2026-10-19 | Phase 7: course editor, curriculum (modules/lessons, reordering), Drive video links with preview, resources, instructors, publishing checklist and permissions, student preview, 53-check e2e run | _pending_ |

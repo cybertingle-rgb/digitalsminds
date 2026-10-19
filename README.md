@@ -104,6 +104,16 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - Files in use (course thumbnails/resources, blog covers, testimonials, case studies) cannot be deleted; "Replace" keeps links.
 - Uploads stay **off** until Admin → Integrations → File storage confirms the folder survived a redeploy.
 
+## Courses
+
+- **Admin → Courses** (Super Admin, Content Manager, Instructor): create a course, then add modules and lessons, reorder them
+  with the arrows, and open a lesson to add its Google Drive video link (live preview), formatted text, length, free-preview flag
+  and resources (files from Media or https links). **Preview as student** shows the course exactly as learners will.
+- Instructors see and edit only the courses they're assigned to; a Content Manager or Super Admin assigns instructors and
+  publishes, unpublishes or archives courses. Publishing requires at least one lesson, no empty modules and valid video links.
+- Videos stay private in Google Drive: share each video with the enrolled student's Google email.
+- Once published, a course's web address is locked; courses with students can be archived but not deleted.
+
 ## Languages
 
 - English is served at `/…`, Urdu at `/ur/…` (right-to-left, Noto Naskh Arabic font, self-hosted).

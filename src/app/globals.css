@@ -41,7 +41,8 @@
     @apply bg-surface text-ink antialiased;
   }
   /* Urdu: Naskh for Arabic-script text, system font for any Latin text. */
-  html:lang(ur) body {
+  html:lang(ur) body,
+  body [lang="ur"] {
     font-family: var(--font-naskh), var(--font-sans);
     line-height: 1.9;
   }

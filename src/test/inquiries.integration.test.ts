@@ -2,7 +2,7 @@
  * Lead management against a real database. Run with `npm run test:db`.
  */
 import { randomUUID } from "node:crypto";
-import { afterAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
@@ -15,9 +15,14 @@ run("lead management (integration)", async () => {
   const { pkDay } = await import("@/lib/pk-time");
   const tag = randomUUID().slice(0, 8);
   const email = (n: string) => `${n}.${tag}@lead.test`;
-  const admin = await db().user.create({ data: { id: `t${tag}_admin`, name: "Admin", email: `admin.${tag}@example.com`, role: "SUPER_ADMIN" } });
-  const cm = await db().user.create({ data: { id: `t${tag}_cm`, name: "Content", email: `cm.${tag}@example.com`, role: "CONTENT_MANAGER" } });
-  const student = await db().user.create({ data: { id: `t${tag}_st`, name: "Student", email: `st.${tag}@example.com`, role: "STUDENT" } });
+  type U = Awaited<ReturnType<ReturnType<typeof db>["user"]["create"]>>;
+  let admin: U, cm: U, student: U;
+  // Created in beforeAll (not while collecting), so `npm test` without a database just skips this suite.
+  beforeAll(async () => {
+    admin = await db().user.create({ data: { id: `t${tag}_admin`, name: "Admin", email: `admin.${tag}@example.com`, role: "SUPER_ADMIN" } });
+    cm = await db().user.create({ data: { id: `t${tag}_cm`, name: "Content", email: `cm.${tag}@example.com`, role: "CONTENT_MANAGER" } });
+    student = await db().user.create({ data: { id: `t${tag}_st`, name: "Student", email: `st.${tag}@example.com`, role: "STUDENT" } });
+  });
   const day = 24 * 60 * 60 * 1000;
   const today = pkDay();
   const mk = (n: string, data: object = {}) =>

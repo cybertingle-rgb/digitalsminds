@@ -24,6 +24,14 @@ export const actionLabels: Record<string, string> = {
   "media.upload": "Uploaded a file",
   "media.replace": "Replaced a file",
   "media.delete": "Deleted a file",
+  "course.created": "Created a course",
+  "course.updated": "Edited course details",
+  "course.instructors_changed": "Changed a course's instructors",
+  "course.published": "Published a course",
+  "course.unpublished": "Unpublished a course",
+  "course.archived": "Archived a course",
+  "course.deleted": "Deleted a course",
+  "course.curriculum_changed": "Changed a course's lessons or resources",
 };
 
 export function describeAction(action: string): string {

@@ -94,7 +94,11 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Newsletter subscriber list and export.
 - **Acceptance:** every number is a live database query; empty states appear when there's no data.
 
-## Phase 7: Course creation and publishing (L)
+## Phase 7: Course creation and publishing (L) ✅
+> Course list/editor, curriculum with arrow-button reordering (instead of drag-and-drop, which is hard on phones and for
+> keyboard users), Drive link validation with live preview, resources, instructor assignment, publishing checklist,
+> student preview. Publishing is limited to Content Managers and Super Admins.
+
 - **Deliverables:**
   - A course editor (draft → published → archived) with thumbnail, objectives, prerequisites, level, language, duration and access type.
   - Modules and lessons with drag-and-drop reordering, Drive video link validation and resources.
