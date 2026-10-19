@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import type { z } from "zod";
 
 /** Error that is safe to show to API clients. */
 export class ApiError extends Error {
@@ -12,15 +11,6 @@ export class ApiError extends Error {
     super(message);
     this.name = "ApiError";
   }
-}
-
-export function fieldErrors(error: z.ZodError): Record<string, string[]> {
-  const out: Record<string, string[]> = {};
-  for (const issue of error.issues) {
-    const key = issue.path.join(".") || "_form";
-    (out[key] ??= []).push(issue.message);
-  }
-  return out;
 }
 
 /**

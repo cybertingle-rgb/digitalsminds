@@ -17,7 +17,17 @@ export async function createInquiry(input: InquiryInput) {
     select: { id: true, createdAt: true },
   });
 
-  await notifyWebhook({ id: inquiry.id, createdAt: inquiry.createdAt.toISOString(), ...input });
+  await notifyWebhook({
+    id: inquiry.id,
+    createdAt: inquiry.createdAt.toISOString(),
+    name: input.name,
+    email: input.email,
+    phone: input.phone,
+    company: input.company,
+    service: input.service,
+    message: input.message,
+    source: input.source,
+  });
   return inquiry;
 }
 
@@ -29,11 +39,10 @@ async function notifyWebhook(payload: Record<string, unknown>) {
   const url = serverEnv().INQUIRY_WEBHOOK_URL;
   if (!url) return;
   try {
-    const { website: _honeypot, ...body } = payload;
     const res = await fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ type: "inquiry.created", data: body }),
+      body: JSON.stringify({ type: "inquiry.created", data: payload }),
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) console.warn(`[inquiries] webhook responded ${res.status}`);

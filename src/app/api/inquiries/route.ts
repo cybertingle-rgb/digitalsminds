@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { siteConfig } from "@/config/site";
-import { ApiError, errorResponse, fieldErrors } from "@/lib/http";
+import { ApiError, errorResponse } from "@/lib/http";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { clientIp, isSameOrigin } from "@/lib/request";
+import { fieldErrors } from "@/lib/validation";
 import { inquiryInputSchema } from "@/modules/inquiries/schema";
 import { createInquiry } from "@/modules/inquiries/service";
 
