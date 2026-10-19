@@ -1,9 +1,9 @@
 # Deployment
 
 The app is a standard Next.js Node server plus a MySQL/MariaDB database. Any host
-that runs **Node.js ≥ 20.9** works. Before going live, check the target host for:
+that runs **Node.js 20.19+, 22.12+ or 24+** works (22 recommended). Before going live, check the target host for:
 
-- [ ] Node.js version ≥ 20.9 (22 LTS recommended)
+- [ ] Node.js 20.19+ / 22.12+ / 24+ (22 LTS recommended)
 - [ ] A MySQL 8+ / MariaDB 10.6+ database (your host's own, e.g. Hostinger/cPanel MySQL, or a managed one)
 - [ ] A way to set environment variables (dashboard, `.env` outside the web root, or cPanel "Environment variables")
 - [ ] HTTPS on the domain (needed for HSTS and secure cookies in Phase 2)
@@ -12,10 +12,12 @@ that runs **Node.js ≥ 20.9** works. Before going live, check the target host f
 
 ```bash
 npm ci                 # installs deps and generates the Prisma client
-npm run db:deploy      # applies pending migrations (never use `migrate dev` in production)
-npm run build
+npm run build          # prebuild applies pending migrations, then `next build --webpack`
 npm start              # or the standalone server, see below
 ```
+
+If the build log shows `[migrate] WARNING: database not reachable`, run `npm run db:deploy` from a
+machine that can reach the database (never use `migrate dev` in production).
 
 Set at **build** time: `NEXT_PUBLIC_SITE_URL` (and any `NEXT_PUBLIC_CONTACT_*`).
 Set at **runtime**: `DATABASE_URL`, `INQUIRY_WEBHOOK_URL` (optional).
@@ -47,7 +49,7 @@ Nginx/Caddy with HTTPS. Make sure the proxy forwards `Host`, `X-Forwarded-For` a
 
 ## Option C: cPanel / Hostinger with "Setup Node.js App"
 
-1. Confirm the plan offers **Node.js ≥ 20.9** in *Setup Node.js App*. Plain PHP-only shared hosting cannot run this app.
+1. Confirm the plan offers **Node.js 20.19+ (22 recommended)** in *Setup Node.js App*. Plain PHP-only shared hosting cannot run this app.
 2. Build locally or in CI with `NEXT_OUTPUT=standalone npm run build` and copy `public/` and `.next/static/` into `.next/standalone/` as above.
 3. Upload the contents of `.next/standalone/` to the app root (outside `public_html`).
 4. In *Setup Node.js App*: application startup file `server.js`; add the environment variables there.
@@ -55,8 +57,9 @@ Nginx/Caddy with HTTPS. Make sure the proxy forwards `Host`, `X-Forwarded-For` a
    `DATABASE_URL=mysql://DB_USER:DB_PASSWORD@localhost:3306/DB_NAME`.
    Use `localhost` when the app runs on the same hosting account; from anywhere else, use the
    remote MySQL hostname and allow your IP under *Remote MySQL*.
-6. Create the tables: set the build command to `npm run db:deploy && npm run build` so migrations run on the
-   host (where `localhost` reaches the database), or run `npm run db:deploy` from your machine with Remote MySQL enabled.
+6. Keep the default build command `npm run build`: it applies migrations first. If the build log says the
+   database is not reachable, enable *Remote MySQL* for your IP and run `npm run db:deploy` from your machine
+   using the remote MySQL hostname in `DATABASE_URL`.
 
 ## Moving from the current site
 

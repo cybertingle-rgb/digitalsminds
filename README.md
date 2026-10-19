@@ -18,7 +18,7 @@ Content Production, Startup & Brand Setup, and Web & E-Commerce.
 
 ## Quick start
 
-Requirements: Node.js ≥ 20.9 (22 recommended, see `.nvmrc`) and MySQL 8+ or MariaDB 10.6+.
+Requirements: Node.js 20.19+, 22.12+ or 24+ (22 recommended, see `.nvmrc`) and MySQL 8+ or MariaDB 10.6+.
 
 ```bash
 npm install                  # also generates the Prisma client
@@ -32,10 +32,19 @@ npm run dev                  # http://localhost:3000
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Development server |
-| `npm run build` / `npm start` | Production build / server |
+| `npm run build` / `npm start` | Production build (applies pending DB migrations first, see below) / server |
 | `npm run lint` · `npm run typecheck` · `npm test` | Quality checks |
 | `npm run db:migrate -- --name <change>` | Create + apply a migration (development) |
 | `npm run db:deploy` | Apply pending migrations (production) |
+
+## Build notes
+
+- `npm run build` uses **webpack** (`next build --webpack`). Turbopack runs PostCSS/Tailwind in a child
+  Node process that must connect back over TCP to `127.0.0.1`; restricted build sandboxes (such as
+  Hostinger's) block that and the build crashes. Webpack processes CSS in-process.
+- A `prebuild` step (`scripts/migrate-on-build.mjs`) runs `prisma migrate deploy` when `DATABASE_URL`
+  is set. If the database is unreachable from the build machine it warns and continues; other
+  migration errors (e.g. wrong password) fail the build. Set `SKIP_DB_MIGRATE=1` to disable it.
 
 ## Environment variables
 
