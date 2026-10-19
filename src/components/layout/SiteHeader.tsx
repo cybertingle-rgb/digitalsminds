@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { LinkButton } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -14,6 +15,12 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
   const homeHref = localizePath("/", locale);
   const cta = { label: dict.nav.cta, href: localizePath(siteConfig.primaryCtaHref, locale) };
   const switcher = features.urduPublic ? <LanguageSwitcher label={dict.a11y.languageSwitcher} /> : null;
+  // Static link (pages stay cacheable): /account sends visitors who aren't signed in to the login page.
+  const myLearning = (
+    <Link href={localizePath("/account", locale)} className="rounded-md px-3 py-2 text-sm font-semibold text-charcoal-900 hover:bg-charcoal-50">
+      {dict.nav.myLearning}
+    </Link>
+  );
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
@@ -24,6 +31,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
         </nav>
         <div className="hidden items-center gap-3 md:flex">
           {switcher}
+          {myLearning}
           <LinkButton href={cta.href} className="py-2">
             {cta.label}
           </LinkButton>
@@ -33,7 +41,12 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
           homeHref={homeHref}
           cta={cta}
           labels={{ open: dict.a11y.openMenu, close: dict.a11y.closeMenu, nav: dict.a11y.mobileNav }}
-          extra={switcher}
+          extra={
+            <>
+              {myLearning}
+              {switcher}
+            </>
+          }
         />
       </Container>
     </header>

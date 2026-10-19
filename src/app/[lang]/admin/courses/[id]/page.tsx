@@ -8,6 +8,7 @@ import { requirePagePermission } from "@/modules/auth/session";
 import { courseStatusLabels, languageLabels } from "@/modules/courses/labels";
 import { availableInstructors, getCourseForEdit, pickableMedia, publishChecklist, publishWarnings } from "@/modules/courses/service";
 import { serviceLabel } from "@/modules/inquiries/labels";
+import { courseStudents } from "@/modules/learning/enrollment";
 import { mediaUrl } from "@/modules/media/service";
 import { DetailsForm, InstructorsForm, PublishPanel } from "../CourseForms";
 import { Curriculum } from "../Curriculum";
@@ -24,7 +25,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
   const course = await getCourseForEdit(id, user);
   if (!course) notFound();
   const manageAll = can(user.role, "courses.manage.all");
-  const [media, instructors] = await Promise.all([pickableMedia(user), manageAll ? availableInstructors() : Promise.resolve([])]);
+  const [media, instructors, roster] = await Promise.all([pickableMedia(user), manageAll ? availableInstructors() : Promise.resolve([]), courseStudents(course.id)]);
 
   const images = media.filter((m) => m.visibility === "PUBLIC" && m.mimeType.startsWith("image/")).map((m) => ({ id: m.id, name: m.originalName, url: mediaUrl(m) }));
   // The current thumbnail stays selectable even if someone else uploaded it.
@@ -133,6 +134,32 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             ) : (
               <ul className="space-y-1 text-sm">
                 {course.instructors.map((i) => <li key={i.userId}>{i.user.name}</li>)}
+              </ul>
+            )}
+          </section>
+
+          <section aria-labelledby="students" className="rounded-2xl border border-line bg-white p-6">
+            <h2 id="students" className="text-lg font-semibold text-charcoal-900">Students ({roster.students.length})</h2>
+            {roster.waiting > 0 && (
+              <p className="mt-2 text-sm">
+                {can(user.role, "enrollments.decide") ? (
+                  <Link href={`/admin/enrollments?course=${course.id}`} className="font-semibold underline underline-offset-4">{roster.waiting} waiting for approval</Link>
+                ) : (
+                  `${roster.waiting} waiting for approval`
+                )}
+              </p>
+            )}
+            {roster.students.length === 0 ? (
+              <p className="mt-2 text-sm text-muted">No enrolled students yet.</p>
+            ) : (
+              <ul className="mt-3 divide-y divide-line text-sm">
+                {roster.students.map((s) => (
+                  <li key={s.id} className="py-2">
+                    <p className="font-medium text-charcoal-900" dir="auto">{s.name}</p>
+                    <p className="truncate text-xs text-muted" dir="ltr">{s.googleEmail ?? s.email}</p>
+                    <p className="text-xs text-muted">{s.done} of {roster.lessonCount} lessons complete</p>
+                  </li>
+                ))}
               </ul>
             )}
           </section>

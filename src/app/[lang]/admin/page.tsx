@@ -44,7 +44,7 @@ function Panel({ title, children, action }: { title: string; children: ReactNode
 
 export default async function AdminOverview() {
   const user = await requirePagePermission("admin.access", "/admin");
-  const { leads, people, media, activity } = await dashboardStats(user);
+  const { leads, people, media, learning, activity } = await dashboardStats(user);
   const setup = can(user.role, "integrations.manage") ? await Promise.all([getSmtpStatus(), getGoogleStatus(), getStorageStatus()]) : null;
   const todo = setup
     ? [
@@ -73,6 +73,7 @@ export default async function AdminOverview() {
       )}
 
       <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {learning && <Stat label="Access requests waiting" value={learning.waiting} hint={`${learning.enrolled} enrolled · ${learning.published} published courses`} href="/admin/enrollments" />}
         {leads && <Stat label="New inquiries (last 7 days)" value={leads.lastWeek} href="/admin/inquiries" />}
         {leads && <Stat label="Not yet answered" value={leads.unanswered} hint="Status: New" href="/admin/inquiries?status=NEW" />}
         {leads && (

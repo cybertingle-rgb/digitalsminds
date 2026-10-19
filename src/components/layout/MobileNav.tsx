@@ -42,7 +42,11 @@ export function MobileNav({ items, homeHref, cta, labels, extra }: Props) {
           <nav aria-label={labels.nav}>
             <NavLinks items={items} homeHref={homeHref} vertical onNavigate={() => setOpen(false)} />
           </nav>
-          {extra && <div className="mt-4 border-t border-line pt-4">{extra}</div>}
+          {extra && (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
+              {extra}
+            </div>
+          )}
           <div onClick={() => setOpen(false)}>
             <LinkButton href={cta.href} className="mt-4 w-full">
               {cta.label}

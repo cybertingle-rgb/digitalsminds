@@ -32,6 +32,10 @@ export const actionLabels: Record<string, string> = {
   "course.archived": "Archived a course",
   "course.deleted": "Deleted a course",
   "course.curriculum_changed": "Changed a course's lessons or resources",
+  "enrollment.requested": "Requested access to a course",
+  "enrollment.approved": "Approved a course access request",
+  "enrollment.rejected": "Rejected a course access request",
+  "enrollment.revoked": "Revoked a student's course access",
 };
 
 export function describeAction(action: string): string {

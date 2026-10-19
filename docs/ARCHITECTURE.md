@@ -73,6 +73,20 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Learning: catalogue, enrollment, progress (Phase 8)
+
+- `src/modules/learning/catalogue.ts`: published-course listing (Urdu title/summary fall back to English), course loader.
+- `src/modules/learning/enrollment.ts`: request → approve/reject, approve → revoke, rejected/revoked → approve or re-request.
+  Decisions need `enrollments.decide` (Super Admin, Content Manager). Request alerts go to the lead-alert address; students
+  get approval/rejection emails in their preferred language. Emails are best effort.
+- `src/modules/learning/progress.ts`: `learnerContext` decides the mode on every request: `student` (approved and course
+  published or archived), `staff` (manages the course; nothing recorded), `preview` (free-preview lessons of a published
+  course, anyone). Revoking access or moving a course back to draft takes effect immediately. Completion is a
+  "Mark as complete" button (Drive embeds don't report watch progress); `Enrollment.completedAt` records the first full completion.
+- Private resource files (`/api/files/[id]`): staff as before, plus approved students of a published/archived course using the file.
+- Routes: `/courses`, `/courses/[slug]`, `/learn/[slug]` (continue), `/learn/[slug]/[lessonId]`, `/account` (My learning + profile),
+  `/admin/enrollments`. The sitemap lists published courses (generated per request).
+
 ## Courses (Phase 7)
 
 - `src/modules/courses/service.ts`: course CRUD, curriculum (modules/lessons with up/down reordering and move-to-module),

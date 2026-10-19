@@ -35,6 +35,7 @@ export const siteConfig = {
     { key: "home", href: "/" },
     { key: "about", href: "/about" },
     { key: "services", href: "/services" },
+    { key: "courses", href: "/courses" },
     { key: "blog", href: "/blog" },
     { key: "contact", href: "/contact" },
   ] as const,

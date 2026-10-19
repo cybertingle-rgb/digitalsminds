@@ -51,9 +51,17 @@ export async function dashboardStats(user: Pick<CurrentUser, "id" | "role">) {
           .then((r) => ({ files: r._count._all, bytes: r._sum.sizeBytes ?? 0 }))
       : null;
 
+  const learning = can(user.role, "enrollments.decide")
+    ? await Promise.all([
+        db().enrollment.count({ where: { status: "REQUESTED" } }),
+        db().enrollment.count({ where: { status: "APPROVED" } }),
+        db().course.count({ where: { status: "PUBLISHED" } }),
+      ]).then(([waiting, enrolled, published]) => ({ waiting, enrolled, published }))
+    : null;
+
   const activity = can(user.role, "audit.view")
     ? await db().auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { actor: { select: { name: true } } } })
     : null;
 
-  return { leads, people, media, activity };
+  return { leads, people, media, learning, activity };
 }

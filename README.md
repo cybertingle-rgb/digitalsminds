@@ -114,6 +114,18 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - Videos stay private in Google Drive: share each video with the enrolled student's Google email.
 - Once published, a course's web address is locked; courses with students can be archived but not deleted.
 
+## Students and enrollment
+
+- **Courses** (public): catalogue and course pages with objectives, contents and free-preview lessons.
+- Students create an account, then **Request access** with the Google email their videos should be shared with.
+  The team is emailed (lead-alert address) and the request appears in **Admin → Enrollments** with the Google email
+  ready to copy and links to the course's Drive videos. Approving or rejecting emails the student.
+- **My learning** (`/account`): enrolled courses with progress and "Continue", request status, profile editing.
+- Lessons: Drive player with "Open in Google Drive", formatted text, resources (private files only for enrolled
+  students), "Mark as complete", course progress. Lessons can be opened in any order.
+- Revoking access ends it immediately (also remove the student from the Drive sharing). Archived courses stay open to
+  students already enrolled.
+
 ## Languages
 
 - English is served at `/…`, Urdu at `/ur/…` (right-to-left, Noto Naskh Arabic font, self-hosted).

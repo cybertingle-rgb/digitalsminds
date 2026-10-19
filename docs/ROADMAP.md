@@ -106,7 +106,11 @@ Repository and hosting audit, build failure fixed and verified live, requirement
 - **Risks:** restricted Drive embeds may not play in Safari/iOS, so the editor shows the fallback and a sharing reminder.
 - **Acceptance:** a non-technical admin can create and publish a course with modules, lessons and resources without help.
 
-## Phase 8: Enrollment, student dashboard and learning (L)
+## Phase 8: Enrollment, student dashboard and learning (L) ✅
+> Catalogue and course pages, free-preview lessons, request access (Google email required), Enrollments queue with Drive
+> sharing helpers, approval/rejection emails, request alerts, My learning dashboard with profile editing, lesson player
+> with manual completion and progress, private files for enrolled students, revocation, courses in the sitemap.
+
 - **Deliverables:**
   - Public course catalogue and detail pages (bilingual listing).
   - "Request access" flow, and an admin approval queue showing each student's Google email ready for Drive sharing.

@@ -4,10 +4,25 @@ import { siteConfig } from "@/config/site";
 import { getPosts } from "@/content/blog";
 import { serviceSlugs } from "@/content/services";
 import { localizePath, type Locale } from "@/i18n/config";
+import { db } from "@/lib/db";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// Generated on request (one small query), so newly published courses appear straight away.
+export const dynamic = "force-dynamic";
+
+async function publishedCourseEntries() {
+  try {
+    const courses = await db().course.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } });
+    return courses.map((c) => ({ path: `/courses/${c.slug}`, lastModified: c.updatedAt.toISOString() }));
+  } catch {
+    // Database not reachable: still list the static pages.
+    return [];
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: { path: string; lastModified?: string }[] = [
-    ...["/", "/about", "/services", "/blog", "/contact"].map((path) => ({ path })),
+    ...["/", "/about", "/services", "/courses", "/blog", "/contact"].map((path) => ({ path })),
+    ...(await publishedCourseEntries()),
     ...serviceSlugs.map((slug) => ({ path: `/services/${slug}` })),
     ...getPosts().map((p) => ({ path: `/blog/${p.slug}`, lastModified: p.publishedAt })),
   ];
