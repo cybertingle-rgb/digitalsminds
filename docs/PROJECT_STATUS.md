@@ -61,4 +61,4 @@ Last updated: 2026-10-19 (Phase 1 complete).
 | 2026-10-19 | Switched database to MySQL/MariaDB for Hostinger | `6d7653c` |
 | 2026-10-19 | Fixed Hostinger build (webpack), migrations on build; verified live | `36e0118` |
 | 2026-10-19 | Requirements discovery; this status file and roadmap | `129a355` |
-| 2026-10-19 | Phase 1: official logos, brand colours, Urdu font, English/Urdu routing with RTL, restyled pages, phone numbers removed | (Phase 1 commit) |
+| 2026-10-19 | Phase 1: official logos, brand colours, Urdu font, English/Urdu routing with RTL, restyled pages, phone numbers removed | `7a768f4` |
