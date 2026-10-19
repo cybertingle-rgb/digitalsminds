@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-19 (Phase 5 complete).
+Last updated: 2026-10-19 (Phase 6 complete).
 
 ## Confirmed decisions
 
@@ -42,6 +42,8 @@ Last updated: 2026-10-19 (Phase 5 complete).
 | 33 | Staff invites | Email link (valid 3 days) to set a password; inviting an existing student promotes that account |
 | 34 | Hosting plan | Hostinger Business Web Hosting (50 GB disk, 600k inodes, shared by 6 sites, 3 GB RAM, Frankfurt) |
 | 35 | File storage | Uploads on the Hostinger account disk, outside the app (`~/digitalsminds-uploads` or `UPLOAD_DIR`); enabled only after a redeploy proves persistence. Videos stay on Google Drive |
+| 36 | Leads | Super Admin + Content Manager manage leads; CSV export and deletion Super Admin only; alert emails default to info@digitalsminds.com; campaign tags kept in sessionStorage (no cookies) |
+| 37 | Newsletter | Subscriber list/export built together with the public sign-up form (and email confirmation) in Phase 10 |
 
 ## Open items (waiting on owner)
 
@@ -54,7 +56,7 @@ Last updated: 2026-10-19 (Phase 5 complete).
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
 - [ ] **Replace `BETTER_AUTH_SECRET`**: its value was shared in a chat screenshot. Then re-enter any saved SMTP password / Google secret
 - [ ] Remove `ADMIN_SETUP_CODE` from Hostinger; set up Email in Admin → Integrations; reset the temporary owner password via "Forgot password"
-- [ ] Approval to start Phase 6 (admin dashboard and lead management)
+- [ ] Approval to start Phase 7 (course creation and publishing)
 
 ## Assumptions (to confirm or correct)
 
@@ -78,3 +80,4 @@ Last updated: 2026-10-19 (Phase 5 complete).
 | 2026-10-19 | Phase 3: Better Auth (email/password, verification, reset, Google), one-time /setup, admin shell with Integrations (encrypted SMTP + Google), permission matrix, audit log, IP-safe rate limiting, 47-check e2e run | `7776223` |
 | 2026-10-19 | Phase 4: Team management, Activity log page, instructor scoping, Drive CSP; fix: missing/short auth secret no longer breaks the contact form and health check | `e5d6608` |
 | 2026-10-19 | Phase 5: media library (uploads with progress, content validation, EXIF stripping, public/private serving, replace, in-use protection, instructor scoping), File storage persistence check | `58e6224` |
+| 2026-10-19 | Phase 6: live dashboard, Inquiries (filters, detail, status/assignee/follow-up, notes, delete), lead alert emails, UTM/language capture, safe CSV export | (Phase 6 commit) |

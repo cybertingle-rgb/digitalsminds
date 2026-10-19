@@ -1,55 +1,146 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { db } from "@/lib/db";
+import type { ReactNode } from "react";
+import { BarList } from "@/components/admin/BarList";
+import { StatusBadge } from "@/components/admin/ui";
+import { describeAction } from "@/modules/audit/labels";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
+import { dashboardStats } from "@/modules/dashboard/stats";
+import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
+import { getStorageStatus } from "@/modules/media/storage-check";
 import { getGoogleStatus, getSmtpStatus } from "@/modules/settings/integrations";
 
 export const metadata: Metadata = { title: "Overview" };
 
-/** Live counts only. The full dashboard arrives in Phase 6. */
+const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Karachi" });
+
+function Stat({ label, value, hint, href }: { label: string; value: string | number; hint?: string; href?: string }) {
+  const body = (
+    <>
+      <p className="text-sm text-muted">{label}</p>
+      <p className="mt-2 text-3xl font-bold tabular-nums text-charcoal-900">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
+    </>
+  );
+  return (
+    <li className="rounded-xl border border-line bg-white p-5">
+      {href ? <Link href={href} className="block hover:opacity-80">{body}</Link> : body}
+    </li>
+  );
+}
+
+function Panel({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
+  return (
+    <section className="rounded-2xl border border-line bg-white p-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="font-semibold text-charcoal-900">{title}</h2>
+        {action}
+      </div>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
 export default async function AdminOverview() {
   const user = await requirePagePermission("admin.access", "/admin");
-  const [students, newInquiries, smtp, google] = await Promise.all([
-    db().user.count({ where: { role: "STUDENT" } }),
-    db().inquiry.count({ where: { status: "NEW" } }),
-    getSmtpStatus(),
-    getGoogleStatus(),
-  ]);
-
-  const cards = [
-    { label: "Student accounts", value: String(students) },
-    { label: "New inquiries", value: String(newInquiries) },
-    { label: "Email sending", value: smtp.verifiedAt ? "Working" : smtp.configured ? "Not tested" : "Not set up" },
-    { label: "Google sign-in", value: google.enabled ? "On" : google.configured ? "Not enabled" : "Not set up" },
-  ];
+  const { leads, people, media, activity } = await dashboardStats(user);
+  const setup = can(user.role, "integrations.manage") ? await Promise.all([getSmtpStatus(), getGoogleStatus(), getStorageStatus()]) : null;
+  const todo = setup
+    ? [
+        !setup[0].verifiedAt && { label: "Set up email so students can verify accounts and reset passwords", href: "/admin/integrations" },
+        !setup[2].uploadsEnabled && { label: "Confirm file storage to switch on uploads", href: "/admin/integrations#storage" },
+        !setup[1].enabled && { label: "Optional: connect Google sign-in", href: "/admin/integrations" },
+      ].filter((t): t is { label: string; href: string } => !!t)
+    : [];
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-6xl space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-charcoal-900">Welcome, {user.name}</h1>
-        <p className="mt-1 text-muted">Here is the current state of the platform.</p>
+        <p className="mt-1 text-muted">Live figures from the website. Times are Pakistan time.</p>
       </div>
-      <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map((c) => (
-          <li key={c.label} className="rounded-xl border border-line bg-white p-5">
-            <p className="text-sm text-muted">{c.label}</p>
-            <p className="mt-2 text-2xl font-bold text-charcoal-900">{c.value}</p>
-          </li>
-        ))}
-      </ul>
-      {can(user.role, "integrations.manage") && (!smtp.verifiedAt || !google.enabled) && (
-        <div className="rounded-xl border border-sun-400 bg-sun-50 p-5">
+
+      {todo.length > 0 && (
+        <section className="rounded-2xl border border-sun-400 bg-sun-50 p-5">
           <h2 className="font-semibold text-charcoal-900">Finish setting up</h2>
-          <p className="mt-1 text-sm text-charcoal-800">
-            Students need email to verify their accounts and reset passwords. Set up email (and optionally Google sign-in) in{" "}
-            <Link href="/admin/integrations" className="font-semibold underline underline-offset-4">
-              Integrations
-            </Link>
-            .
-          </p>
-        </div>
+          <ul className="mt-2 list-disc space-y-1 ps-5 text-sm">
+            {todo.map((t) => (
+              <li key={t.label}><Link href={t.href} className="underline underline-offset-4">{t.label}</Link></li>
+            ))}
+          </ul>
+        </section>
       )}
+
+      <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {leads && <Stat label="New inquiries (last 7 days)" value={leads.lastWeek} href="/admin/inquiries" />}
+        {leads && <Stat label="Not yet answered" value={leads.unanswered} hint="Status: New" href="/admin/inquiries?status=NEW" />}
+        {leads && (
+          <Stat
+            label="Follow-ups due"
+            value={leads.followUpsDue}
+            hint="Today or overdue"
+            href="/admin/inquiries?followUp=overdue"
+          />
+        )}
+        {people && <Stat label="Student accounts" value={people.students} hint={`${people.newStudents} new in the last 7 days`} />}
+        {people && can(user.role, "staff.manage") && <Stat label="Active team members" value={people.staff} href="/admin/team" />}
+        {media && (
+          <Stat
+            label={can(user.role, "media.manage.all") ? "Files in the media library" : "Your uploaded files"}
+            value={media.files}
+            hint={`${(media.bytes / 1024 / 1024).toFixed(1)} MB used`}
+            href="/admin/media"
+          />
+        )}
+      </ul>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        {leads && (
+          <Panel title="Inquiries by service (last 30 days)">
+            {leads.byService.length === 0 ? (
+              <p className="text-sm text-muted">No inquiries in the last 30 days.</p>
+            ) : (
+              <BarList label="Inquiries by service, last 30 days" items={leads.byService.map((r) => ({ label: serviceLabel(r.service), value: r.count }))} />
+            )}
+          </Panel>
+        )}
+        {leads && (
+          <Panel title="Latest inquiries" action={<Link href="/admin/inquiries" className="text-sm underline underline-offset-4">View all</Link>}>
+            {leads.recent.length === 0 ? (
+              <p className="text-sm text-muted">No inquiries yet.</p>
+            ) : (
+              <ul className="divide-y divide-line text-sm">
+                {leads.recent.map((i) => (
+                  <li key={i.id} className="flex items-center justify-between gap-3 py-2">
+                    <span className="min-w-0">
+                      <Link href={`/admin/inquiries/${i.id}`} className="font-medium text-charcoal-900 underline-offset-4 hover:underline">{i.name}</Link>
+                      <span className="block truncate text-xs text-muted">{serviceLabel(i.service)} · {dateFmt.format(i.createdAt)}</span>
+                    </span>
+                    <StatusBadge tone={i.status === "NEW" ? "warn" : i.status === "QUALIFIED" ? "ok" : "off"}>{statusLabels[i.status]}</StatusBadge>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        )}
+        {activity && (
+          <Panel title="Recent activity" action={<Link href="/admin/activity" className="text-sm underline underline-offset-4">View all</Link>}>
+            {activity.length === 0 ? (
+              <p className="text-sm text-muted">No activity yet.</p>
+            ) : (
+              <ul className="divide-y divide-line text-sm">
+                {activity.map((a) => (
+                  <li key={a.id} className="py-2">
+                    <span className="text-charcoal-900">{describeAction(a.action)}</span>
+                    <span className="block text-xs text-muted">{a.actor?.name ?? "Former team member"} · {dateFmt.format(a.createdAt)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        )}
+      </div>
     </div>
   );
 }

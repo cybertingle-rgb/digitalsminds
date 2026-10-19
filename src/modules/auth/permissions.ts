@@ -21,6 +21,8 @@ export const permissions = [
   "courses.manage.own",
   "content.manage",
   "inquiries.manage",
+  "inquiries.export",
+  "inquiries.delete",
   "media.manage.all",
   "media.manage.own",
 ] as const;

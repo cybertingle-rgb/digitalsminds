@@ -12,7 +12,7 @@ describe("can", () => {
 
   it("keeps integrations, settings, staff and exports Super Admin only", () => {
     for (const role of ["CONTENT_MANAGER", "INSTRUCTOR", "STUDENT"]) {
-      for (const p of ["integrations.manage", "settings.manage", "staff.manage", "students.export"] as const) {
+      for (const p of ["integrations.manage", "settings.manage", "staff.manage", "students.export", "inquiries.export", "inquiries.delete"] as const) {
         expect(can(role, p)).toBe(false);
       }
     }

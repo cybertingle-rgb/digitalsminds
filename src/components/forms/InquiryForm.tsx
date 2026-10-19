@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n/dictionaries/en";
+import { readCampaign } from "@/components/analytics/CampaignCapture";
 import { inquiryInputSchema } from "@/modules/inquiries/schema";
 
 type Strings = Dictionary["form"];
@@ -31,7 +32,12 @@ export function InquiryForm({ strings, services, defaultService = "general" }: P
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    const data = { ...Object.fromEntries(new FormData(form)), source: window.location.pathname };
+    const data = {
+      ...Object.fromEntries(new FormData(form)),
+      source: window.location.pathname,
+      locale: document.documentElement.lang === "ur" ? "ur" : "en",
+      ...readCampaign(),
+    };
 
     const parsed = inquiryInputSchema.safeParse(data);
     if (!parsed.success) {

@@ -36,4 +36,13 @@ describe("inquiryInputSchema", () => {
   it("rejects oversized messages", () => {
     expect(inquiryInputSchema.safeParse({ ...valid, message: "x".repeat(5001) }).success).toBe(false);
   });
+
+  it("keeps valid attribution and silently drops invalid values", () => {
+    const r = inquiryInputSchema.parse({ ...valid, locale: "ur", utmSource: "facebook", utmMedium: "x".repeat(500), utmCampaign: 42 });
+    expect(r.locale).toBe("ur");
+    expect(r.utmSource).toBe("facebook");
+    expect(r.utmMedium).toBeUndefined();
+    expect(r.utmCampaign).toBeUndefined();
+    expect(inquiryInputSchema.parse({ ...valid, locale: "fr" }).locale).toBeUndefined();
+  });
 });

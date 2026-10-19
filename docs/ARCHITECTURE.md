@@ -73,6 +73,15 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Admin dashboard & leads (Phase 6)
+
+- `src/modules/dashboard/stats.ts`: every figure is a live query, and only those the viewer's role may see.
+- `src/modules/inquiries/admin.ts`: filters → Prisma `where` (spam hidden unless requested; follow-up ranges in PKT via
+  `src/lib/pk-time.ts`), updates with audit of real changes only, notes, delete, export rows.
+- `src/modules/inquiries/alerts.ts`: best-effort lead alert email (setting `notifications.inquiry`).
+- `src/lib/csv.ts`: UTF-8 BOM + formula-injection guard. Export route: `GET /api/admin/inquiries/export` (`inquiries.export`).
+- Attribution: `CampaignCapture` (client, sessionStorage) → sent with the inquiry form → `Inquiry.locale/utm*`.
+
 ## Media & file storage (Phase 5)
 
 - `src/lib/storage/local.ts`: local-disk driver rooted at `UPLOAD_DIR` (default `~/digitalsminds-uploads`), with strict key

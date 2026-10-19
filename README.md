@@ -114,9 +114,13 @@ No testimonials, client logos or statistics are included. Add them only from ver
 
 ## Leads
 
-Inquiries are stored in the `Inquiry` table (status `NEW` → `CONTACTED` → `QUALIFIED` → `CLOSED`/`SPAM`).
-Until the Phase 2 admin dashboard exists, view them with `npx prisma studio` or your database console,
-or forward them in real time via `INQUIRY_WEBHOOK_URL`.
+- **Admin → Inquiries** (Super Admin, Content Manager): search; filter by status (spam hidden by default), service, assignee and
+  follow-up (overdue / today / upcoming, Pakistan time); detail page with status, assignee, follow-up date and a notes timeline.
+- Each inquiry records the page it came from, the site language and campaign tags (`utm_source/medium/campaign`, kept in the
+  visitor's sessionStorage only, no cookies).
+- **Lead alert emails** for every new inquiry (default `info@digitalsminds.com`, changeable on the Inquiries page; needs Email set up).
+- **CSV export** (Super Admin only, honours filters, logged in Activity; formula cells are neutralised). Deleting a lead is Super Admin only.
+- `INQUIRY_WEBHOOK_URL` can still forward each lead to Zapier/Make/a CRM.
 
 ## Further docs
 

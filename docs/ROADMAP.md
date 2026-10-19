@@ -87,7 +87,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Private files are unreachable without an approved enrollment.
   - Disallowed file types are rejected.
 
-## Phase 6: Admin dashboard and lead management (M)
+## Phase 6: Admin dashboard and lead management (M) ✅ (newsletter list moved to Phase 10 with the public sign-up form)
 - **Deliverables:**
   - Admin shell (English UI) and a dashboard showing only real counts and recent activity.
   - Inquiries with search, filters, status, notes, follow-up dates, service category, source and CSV export (Super Admin).

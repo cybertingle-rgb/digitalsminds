@@ -23,6 +23,12 @@ export const inquiryInputSchema = z.object({
   service: z.enum(INQUIRY_SERVICE_OPTIONS, { error: "Please choose a service" }),
   message: trimmed(5000, "Message").min(10, "Please tell us a little more (at least 10 characters)"),
   source: optionalTrimmed(200, "Source"),
+  /** Language of the page the form was sent from. */
+  locale: z.enum(["en", "ur"]).optional().catch(undefined),
+  /** Campaign attribution captured from the landing URL (utm_* parameters). Invalid values are dropped, never rejected. */
+  utmSource: optionalTrimmed(100, "utm_source").catch(undefined),
+  utmMedium: optionalTrimmed(100, "utm_medium").catch(undefined),
+  utmCampaign: optionalTrimmed(150, "utm_campaign").catch(undefined),
   /** Honeypot: hidden from real users. Checked in the route before validation. */
   website: z.string().max(500).optional(),
 });

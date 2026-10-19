@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { CampaignCapture } from "@/components/analytics/CampaignCapture";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { hasLocale } from "@/i18n/config";
@@ -22,6 +23,7 @@ export default async function MarketingLayout({ children, params }: LayoutProps<
         {children}
       </main>
       <SiteFooter locale={lang} dict={dict} />
+      <CampaignCapture />
     </>
   );
 }

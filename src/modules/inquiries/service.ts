@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { serverEnv } from "@/lib/env";
+import { sendLeadAlert } from "./alerts";
 import type { InquiryInput } from "./schema";
 
 export async function createInquiry(input: InquiryInput) {
@@ -13,9 +14,15 @@ export async function createInquiry(input: InquiryInput) {
       service: input.service,
       message: input.message,
       source: input.source,
+      locale: input.locale,
+      utmSource: input.utmSource,
+      utmMedium: input.utmMedium,
+      utmCampaign: input.utmCampaign,
     },
     select: { id: true, createdAt: true },
   });
+
+  await sendLeadAlert(inquiry.id, input);
 
   await notifyWebhook({
     id: inquiry.id,
@@ -27,6 +34,10 @@ export async function createInquiry(input: InquiryInput) {
     service: input.service,
     message: input.message,
     source: input.source,
+    locale: input.locale,
+    utmSource: input.utmSource,
+    utmMedium: input.utmMedium,
+    utmCampaign: input.utmCampaign,
   });
   return inquiry;
 }
