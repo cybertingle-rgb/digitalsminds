@@ -1,10 +1,10 @@
 # Deployment
 
-The app is a standard Next.js Node server plus a PostgreSQL database. Any host
+The app is a standard Next.js Node server plus a MySQL/MariaDB database. Any host
 that runs **Node.js ≥ 20.9** works. Before going live, check the target host for:
 
 - [ ] Node.js version ≥ 20.9 (22 LTS recommended)
-- [ ] A PostgreSQL 14+ database (managed: Neon, Supabase, Railway, RDS, or your host's own)
+- [ ] A MySQL 8+ / MariaDB 10.6+ database (your host's own, e.g. Hostinger/cPanel MySQL, or a managed one)
 - [ ] A way to set environment variables (dashboard, `.env` outside the web root, or cPanel "Environment variables")
 - [ ] HTTPS on the domain (needed for HSTS and secure cookies in Phase 2)
 
@@ -28,7 +28,7 @@ Point an uptime monitor at it.
 1. Import the GitHub repo in Vercel (framework is auto-detected).
 2. Add the environment variables for Production (and Preview if wanted).
 3. Build command: `npm run db:deploy && npm run build` (or run migrations from CI).
-4. Use a pooled connection string for `DATABASE_URL` (e.g. Neon/Supabase pooler), since serverless opens many connections.
+4. Use a managed MySQL that allows connections from Vercel (e.g. PlanetScale, Aiven, or a host with Remote MySQL enabled), and keep the connection limit low since serverless opens many connections (`?connectionLimit=5`).
 5. The in-memory rate limiter is per-instance on serverless; see ARCHITECTURE.md > Security.
 
 ## Option B: VPS / Docker / any Node host (standalone)
@@ -51,8 +51,12 @@ Nginx/Caddy with HTTPS. Make sure the proxy forwards `Host`, `X-Forwarded-For` a
 2. Build locally or in CI with `NEXT_OUTPUT=standalone npm run build` and copy `public/` and `.next/static/` into `.next/standalone/` as above.
 3. Upload the contents of `.next/standalone/` to the app root (outside `public_html`).
 4. In *Setup Node.js App*: application startup file `server.js`; add the environment variables there.
-5. Database: if the host only offers MySQL, either use an external managed PostgreSQL (recommended, no code change) or switch the Prisma provider to MySQL (change `provider` and the adapter to `@prisma/adapter-mariadb`, then regenerate migrations before any production data exists).
-6. Run migrations from your machine or CI against the production `DATABASE_URL`: `npm run db:deploy`.
+5. Database: create a MySQL database + user in hPanel/cPanel, then set
+   `DATABASE_URL=mysql://DB_USER:DB_PASSWORD@localhost:3306/DB_NAME`.
+   Use `localhost` when the app runs on the same hosting account; from anywhere else, use the
+   remote MySQL hostname and allow your IP under *Remote MySQL*.
+6. Create the tables: set the build command to `npm run db:deploy && npm run build` so migrations run on the
+   host (where `localhost` reaches the database), or run `npm run db:deploy` from your machine with Remote MySQL enabled.
 
 ## Moving from the current site
 

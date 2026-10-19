@@ -12,13 +12,13 @@ Content Production, Startup & Brand Setup, and Web & E-Commerce.
 | --- | --- |
 | Framework | Next.js 16 (App Router, React Server Components), TypeScript |
 | Styling | Tailwind CSS 4, with brand tokens in `src/app/globals.css` |
-| Database | PostgreSQL via Prisma 7 (`@prisma/adapter-pg`), versioned migrations |
+| Database | MySQL / MariaDB via Prisma 7 (`@prisma/adapter-mariadb`), versioned migrations |
 | Validation | Zod 4, one schema shared by client and server |
 | Tests | Vitest (unit + route handler tests) |
 
 ## Quick start
 
-Requirements: Node.js ≥ 20.9 (22 recommended, see `.nvmrc`) and PostgreSQL 14+.
+Requirements: Node.js ≥ 20.9 (22 recommended, see `.nvmrc`) and MySQL 8+ or MariaDB 10.6+.
 
 ```bash
 npm install                  # also generates the Prisma client
@@ -43,7 +43,7 @@ See `.env.example`. **Never commit `.env`**; it is git-ignored.
 
 | Variable | Required | Notes |
 | --- | --- | --- |
-| `DATABASE_URL` | Yes (runtime) | PostgreSQL connection string. Not needed for `next build`. |
+| `DATABASE_URL` | Yes (runtime) | `mysql://USER:PASSWORD@HOST:3306/DATABASE` (URL-encode special characters in the password). Not needed for `next build`. |
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical URL, e.g. `https://digitalsminds.com`. Used for SEO, sitemap and origin checks. Set at **build** time. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` / `_PHONE` / `NEXT_PUBLIC_WHATSAPP_NUMBER` | No | Shown on the site only when set. Set at build time. |
 | `INQUIRY_WEBHOOK_URL` | No | Receives `{type:"inquiry.created", data}` JSON for each lead (Zapier/Make/Slack/CRM). |
