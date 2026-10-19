@@ -85,4 +85,4 @@ Last updated: 2026-10-19 (Phase 7 complete).
 | 2026-10-19 | Phase 4: Team management, Activity log page, instructor scoping, Drive CSP; fix: missing/short auth secret no longer breaks the contact form and health check | `e5d6608` |
 | 2026-10-19 | Phase 5: media library (uploads with progress, content validation, EXIF stripping, public/private serving, replace, in-use protection, instructor scoping), File storage persistence check | `58e6224` |
 | 2026-10-19 | Phase 6: live dashboard, Inquiries (filters, detail, status/assignee/follow-up, notes, delete), lead alert emails, UTM/language capture, safe CSV export | `ee1d546` |
-| 2026-10-19 | Phase 7: course editor, curriculum (modules/lessons, reordering), Drive video links with preview, resources, instructors, publishing checklist and permissions, student preview, 53-check e2e run | _pending_ |
+| 2026-10-19 | Phase 7: course editor, curriculum (modules/lessons, reordering), Drive video links with preview, resources, instructors, publishing checklist and permissions, student preview, 53-check e2e run | `cb36e7c` |
