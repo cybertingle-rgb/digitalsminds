@@ -73,6 +73,16 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Backups and hardening (Phase 13)
+
+- `src/modules/backup`: `sqlDump()` streams a mysqldump-style file (DROP/CREATE + batched INSERTs ordered by primary
+  key; Session, Verification and RateLimit structure only) and `tarArchive()` streams the upload folder as ustar;
+  both are gzipped on the fly by `/api/admin/backup/{database,media}` (`backups.download`, Super Admin, audited).
+  Admin page: `/admin/backups`. Runbook and the tested restore drill: docs/BACKUP.md.
+- Auth route adds per-account limits (sign-in 50/h, sign-up/reset/verification email 3/h per email) on top of
+  Better Auth's per-IP limits. `safeNext` rejects control characters/backslashes and checks the resolved origin.
+- Findings and accepted risks: docs/SECURITY_REVIEW.md.
+
 ## SEO, analytics, accessibility (Phase 12)
 
 - Structured data (`src/modules/seo/structured-data.ts`, rendered by `<JsonLd>`, escaped against `</script>`):

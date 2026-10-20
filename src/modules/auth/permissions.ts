@@ -16,6 +16,7 @@ export const permissions = [
   "students.view",
   "students.manage",
   "students.export",
+  "students.delete",
   "enrollments.decide",
   "courses.manage.all",
   "courses.manage.own",
@@ -32,6 +33,8 @@ export const permissions = [
   "announcements.site",
   "newsletter.view",
   "newsletter.export",
+  "newsletter.delete",
+  "backups.download",
 ] as const;
 export type Permission = (typeof permissions)[number];
 

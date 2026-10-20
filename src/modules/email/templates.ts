@@ -14,6 +14,7 @@ export function actionEmail(opts: {
   dict: Dictionary;
   locale: Locale;
   to: string;
+  /** Empty: a greeting without a name. */
   name: string;
   subject: string;
   intro: string;
@@ -24,7 +25,7 @@ export function actionEmail(opts: {
 }): Mail {
   const { dict, locale } = opts;
   const e = dict.emails;
-  const greeting = format(e.greeting, { name: opts.name });
+  const greeting = opts.name.trim() ? format(e.greeting, { name: opts.name }) : e.greetingNoName;
   const dir = localeMeta[locale].dir;
   const url = escapeHtml(opts.url);
 

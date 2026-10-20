@@ -52,7 +52,7 @@ export async function manualEnrollAction(id: string, _prev: StudentState, fd: Fo
 
 export async function deleteStudentAction(id: string, confirmEmail: string): Promise<StudentState> {
   try {
-    const actor = await assertPermission("students.export");
+    const actor = await assertPermission("students.delete");
     await deleteStudent(z.string().min(1).max(64).parse(id), z.string().max(254).parse(confirmEmail), actor);
     revalidatePath("/admin/students");
     return { status: "success", message: "Account deleted." };

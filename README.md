@@ -183,4 +183,7 @@ description, share image per page), Contact & social links, and Logo (Super Admi
 
 - [Architecture](docs/ARCHITECTURE.md): structure, request flow, security model
 - [Deployment](docs/DEPLOYMENT.md): Vercel, Node/VPS, cPanel Node.js hosting
+- [Launch checklist and maintenance runbook](docs/LAUNCH.md)
+- [Backups and restore](docs/BACKUP.md)
+- [Security review](docs/SECURITY_REVIEW.md)
 - [Student Portal plan (Phase 2)](docs/STUDENT_PORTAL.md)

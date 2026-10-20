@@ -500,6 +500,7 @@ export const en = {
   },
   emails: {
     greeting: "Hello {name},",
+    greetingNoName: "Hello,",
     verifySubject: "Verify your email for Digitals Minds",
     verifyIntro: "Thanks for joining Digitals Minds. Please confirm your email address to activate your account.",
     verifyButton: "Verify email",

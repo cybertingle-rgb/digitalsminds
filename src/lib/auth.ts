@@ -44,7 +44,8 @@ async function sendAuthEmail(kind: "verify" | "reset", user: { email: string; na
     dict,
     locale,
     to: user.email,
-    name: user.name,
+    // The name of an unverified account was typed by whoever signed up, who may not own this inbox.
+    name: user.emailVerified === true ? user.name : "",
     url,
     ...(kind === "verify"
       ? { subject: e.verifySubject, intro: e.verifyIntro, buttonLabel: e.verifyButton }
@@ -157,6 +158,15 @@ function createAuth(google: GoogleCredentials) {
             const { role: _role, status: _status, ...rest } = data as Record<string, unknown>;
             void _role;
             void _status;
+            // Same checks as sign-up for profile fields; an invalid value is ignored, not saved.
+            const checks: Record<string, (v: unknown) => boolean> = {
+              name: (v) => typeof v === "string" && v.trim().length >= 1 && v.length <= 120 && !/[\x00-\x1f\x7f]/.test(v),
+              googleEmail: (v) => v === null || optionalEmail.safeParse(v).success,
+              phone: (v) => v === null || phone.safeParse(v).success,
+              city: (v) => v === null || city.safeParse(v).success,
+              preferredLocale: (v) => typeof v === "string" && hasLocale(v),
+            };
+            for (const [field, ok] of Object.entries(checks)) if (field in rest && !ok(rest[field])) delete rest[field];
             return { data: rest };
           },
         },

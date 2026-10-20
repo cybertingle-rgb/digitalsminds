@@ -18,6 +18,7 @@ export default async function NewsletterPage({ searchParams }: PageProps<"/[lang
   const status = sp.status === "UNSUBSCRIBED" ? "UNSUBSCRIBED" : sp.status === "ALL" ? undefined : "SUBSCRIBED";
   const [list, counts] = await Promise.all([listSubscribers({ q: q || undefined, status }), subscriberCounts()]);
   const exportAllowed = can(user.role, "newsletter.export");
+  const deleteAllowed = can(user.role, "newsletter.delete");
 
   return (
     <div className="max-w-5xl space-y-6">
@@ -65,7 +66,7 @@ export default async function NewsletterPage({ searchParams }: PageProps<"/[lang
                 <th scope="col" className="px-4 py-3">Language</th>
                 <th scope="col" className="px-4 py-3">Joined from</th>
                 <th scope="col" className="px-4 py-3">Confirmed</th>
-                {exportAllowed && <th scope="col" className="px-4 py-3"><span className="sr-only">Actions</span></th>}
+                {deleteAllowed && <th scope="col" className="px-4 py-3"><span className="sr-only">Actions</span></th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-charcoal-200/50">
@@ -76,7 +77,7 @@ export default async function NewsletterPage({ searchParams }: PageProps<"/[lang
                   <td className="px-4 py-3">{s.locale === "ur" ? "Urdu" : "English"}</td>
                   <td className="px-4 py-3 text-muted" dir="ltr">{s.source ?? "-"}</td>
                   <td className="px-4 py-3 text-muted">{dateFmt.format(s.consentAt)}</td>
-                  {exportAllowed && <td className="px-4 py-3 text-end"><DeleteSubscriber id={s.id} email={s.email} /></td>}
+                  {deleteAllowed && <td className="px-4 py-3 text-end"><DeleteSubscriber id={s.id} email={s.email} /></td>}
                 </tr>
               ))}
             </tbody>

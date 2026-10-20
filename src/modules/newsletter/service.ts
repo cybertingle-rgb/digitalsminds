@@ -46,8 +46,9 @@ export async function requestSubscription(input: z.infer<typeof signupInput>) {
   });
   const locale: Locale = input.locale;
   const dict = getDictionary(locale);
-  await sendMail(
-    actionEmail({
+  try {
+    await sendMail(
+      actionEmail({
       dict,
       locale,
       to: input.email,
@@ -56,8 +57,14 @@ export async function requestSubscription(input: z.infer<typeof signupInput>) {
       intro: dict.emails.newsletterIntro,
       buttonLabel: dict.emails.newsletterButton,
       url: `${siteConfig.url}${localizePath("/newsletter/confirm", locale)}?token=${token}`,
-    }),
-  );
+      }),
+    );
+  } catch (err) {
+    // Answer "ok" like every other case (an error here would reveal that the address isn't subscribed);
+    // drop the pending link so the visitor can simply try again later.
+    console.error("[newsletter] confirmation email failed:", err instanceof Error ? err.message : err);
+    await db().verification.deleteMany({ where: { identifier } });
+  }
 }
 
 async function pendingFor(token: string) {

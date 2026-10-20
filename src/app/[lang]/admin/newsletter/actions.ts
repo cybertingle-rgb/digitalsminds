@@ -9,7 +9,7 @@ import { deleteSubscriber } from "@/modules/newsletter/service";
 /** Permanently removes an address (privacy requests). Super Admin only. */
 export async function deleteSubscriberAction(id: string): Promise<{ ok: boolean; message: string }> {
   try {
-    const actor = await assertPermission("newsletter.export");
+    const actor = await assertPermission("newsletter.delete");
     await deleteSubscriber(z.string().min(1).max(64).parse(id));
     await audit({ actorId: actor.id, action: "newsletter.deleted", entityType: "NewsletterSubscriber", entityId: id });
     revalidatePath("/admin/newsletter");

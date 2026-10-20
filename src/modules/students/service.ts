@@ -207,7 +207,7 @@ export async function enrollableCourses(studentId: string) {
  * same email. Super Admin only; the email must be typed to confirm.
  */
 export async function deleteStudent(id: string, confirmEmail: string, actor: Actor) {
-  if (!can(actor.role, "students.export")) throw new StudentError("Only Super Admins can delete accounts.", 403);
+  if (!can(actor.role, "students.delete")) throw new StudentError("Only Super Admins can delete accounts.", 403);
   const user = await requireStudent(id);
   if (confirmEmail.trim().toLowerCase() !== user.email.toLowerCase()) throw new StudentError("Type the student's email address exactly to confirm.");
   const [enrollments, certificates] = await Promise.all([db().enrollment.count({ where: { userId: id } }), db().certificate.count({ where: { userId: id } })]);

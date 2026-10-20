@@ -11,7 +11,7 @@ describe("safeNext", () => {
   });
 
   it("rejects external and protocol-relative URLs", () => {
-    for (const bad of ["https://evil.example", "//evil.example", "/\\evil.example", "javascript:alert(1)", "", null, undefined]) {
+    for (const bad of ["https://evil.example", "//evil.example", "/\\evil.example", "javascript:alert(1)", "/\t/evil.example", "/\n/evil.example", "/\r\n/evil.example", "/\t\\evil.example", "/x\\..\\..\\evil", "", null, undefined]) {
       expect(safeNext(bad)).toBe("/account");
     }
   });

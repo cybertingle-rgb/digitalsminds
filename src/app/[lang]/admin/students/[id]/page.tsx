@@ -140,7 +140,7 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
                 </div>
               </details>
               <SuspendControl id={user.id} suspended={user.status === "SUSPENDED"} />
-              {can(viewer.role, "students.export") && <DeleteStudent id={user.id} email={user.email} inquiries={await inquiriesFromEmail(user.email)} />}
+              {can(viewer.role, "students.delete") && <DeleteStudent id={user.id} email={user.email} inquiries={await inquiriesFromEmail(user.email)} />}
             </section>
           )}
         </aside>

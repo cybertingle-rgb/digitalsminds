@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-20 (Phase 12 complete).
+Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 
 ## Confirmed decisions
 
@@ -64,6 +64,8 @@ Last updated: 2026-10-20 (Phase 12 complete).
 | 55 | Hostinger build | Next.js build limited to 2 workers (shared hosting thread limit); Node.js 22 recommended |
 | 56 | Analytics and consent | GA4 loads only after a visitor presses "Accept analytics" (Consent Mode, ads signals always denied); banner shown only once a Measurement ID is saved; "Cookie settings" link in the footer; events: inquiry, newsletter sign-up, course access request, without personal details |
 | 57 | Structured data | Organization (Faisalabad address, email, logo, social links), WebSite, FAQ, blog posts, courses, services and breadcrumbs; no ratings, reviews or phone numbers |
+| 58 | Backups | Super Admin downloads (Admin → Backups): database as .sql.gz (restorable with phpMyAdmin), uploaded files as .tar.gz; plus Hostinger automatic backups; restore drill tested (docs/BACKUP.md) |
+| 59 | Security review | Findings fixed (open redirect, per-account auth limits, email greeting, profile validation, newsletter, delete permissions); accepted risks in docs/SECURITY_REVIEW.md |
 
 ## Open items (waiting on owner)
 
@@ -75,6 +77,9 @@ Last updated: 2026-10-20 (Phase 12 complete).
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
 - [x] Privacy Policy and Terms & Conditions written and published (owner delegated); have them reviewed by a lawyer when convenient
 - [ ] Urdu translations (provided when the bilingual structure is ready)
+- [ ] Launch checklist: docs/LAUNCH.md (production settings, tests on the live site, uptime monitor on `/api/health`)
+- [ ] Weekly backups from Admin → Backups, stored privately (docs/BACKUP.md)
+- [ ] Ask Hostinger support whether requests pass through more than one proxy (only if yes: set `TRUSTED_PROXY_HOPS`)
 - [ ] Google Analytics: create a GA4 property (Web data stream for https://digitalsminds.com), paste the Measurement ID (G-...) in Admin → Website → Analytics
 - [ ] Search Console: add the URL-prefix property https://digitalsminds.com, choose "HTML tag", paste it in Admin → Website → Analytics, press Verify, then submit `sitemap.xml`
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)

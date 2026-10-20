@@ -159,7 +159,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Image optimisation, a Core Web Vitals pass, and an accessibility audit (WCAG 2.1 AA target).
 - **Owner inputs:** GA4 Measurement ID and Search Console access.
 
-## Phase 13: QA, security review, backups and production launch (M)
+## Phase 13: QA, security review, backups and production launch (M) ✅ (launch steps on the live site are the owner checklist in docs/LAUNCH.md)
 - **Deliverables:**
   - Full regression and end-to-end suite; security review of auth, uploads, authorisation and headers.
   - Dependency audit (no forced upgrades).

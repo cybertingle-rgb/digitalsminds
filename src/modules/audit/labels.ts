@@ -58,6 +58,8 @@ export const actionLabels: Record<string, string> = {
   "student.deleted": "Deleted a student account (privacy request)",
   "export.students": "Exported students (CSV)",
   "export.newsletter": "Exported newsletter subscribers (CSV)",
+  "backup.database": "Downloaded a database backup",
+  "backup.media": "Downloaded a media backup",
   "newsletter.deleted": "Removed a newsletter subscriber",
   "announcement.created": "Posted an announcement",
   "certificate.issued": "Issued a certificate",

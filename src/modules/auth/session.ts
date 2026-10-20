@@ -56,6 +56,12 @@ export async function assertPermission(permission: Permission): Promise<CurrentU
 
 /** Only allow same-site relative paths as post-login destinations (prevents open redirects). */
 export function safeNext(value: string | null | undefined, fallback = "/account"): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return fallback;
-  return value;
+  // Browsers drop tabs/newlines and treat "\\" as "/" when parsing URLs, so "/\t/evil.com" would become "//evil.com".
+  if (!value || !value.startsWith("/") || /[\\\x00-\x1f\x7f]/.test(value)) return fallback;
+  try {
+    if (new URL(value, "http://same.site").origin !== "http://same.site") return fallback;
+  } catch {
+    return fallback;
+  }
+  return value.startsWith("//") ? fallback : value;
 }
