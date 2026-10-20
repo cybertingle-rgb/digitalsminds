@@ -19,6 +19,8 @@ export function actionEmail(opts: {
   intro: string;
   buttonLabel: string;
   url: string;
+  /** Show "if you didn't request this, ignore it" (default). Off for announcements and replies. */
+  ignoreNote?: boolean;
 }): Mail {
   const { dict, locale } = opts;
   const e = dict.emails;
@@ -36,11 +38,11 @@ export function actionEmail(opts: {
           <div style="color:#fdcf31;font-size:12px;font-weight:normal;margin-top:4px">Learn | Grow | Earn</div></td></tr>
         <tr><td style="padding:28px;font-size:15px;line-height:1.6" dir="${dir}">
           <p style="margin:0 0 12px">${escapeHtml(greeting)}</p>
-          <p style="margin:0 0 24px">${escapeHtml(opts.intro)}</p>
+          <p style="margin:0 0 24px;white-space:pre-line">${escapeHtml(opts.intro)}</p>
           <p style="margin:0 0 24px"><a href="${url}" style="display:inline-block;background:#fdcf31;color:#2b323c;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:8px">${escapeHtml(opts.buttonLabel)}</a></p>
           <p style="margin:0 0 8px;color:#5f6675;font-size:13px">${escapeHtml(e.linkFallback)}</p>
           <p style="margin:0 0 24px;font-size:12px;word-break:break-all" dir="ltr"><a href="${url}" style="color:#2b323c">${url}</a></p>
-          <p style="margin:0;color:#5f6675;font-size:13px">${escapeHtml(e.ignore)}</p>
+          ${opts.ignoreNote === false ? "" : `<p style="margin:0;color:#5f6675;font-size:13px">${escapeHtml(e.ignore)}</p>`}
         </td></tr>
         <tr><td style="padding:16px 28px;background:#f6f7f9;color:#5f6675;font-size:12px">${escapeHtml(e.signature)}</td></tr>
       </table>
@@ -49,6 +51,6 @@ export function actionEmail(opts: {
 </body>
 </html>`;
 
-  const text = plain([greeting, "", opts.intro, "", `${opts.buttonLabel}: ${opts.url}`, "", e.ignore, "", e.signature].join("\n"));
+  const text = plain([greeting, "", opts.intro, "", `${opts.buttonLabel}: ${opts.url}`, "", ...(opts.ignoreNote === false ? [] : [e.ignore, ""]), e.signature].join("\n"));
   return { to: opts.to, subject: plain(opts.subject), html, text };
 }

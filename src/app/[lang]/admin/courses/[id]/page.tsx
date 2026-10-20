@@ -149,6 +149,9 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
                 )}
               </p>
             )}
+            {course.status !== "DRAFT" && (
+              <p className="mt-2 text-sm"><Link href={`/admin/announcements?course=${course.id}`} className="font-semibold underline underline-offset-4">Send an announcement</Link></p>
+            )}
             {roster.students.length === 0 ? (
               <p className="mt-2 text-sm text-muted">No enrolled students yet.</p>
             ) : (

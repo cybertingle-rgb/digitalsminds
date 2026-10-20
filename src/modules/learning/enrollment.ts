@@ -12,6 +12,7 @@ import { can } from "@/modules/auth/permissions";
 import type { CurrentUser } from "@/modules/auth/session";
 import { actionEmail } from "@/modules/email/templates";
 import { getLeadAlertSetting } from "@/modules/inquiries/alerts";
+import { notify } from "@/modules/notifications/service";
 
 export class EnrollmentError extends Error {
   constructor(message: string, public readonly status = 400) {
@@ -77,6 +78,7 @@ export async function decideEnrollment(id: string, decision: "APPROVED" | "REJEC
   });
   const action = { APPROVED: "enrollment.approved", REJECTED: "enrollment.rejected", REVOKED: "enrollment.revoked" }[decision];
   await audit({ actorId: actor.id, action, entityType: "Enrollment", entityId: id, metadata: { course: enrollment.course.title, from: enrollment.status } });
+  await notifyDecision(id);
   if (decision !== "REVOKED") await sendDecisionEmail(id);
 }
 
@@ -158,6 +160,23 @@ async function sendRequestAlert(enrollmentId: string) {
   }
 }
 
+/** In-app notification for the student, in their preferred language. */
+async function notifyDecision(enrollmentId: string) {
+  const e = await db().enrollment.findUnique({ where: { id: enrollmentId }, include: { user: true, course: true } });
+  if (!e || e.status === "REQUESTED") return;
+  const locale: Locale = e.user.preferredLocale === "ur" ? "ur" : "en";
+  const t = getDictionary(locale).notifications;
+  const course = locale === "ur" ? e.course.titleUr || e.course.title : e.course.title;
+  const kind = { APPROVED: "ENROLLMENT_APPROVED", REJECTED: "ENROLLMENT_REJECTED", REVOKED: "ENROLLMENT_REVOKED" } as const;
+  const title = { APPROVED: t.enrollmentApproved, REJECTED: t.enrollmentRejected, REVOKED: t.enrollmentRevoked }[e.status];
+  await notify(e.userId, {
+    type: kind[e.status],
+    title: format(title, { course }),
+    body: e.status === "APPROVED" ? null : e.decisionNote,
+    link: e.status === "APPROVED" ? `/learn/${e.course.slug}` : `/courses/${e.course.slug}`,
+  });
+}
+
 async function sendDecisionEmail(enrollmentId: string) {
   try {
     const e = await db().enrollment.findUniqueOrThrow({ where: { id: enrollmentId }, include: { user: true, course: true } });
@@ -229,6 +248,7 @@ export async function manualEnroll(userId: string, courseId: string, actor: Acto
     ? await db().enrollment.update({ where: { id: existing.id }, data })
     : await db().enrollment.create({ data: { userId, courseId, ...data } });
   await audit({ actorId: actor.id, action: "enrollment.manual", entityType: "Enrollment", entityId: enrollment.id, metadata: { course: course.title, from: existing?.status ?? null } });
+  await notifyDecision(enrollment.id);
   await sendDecisionEmail(enrollment.id);
   return enrollment;
 }

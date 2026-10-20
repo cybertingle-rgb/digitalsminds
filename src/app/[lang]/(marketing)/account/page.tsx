@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { FormAlert } from "@/components/forms/Field";
+import { AccountNav } from "@/components/learning/AccountNav";
 import { ProfileForm } from "@/components/learning/ProfileForm";
 import { LinkButton } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
@@ -11,6 +12,9 @@ import { format } from "@/i18n/merge";
 import { authPage, noindex } from "@/modules/auth/pages";
 import { can } from "@/modules/auth/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
+import { studentAnnouncements } from "@/modules/announcements/service";
+import { RichText } from "@/modules/courses/richtext";
+import { accountNavItems } from "@/modules/learning/account-nav";
 import { listingText } from "@/modules/learning/catalogue";
 import { profileOf } from "@/modules/learning/profile";
 import { myLearning } from "@/modules/learning/progress";
@@ -27,7 +31,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
   const t = dict.account;
   const c = dict.courses;
   const sp = await searchParams;
-  const [learning, profile] = await Promise.all([myLearning(user.id), profileOf(user.id)]);
+  const [learning, profile, nav, news] = await Promise.all([myLearning(user.id), profileOf(user.id), accountNavItems(user.id, locale, dict), studentAnnouncements(user.id)]);
   const enrolled = learning.filter((l) => l.enrollment.status === "APPROVED");
   const requests = learning.filter((l) => l.enrollment.status !== "APPROVED");
   const dateFmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
@@ -47,6 +51,8 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
             <LogoutButton label={dict.auth.logout} redirectTo={localizePath("/", locale)} />
           </div>
         </div>
+
+        <AccountNav items={nav} label={t.title} />
 
         <section aria-labelledby="my-courses">
           <h2 id="my-courses" className="text-xl font-bold text-charcoal-900">{t.myCourses}</h2>
@@ -94,6 +100,24 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
             </ul>
           )}
         </section>
+
+        {news.length > 0 && (
+          <section aria-labelledby="news">
+            <h2 id="news" className="text-xl font-bold text-charcoal-900">{dict.announcements.title}</h2>
+            <ul className="mt-4 space-y-3">
+              {news.map((a) => (
+                <li key={a.id} className="glass rounded-2xl p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gold-700" dir="auto">
+                    {a.course ? listingText({ title: a.course.title, titleUr: a.course.titleUr, summary: "", summaryUr: null }, locale).title : dict.announcements.allStudents}
+                    {a.publishedAt && <span className="ms-2 font-normal normal-case tracking-normal text-muted">{dateFmt.format(a.publishedAt)}</span>}
+                  </p>
+                  <h3 className="mt-1 font-semibold text-charcoal-900" dir="auto">{a.title}</h3>
+                  <RichText text={a.body} className="mt-2 text-sm text-charcoal-800" />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {requests.length > 0 && (
           <section aria-labelledby="requests">

@@ -26,6 +26,12 @@ export const permissions = [
   "inquiries.delete",
   "media.manage.all",
   "media.manage.own",
+  "support.manage.all",
+  "support.manage.own",
+  "certificates.issue",
+  "announcements.site",
+  "newsletter.view",
+  "newsletter.export",
 ] as const;
 export type Permission = (typeof permissions)[number];
 
@@ -40,9 +46,13 @@ const grants: Record<Role, readonly Permission[]> = {
     "content.manage",
     "inquiries.manage",
     "media.manage.all",
+    "support.manage.all",
+    "certificates.issue",
+    "announcements.site",
+    "newsletter.view",
   ],
   // Instructors are further limited to their own courses (CourseInstructor) in later phases.
-  INSTRUCTOR: ["admin.access", "courses.manage.own", "media.manage.own"],
+  INSTRUCTOR: ["admin.access", "courses.manage.own", "media.manage.own", "support.manage.own"],
   STUDENT: [],
 };
 

@@ -39,6 +39,8 @@ export const actionLabels: Record<string, string> = {
   "enrollment.manual": "Enrolled a student in a course",
   "student.updated": "Edited a student's details",
   "export.students": "Exported students (CSV)",
+  "announcement.created": "Posted an announcement",
+  "announcement.deleted": "Deleted an announcement",
 };
 
 export function describeAction(action: string): string {

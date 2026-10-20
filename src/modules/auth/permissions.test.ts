@@ -12,7 +12,7 @@ describe("can", () => {
 
   it("keeps integrations, settings, staff and exports Super Admin only", () => {
     for (const role of ["CONTENT_MANAGER", "INSTRUCTOR", "STUDENT"]) {
-      for (const p of ["integrations.manage", "settings.manage", "staff.manage", "students.export", "inquiries.export", "inquiries.delete"] as const) {
+      for (const p of ["integrations.manage", "settings.manage", "staff.manage", "students.export", "inquiries.export", "inquiries.delete", "newsletter.export"] as const) {
         expect(can(role, p)).toBe(false);
       }
     }
@@ -26,6 +26,16 @@ describe("can", () => {
     expect(can("INSTRUCTOR", "media.manage.all")).toBe(false);
     expect(can("INSTRUCTOR", "courses.publish")).toBe(false);
     expect(can("CONTENT_MANAGER", "courses.publish")).toBe(true);
+  });
+
+  it("scopes support, certificates and announcements", () => {
+    expect(can("CONTENT_MANAGER", "support.manage.all")).toBe(true);
+    expect(can("INSTRUCTOR", "support.manage.all")).toBe(false);
+    expect(can("INSTRUCTOR", "support.manage.own")).toBe(true);
+    expect(can("CONTENT_MANAGER", "certificates.issue")).toBe(true);
+    expect(can("INSTRUCTOR", "certificates.issue")).toBe(false);
+    expect(can("INSTRUCTOR", "announcements.site")).toBe(false);
+    expect(can("CONTENT_MANAGER", "newsletter.view")).toBe(true);
   });
 
   it("denies unknown or missing roles", () => {

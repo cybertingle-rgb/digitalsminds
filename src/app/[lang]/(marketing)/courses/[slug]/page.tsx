@@ -10,6 +10,7 @@ import { hasLocale, localeMeta, localizePath, type Locale } from "@/i18n/config"
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { pageMetadata } from "@/i18n/metadata";
+import { courseAnnouncements } from "@/modules/announcements/service";
 import { getCurrentUser } from "@/modules/auth/session";
 import { RichText } from "@/modules/courses/richtext";
 import { courseBySlug, lessonsOf, listingText, objectivesOf, totalMinutes } from "@/modules/learning/catalogue";
@@ -54,6 +55,7 @@ export default async function CoursePage({ params }: Props) {
   const courseDir = localeMeta[course.language].dir;
   const learnHref = (lessonId?: string) => localizePath(`/learn/${course.slug}${lessonId ? `/${lessonId}` : ""}`, lang);
   const canOpenAll = mode === "student" || mode === "staff";
+  const news = canOpenAll ? await courseAnnouncements(course.id) : [];
 
   return (
     <>
@@ -142,8 +144,8 @@ export default async function CoursePage({ params }: Props) {
             </section>
           </div>
 
-          <aside className="min-w-0">
-            <div className="space-y-4 glass rounded-2xl p-6 lg:sticky lg:top-24" aria-labelledby="access-title">
+          <aside className="min-w-0 space-y-6">
+            <div className="space-y-4 glass rounded-2xl p-6" aria-labelledby="access-title">
               <h2 id="access-title" className="text-lg font-bold text-charcoal-900">{t.accessTitle}</h2>
               <AccessPanel
                 lang={lang}
@@ -159,6 +161,17 @@ export default async function CoursePage({ params }: Props) {
                 published={course.status === "PUBLISHED"}
               />
             </div>
+            {news.length > 0 && (
+              <section aria-labelledby="course-news" className="space-y-4 glass rounded-2xl p-6">
+                <h2 id="course-news" className="text-lg font-bold text-charcoal-900">{dict.announcements.title}</h2>
+                {news.map((a) => (
+                  <article key={a.id} dir={localeMeta[course.language].dir} lang={course.language}>
+                    <h3 className="font-semibold text-charcoal-900">{a.title}</h3>
+                    <RichText text={a.body} className="mt-1 text-sm text-charcoal-800" />
+                  </article>
+                ))}
+              </section>
+            )}
           </aside>
         </div>
       </Section>
