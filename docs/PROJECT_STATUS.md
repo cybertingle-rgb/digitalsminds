@@ -114,3 +114,4 @@ Last updated: 2026-10-20 (Phase 11 complete).
 | 2026-10-20 | Glass design v1 and v2 (owner request): glass UI, floating header, new footer, social rail, preloader, richer home | `0ba1984`, `b31f3dd` |
 | 2026-10-20 | Phase 10: notifications, announcements, support tickets, certificates with review and verification, newsletter with double opt-in, 37-check e2e run | `e033e49`, `8b12b97` |
 | 2026-10-20 | Phase 11: website content management (homepage, blog, FAQs, testimonials, case studies, legal pages, SEO, contact, logo), 27-check e2e run | `958b3ba` |
+| 2026-10-20 | Published Privacy Policy and Terms, final Why-us/FAQ text, privacy account deletion; Hostinger build fix (2 build workers) | `2421be9` |
