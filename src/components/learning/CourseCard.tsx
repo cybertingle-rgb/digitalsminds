@@ -12,7 +12,7 @@ export function CourseCard(props: {
   footer?: ReactNode;
 }) {
   return (
-    <article className="glass relative flex h-full flex-col overflow-hidden rounded-3xl transition hover:-translate-y-0.5 hover:bg-white/85 hover:shadow-lg">
+    <article className="glass glow-card flex h-full flex-col rounded-3xl">
       <div className="relative aspect-video bg-charcoal-100">
         {props.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

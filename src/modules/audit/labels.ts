@@ -21,6 +21,7 @@ export const actionLabels: Record<string, string> = {
   "inquiry.deleted": "Deleted an inquiry",
   "export.inquiries": "Exported inquiries (CSV)",
   "settings.lead_alerts": "Changed lead alert emails",
+  "settings.social": "Changed social media links",
   "media.upload": "Uploaded a file",
   "media.replace": "Replaced a file",
   "media.delete": "Deleted a file",

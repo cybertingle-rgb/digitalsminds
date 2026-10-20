@@ -8,7 +8,7 @@ import { publicPathname } from "@/i18n/config";
 export function AccountNav({ items, label }: { items: { label: string; href: string; badge?: string }[]; label: string }) {
   const pathname = publicPathname(usePathname());
   return (
-    <nav aria-label={label} className="-mx-4 overflow-x-auto px-4">
+    <nav aria-label={label} className="overflow-x-auto">
       <ul className="flex gap-2 border-b border-charcoal-200/60">
         {items.map((item, i) => {
           const active = i === 0 ? pathname === item.href : pathname.startsWith(item.href);

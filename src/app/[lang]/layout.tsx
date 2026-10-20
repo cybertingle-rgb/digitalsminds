@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { hasLocale, localeMeta, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { CAMPAIGN_HEAD_SCRIPT } from "@/components/analytics/campaign-script";
+import { AmbientBackground } from "@/components/effects/AmbientBackground";
+import { GlowTracker } from "@/components/effects/GlowTracker";
+import { Preloader, PRELOADER_END_SCRIPT, PRELOADER_HEAD_SCRIPT } from "@/components/effects/Preloader";
 import { naskh } from "../fonts";
 import "../globals.css";
 
@@ -31,8 +35,17 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!hasLocale(lang)) notFound();
   const { htmlLang, dir } = localeMeta[lang];
   return (
-    <html lang={htmlLang} dir={dir} className={naskh.variable}>
-      <body className="flex min-h-dvh flex-col">{children}</body>
+    <html lang={htmlLang} dir={dir} className={naskh.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PRELOADER_HEAD_SCRIPT + CAMPAIGN_HEAD_SCRIPT }} />
+      </head>
+      <body className="flex min-h-dvh flex-col">
+        <Preloader label={getDictionary(lang).brand.name} />
+        <script dangerouslySetInnerHTML={{ __html: PRELOADER_END_SCRIPT }} />
+        <AmbientBackground />
+        <GlowTracker />
+        {children}
+      </body>
     </html>
   );
 }

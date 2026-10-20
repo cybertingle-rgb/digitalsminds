@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { SocialRow } from "@/components/effects/SocialLinks";
 import { Container } from "@/components/ui/Container";
 import { siteConfig } from "@/config/site";
 import { getServices } from "@/content/services";
@@ -26,6 +27,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 {dict.brand.tagline}
               </p>
               <p className="mt-3 max-w-xs text-charcoal-700">{dict.brand.positioning}</p>
+              <SocialRow label={dict.a11y.social} />
             </div>
             <div className="lg:col-span-3">
               <h2 className="font-semibold text-charcoal-900">{dict.footer.services}</h2>
@@ -50,11 +52,6 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 <li>
                   <Link href={localizePath("/account", locale)} className={linkClass}>{dict.nav.myLearning}</Link>
                 </li>
-                {siteConfig.social.map((s) => (
-                  <li key={s.href}>
-                    <a href={s.href} target="_blank" rel="noopener noreferrer" className={linkClass}>{s.label}</a>
-                  </li>
-                ))}
               </ul>
             </div>
             <div className="lg:col-span-3">

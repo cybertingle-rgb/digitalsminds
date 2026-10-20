@@ -8,10 +8,10 @@ export function CtaBanner({ title, text, href, label }: Props) {
     <Section tone="dark">
       <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
         <div className="max-w-2xl">
-          <h2 className="text-3xl font-bold tracking-tight text-balance">{title}</h2>
-          <p className="mt-3 text-charcoal-200">{text}</p>
+          <h2 className="text-3xl font-bold tracking-tight text-balance text-charcoal-900 sm:text-4xl">{title}</h2>
+          <p className="mt-3 text-charcoal-800">{text}</p>
         </div>
-        <LinkButton href={href}>{label}</LinkButton>
+        <LinkButton href={href} variant="dark" className="border-run px-7 py-3.5 text-base">{label}</LinkButton>
       </div>
     </Section>
   );

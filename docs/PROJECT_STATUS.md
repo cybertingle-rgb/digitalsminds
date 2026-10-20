@@ -11,7 +11,7 @@ Last updated: 2026-10-20 (Phase 9 complete).
 | 2 | Stack | Next.js 16 (App Router, TypeScript), Tailwind CSS 4, Prisma 7 + MySQL/MariaDB (Hostinger database), Zod |
 | 3 | Build | `npm run build` uses webpack (Turbopack's PostCSS child process is blocked in Hostinger's build sandbox); `prebuild` applies migrations |
 | 4 | Brand | Official logos supplied by owner (transparent PNG, dark JPG, light JPG). Colours from logo: yellow `#FDCF31`, charcoal `#2B323C`, logo text `#373643`. Logo used unaltered. |
-| 5 | Visual direction | Light glassmorphism (owner choice, Oct 2026): warm off-white canvas with soft yellow/charcoal glows, frosted white glass panels, charcoal text, yellow accents/CTAs, charcoal glass for call-to-action panels. Subtle effect; floating glass header, glass footer and admin sidebar; content up to 1280px wide |
+| 5 | Visual direction | White and light-yellow glassmorphism (owner choice, Oct 2026): frosted glass panels with a light-yellow tint over slowly drifting brand glows (still on phones and for reduced motion); glowing yellow hover on cards, nav and buttons; floating glass header (full menu from 1280px), glass footer and admin sidebar; yellow-glass call-to-action panels; content up to 1680px with slim side margins |
 | 6 | Contact | info@digitalsminds.com · 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan. **No phone or WhatsApp number anywhere on the site or in docs until the owner says otherwise.** |
 | 7 | Course pricing | All free at launch; schema ready for paid courses later |
 | 8 | Enrollment | Student requests access; an admin approves |
@@ -53,11 +53,16 @@ Last updated: 2026-10-20 (Phase 9 complete).
 | 44 | Request alerts | Email to the lead-alert address (default info@digitalsminds.com) plus a waiting count on the dashboard |
 | 45 | Learning access | Completion is a "Mark as complete" button; revoking or unpublishing ends access immediately; archived courses stay open to enrolled students |
 | 46 | Student management | Super Admin + Content Manager view students; enrollment staff can enroll directly; editing, suspending and CSV export are Super Admin only. No account deletion yet (ask if needed for privacy requests) |
+| 47 | Social links | Facebook, Instagram, LinkedIn shown as an expanding icon rail on the right (tablet/desktop) and in the footer; links pasted by the owner in Admin → Website (validated official URLs) |
+| 48 | Preloader | Neon-glow logo preloader on the first page of each visit (about 1 s, max 2.5 s); never shown without JavaScript |
+| 49 | Home content | Adds live courses, division details, "Why Digitals Minds", FAQ and testimonials (published + consent only). Why-us and FAQ wording drafted from confirmed facts: **owner to approve** |
 
 ## Open items (waiting on owner)
 
 - [ ] File storage: Admin → Integrations → File storage → Run check, redeploy, Run check again (enables uploads); confirm Hostinger backups include the upload folder
-- [ ] Social media profile URLs
+- [ ] Social media links: paste Facebook, Instagram and LinkedIn URLs in Admin → Website
+- [ ] Approve or edit the drafted "Why Digitals Minds" and FAQ text on the home page
+- [ ] Send verified testimonials (name, role/company, quote, photo if any, permission)
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
 - [ ] Privacy Policy and Terms & Conditions text
 - [ ] Urdu translations (provided when the bilingual structure is ready)

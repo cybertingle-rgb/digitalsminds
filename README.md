@@ -78,8 +78,12 @@ No phone or WhatsApp number is displayed anywhere on the site (owner decision); 
 - **Logos:** official files in `public/brand/` (web versions) and `assets/brand/originals/` (as supplied). See `public/brand/README.md`.
 - **Colours:** `@theme` block in `src/app/globals.css` (charcoal `#2B323C`, yellow `#FDCF31` from the logo).
 - **Glass look:** utilities in `src/app/globals.css`: `glass` (cards), `glass-subtle` (callouts), `glass-strong` (forms),
-  `glass-blur` (floating header/sidebar; the only ones with a backdrop blur, to stay light on phones) and `glass-ink`
-  (charcoal call-to-action panels). Falls back to near-solid panels when blur isn't supported or reduced transparency is requested.
+  `glass-blur` (header/sidebar/rail), `glass-sun` (yellow call-to-action panels), `glass-ink` (small dark badges),
+  `glow-card` (yellow glow + pointer spotlight on hover, via `GlowTracker`) and `border-run` (light running around a border).
+  `AmbientBackground` draws the drifting glows (still on phones and with reduced motion); blur is lighter on phones; panels
+  turn near-solid when blur isn't supported or reduced transparency is requested.
+- **Preloader:** `src/components/effects/Preloader.tsx` (first page of each visit, switched on by an inline head script).
+- **Social links:** Admin → Website (stored in `SiteSetting` `site.social`, read by the page via `/api/public/social`).
 - **All page text:** `src/i18n/dictionaries/en.ts` (English) and `ur.ts` (Urdu). Services text lives there too.
 - **Navigation, email, social links:** `src/config/site.ts`.
 - **Blog posts:** `src/content/blog.ts` (each post has one language).

@@ -24,7 +24,7 @@ export function MobileNav({ items, homeHref, cta, labels, extra }: Props) {
   }, [open]);
 
   return (
-    <div className="lg:hidden">
+    <div className="xl:hidden">
       <button
         type="button"
         aria-expanded={open}

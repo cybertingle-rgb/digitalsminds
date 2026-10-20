@@ -27,9 +27,6 @@ export const siteConfig = {
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "info@digitalsminds.com",
   },
 
-  /** Add profile URLs here to show them in the footer. */
-  social: [] as { label: string; href: string }[],
-
   /** `key` refers to dict.nav. */
   nav: [
     { key: "home", href: "/" },

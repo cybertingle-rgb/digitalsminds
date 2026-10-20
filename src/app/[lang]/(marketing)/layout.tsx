@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { CampaignCapture } from "@/components/analytics/CampaignCapture";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SocialRail } from "@/components/effects/SocialLinks";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 
@@ -23,7 +23,7 @@ export default async function MarketingLayout({ children, params }: LayoutProps<
         {children}
       </main>
       <SiteFooter locale={lang} dict={dict} />
-      <CampaignCapture />
+      <SocialRail label={dict.a11y.social} />
     </>
   );
 }

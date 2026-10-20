@@ -30,7 +30,7 @@ export default async function BlogPage({ params }: PageProps<"/[lang]/blog">) {
           {posts.map((p) => (
             // Posts are written in one language; mark it so it renders correctly on either locale.
             <li key={p.slug} lang={localeMeta[p.lang].htmlLang} dir={localeMeta[p.lang].dir}>
-              <article className="glass flex h-full flex-col rounded-3xl !border-t-4 !border-t-sun-400 p-6">
+              <article className="glass glow-card flex h-full flex-col rounded-3xl !border-t-4 !border-t-sun-400 p-6">
                 <p className="text-xs font-medium uppercase tracking-wide text-gold-700">{p.tags.join(" · ")}</p>
                 <h2 className="mt-2 text-lg font-semibold text-charcoal-900">
                   <Link href={localizePath(`/blog/${p.slug}`, lang)} className="hover:underline">
