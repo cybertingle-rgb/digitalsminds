@@ -28,7 +28,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
 
   return (
     // Floating frosted bar: sits a little below the top edge and stays visible while scrolling.
-    <header className="sticky top-0 z-40 pt-3">
+    <header className="sticky top-0 z-40 pt-3 print:hidden">
       <Container>
         <div className="glass-blur relative flex h-[4.25rem] items-center justify-between gap-3 rounded-[1.4rem] ps-3 pe-2 sm:h-20 sm:ps-5 sm:pe-3">
         <BrandLogo locale={locale} alt={dict.brand.logoAlt} homeLabel={dict.a11y.homeLink} priority className="h-11 w-auto sm:h-14" />

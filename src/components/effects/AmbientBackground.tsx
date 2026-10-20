@@ -4,7 +4,7 @@
  */
 export function AmbientBackground() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden">
       <div className="dm-orb dm-orb-a -left-[12vw] -top-[18vh] h-[70vh] w-[70vh] bg-[radial-gradient(circle,rgb(253_207_49/0.55),rgb(253_207_49/0)_65%)]" />
       <div className="dm-orb dm-orb-b -right-[14vw] top-[10vh] h-[75vh] w-[75vh] bg-[radial-gradient(circle,rgb(255_236_160/0.6),rgb(255_236_160/0)_65%)]" />
       <div className="dm-orb dm-orb-c bottom-[-25vh] left-[25vw] h-[80vh] w-[80vh] bg-[radial-gradient(circle,rgb(253_207_49/0.38),rgb(253_207_49/0)_65%)]" />

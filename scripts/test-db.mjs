@@ -18,4 +18,5 @@ const env = { ...process.env, DATABASE_URL: url };
 const run = (args) => spawnSync(process.execPath, args, { stdio: "inherit", env }).status ?? 1;
 
 if (run(["node_modules/prisma/build/index.js", "migrate", "deploy"]) !== 0) process.exit(1);
-process.exit(run(["node_modules/vitest/vitest.mjs", "run", "src/test/"]));
+// One file at a time: the suites share one database and some update many rows at once.
+process.exit(run(["node_modules/vitest/vitest.mjs", "run", "--no-file-parallelism", "src/test/"]));

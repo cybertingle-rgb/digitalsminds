@@ -4,6 +4,8 @@ import { pkTodayRange } from "@/lib/pk-time";
 import { can } from "@/modules/auth/permissions";
 import type { CurrentUser } from "@/modules/auth/session";
 import { mediaScope } from "@/modules/media/service";
+import { supportScope } from "@/modules/support/service";
+import { readyToIssue } from "@/modules/certificates/service";
 
 const DAY = 24 * 60 * 60 * 1000;
 const OPEN = ["NEW", "CONTACTED", "QUALIFIED"] as const;
@@ -59,9 +61,16 @@ export async function dashboardStats(user: Pick<CurrentUser, "id" | "role">) {
       ]).then(([waiting, enrolled, published]) => ({ waiting, enrolled, published }))
     : null;
 
+  const support =
+    can(user.role, "support.manage.all") || can(user.role, "support.manage.own")
+      ? await db().supportTicket.count({ where: { AND: [supportScope(user), { status: "OPEN" }] } })
+      : null;
+
+  const certificatesReady = can(user.role, "certificates.issue") ? (await readyToIssue()).length : null;
+
   const activity = can(user.role, "audit.view")
     ? await db().auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { actor: { select: { name: true } } } })
     : null;
 
-  return { leads, people, media, learning, activity };
+  return { leads, people, media, learning, support, certificatesReady, activity };
 }

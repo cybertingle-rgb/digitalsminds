@@ -307,3 +307,31 @@
     animation: dm-drift-c 40s ease-in-out infinite;
   }
 }
+
+/* Certificates print on one A4 landscape page, colours included. */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  body::before,
+  #dm-preloader {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  /* Pinned to the page corner, independent of the on-screen layout around it. */
+  .dm-certificate {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    width: 297mm;
+    height: 210mm;
+    max-width: none;
+    aspect-ratio: auto;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

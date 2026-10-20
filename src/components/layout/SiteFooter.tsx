@@ -8,17 +8,28 @@ import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { ContactDetails } from "./ContactDetails";
+import { NewsletterForm } from "./NewsletterForm";
 
 const linkClass = "rounded-md text-charcoal-700 transition-colors hover:text-charcoal-900 hover:underline underline-offset-4";
 
 export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const year = new Date().getFullYear();
   return (
-    <footer className="pb-4 pt-8 sm:pt-12">
+    <footer className="pb-4 pt-8 sm:pt-12 print:hidden">
       <Container>
         <div className="glass relative overflow-hidden rounded-3xl">
           <div aria-hidden="true" className="pointer-events-none absolute -end-24 -top-24 h-64 w-64 rounded-full bg-sun-400/25 blur-3xl" />
 
+          <div className="relative flex flex-col gap-5 border-b border-charcoal-200/50 bg-gradient-to-r from-sun-100/70 via-white/30 to-transparent p-6 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-xl">
+              <p className="text-xl font-bold text-charcoal-900 sm:text-2xl">{dict.newsletter.title}</p>
+              <p className="mt-1 text-sm text-charcoal-700">{dict.newsletter.text}</p>
+            </div>
+            <NewsletterForm
+              locale={locale}
+              labels={{ label: dict.newsletter.label, button: dict.newsletter.button, sent: dict.newsletter.sent, invalid: dict.newsletter.invalid, tooMany: dict.newsletter.tooMany, error: dict.newsletter.error }}
+            />
+          </div>
           <div className="relative grid gap-10 p-6 text-sm sm:grid-cols-2 sm:p-10 lg:grid-cols-12">
             <div className="lg:col-span-4">
               <BrandLogo locale={locale} alt={dict.brand.logoAlt} homeLabel={dict.a11y.homeLink} className="h-14 w-auto" />
@@ -51,6 +62,9 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                   ))}
                 <li>
                   <Link href={localizePath("/account", locale)} className={linkClass}>{dict.nav.myLearning}</Link>
+                </li>
+                <li>
+                  <Link href={localizePath("/verify", locale)} className={linkClass}>{dict.certificates.verifyTitle}</Link>
                 </li>
               </ul>
             </div>

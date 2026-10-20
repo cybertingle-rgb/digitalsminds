@@ -35,7 +35,7 @@ export function SocialRail({ label }: { label: string }) {
   const links = useSocialLinks();
   if (links.length === 0) return null;
   return (
-    <nav aria-label={label} className="fixed end-1.5 top-1/2 z-30 hidden -translate-y-1/2 md:block">
+    <nav aria-label={label} className="fixed end-1.5 top-1/2 z-30 hidden -translate-y-1/2 md:block print:hidden">
       <ul className="flex flex-col items-end gap-2.5">
         {links.map((l) => (
           <li key={l.platform}>

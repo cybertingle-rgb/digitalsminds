@@ -129,7 +129,10 @@ Repository and hosting audit, build failure fixed and verified live, requirement
 
 - **Deliverables:** student search and profiles; enrollments and progress; suspend/reactivate; manual enroll/revoke; permitted exports. Audit log entries for each action.
 
-## Phase 10: Announcements, notifications, support and certificates (M)
+## Phase 10: Announcements, notifications, support and certificates (M) ✅
+> Built as planned plus the newsletter sign-up (double opt-in). Certificates are a printable page instead of a PDF library
+> (correct Urdu names, no new dependency) and are issued after staff review.
+
 - **Deliverables:**
   - Course announcements, shown in the portal and optionally by email.
   - Notification centre.

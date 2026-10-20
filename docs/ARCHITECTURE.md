@@ -73,6 +73,22 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Communication, support, certificates, newsletter (Phase 10)
+
+- `src/modules/notifications/service.ts`: in-app notifications (stored ready to show; links localised when rendered). Created for
+  enrollment decisions, announcements, support replies and certificates; never fail the action that caused them.
+- `src/modules/announcements/service.ts`: all-students (`announcements.site`) or one course's students (course managers).
+  Optional email runs after the response (`after()`) and is claimed once (`emailSentAt`) so it can't double-send.
+- `src/modules/support/service.ts`: tickets + threaded messages; `supportScope` = all tickets (`support.manage.all`) or tickets
+  about the instructor's courses (`support.manage.own`). Internal notes never reach students. New tickets/replies email the
+  lead-alert address and the course's instructors; staff replies email + notify the student. Per-account rate limits.
+- `src/modules/certificates/service.ts`: staff review queue (`certificates.issue`); IDs `DM-XXXX-XXXX` (no look-alike
+  characters); a re-issue after revocation gets a new ID. Public page `/certificates/[code]` (name, course, date, ID only;
+  noindex) is also the printable A4 certificate (print CSS); `/verify` looks IDs up.
+- `src/modules/newsletter/service.ts`: double opt-in. Pending sign-ups live in `Verification` (keyed by a hash of the emailed
+  token, 3 days); confirming creates the `NewsletterSubscriber`. Confirm/unsubscribe pages use a button (email link scanners
+  can't act). `POST /api/newsletter` (same-origin, rate-limited, honeypot, never reveals existing subscribers).
+
 ## Student management (Phase 9)
 
 - `src/modules/students/service.ts`: search/filters → Prisma `where` (role STUDENT only), profile with per-course progress and

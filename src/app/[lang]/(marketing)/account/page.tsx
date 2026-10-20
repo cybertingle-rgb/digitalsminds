@@ -14,6 +14,7 @@ import { can } from "@/modules/auth/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 import { studentAnnouncements } from "@/modules/announcements/service";
 import { RichText } from "@/modules/courses/richtext";
+import { studentCertificates } from "@/modules/certificates/service";
 import { accountNavItems } from "@/modules/learning/account-nav";
 import { listingText } from "@/modules/learning/catalogue";
 import { profileOf } from "@/modules/learning/profile";
@@ -31,7 +32,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
   const t = dict.account;
   const c = dict.courses;
   const sp = await searchParams;
-  const [learning, profile, nav, news] = await Promise.all([myLearning(user.id), profileOf(user.id), accountNavItems(user.id, locale, dict), studentAnnouncements(user.id)]);
+  const [learning, profile, nav, news, certs] = await Promise.all([myLearning(user.id), profileOf(user.id), accountNavItems(user.id, locale, dict), studentAnnouncements(user.id), studentCertificates(user.id)]);
   const enrolled = learning.filter((l) => l.enrollment.status === "APPROVED");
   const requests = learning.filter((l) => l.enrollment.status !== "APPROVED");
   const dateFmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
@@ -100,6 +101,23 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
             </ul>
           )}
         </section>
+
+        {certs.length > 0 && (
+          <section aria-labelledby="certs">
+            <h2 id="certs" className="text-xl font-bold text-charcoal-900">{dict.certificates.mine}</h2>
+            <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {certs.map((c) => (
+                <li key={c.id}>
+                  <Link href={localizePath(`/certificates/${c.code}`, locale)} className="glass-sun glow-card flex h-full flex-col rounded-3xl p-5">
+                    <span className="text-xs font-semibold uppercase tracking-wider">{dict.certificates.heading}</span>
+                    <span className="mt-2 font-bold" dir="auto">{c.courseTitle}</span>
+                    <span className="mt-auto pt-3 text-xs" dir="ltr">{c.code} · {dateFmt.format(c.issuedAt)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {news.length > 0 && (
           <section aria-labelledby="news">

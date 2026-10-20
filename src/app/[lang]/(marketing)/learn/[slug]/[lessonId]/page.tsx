@@ -11,6 +11,7 @@ import { hasLocale, localeMeta, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { getCurrentUser } from "@/modules/auth/session";
+import { validCertificateFor } from "@/modules/certificates/service";
 import { RichText } from "@/modules/courses/richtext";
 import { lessonsOf, listingText } from "@/modules/learning/catalogue";
 import { canOpenLesson, completedLessonIds, learnerContext, recordView } from "@/modules/learning/progress";
@@ -50,6 +51,7 @@ export default async function LessonPage({ params }: PageProps<"/[lang]/learn/[s
   const student = mode === "student" && user;
   if (student) await recordView(user.id, lesson.id);
   const completed = student ? await completedLessonIds(user.id, course) : new Set<string>();
+  const cert = student && completed.size === lessons.length ? await validCertificateFor(user.id, course.id) : null;
   const href = (id: string) => localizePath(`/learn/${course.slug}/${id}`, lang);
   const prev = lessons[index - 1];
   const next = lessons[index + 1];
@@ -119,7 +121,16 @@ export default async function LessonPage({ params }: PageProps<"/[lang]/learn/[s
               labels={{ mark: t.markComplete, completed: t.completed, undo: t.markIncomplete }}
             />
           )}
-          {student && lessons.length > 0 && completed.size === lessons.length && <FormAlert tone="success">{t.courseComplete}</FormAlert>}
+          {student && lessons.length > 0 && completed.size === lessons.length && (
+            <FormAlert tone="success">
+              {t.courseComplete}
+              {cert ? (
+                <> <Link href={localizePath(`/certificates/${cert.code}`, lang)} className="font-semibold underline underline-offset-4">{dict.certificates.view}</Link></>
+              ) : (
+                course.certificateEnabled && <> {dict.certificates.pendingReview}</>
+              )}
+            </FormAlert>
+          )}
 
           {mode !== "preview" && (
             <nav aria-label={t.contents} className="flex flex-wrap justify-between gap-3 border-t border-line pt-6">

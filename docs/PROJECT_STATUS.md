@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-20 (Phase 9 complete).
+Last updated: 2026-10-20 (Phase 10 complete).
 
 ## Confirmed decisions
 
@@ -56,6 +56,9 @@ Last updated: 2026-10-20 (Phase 9 complete).
 | 47 | Social links | Facebook, Instagram, LinkedIn shown as an expanding icon rail on the right (tablet/desktop) and in the footer; links pasted by the owner in Admin → Website (validated official URLs) |
 | 48 | Preloader | Neon-glow logo preloader on the first page of each visit (about 1 s, max 2.5 s); never shown without JavaScript |
 | 49 | Home content | Adds live courses, division details, "Why Digitals Minds", FAQ and testimonials (published + consent only). Why-us and FAQ wording drafted from confirmed facts: **owner to approve** |
+| 50 | Certificates | Printable A4 certificate page (browser "Save as PDF"), no PDF library; issued after staff review (Super Admin, Content Manager); public verification shows name, course, date and ID only |
+| 51 | Support | Super Admin + Content Manager see all requests; instructors see requests about their own courses; internal notes are staff-only |
+| 52 | Newsletter | Footer sign-up with email confirmation; list for Super Admin + Content Manager; CSV export and removal Super Admin only. Sending newsletters is a later option |
 
 ## Open items (waiting on owner)
 
@@ -74,7 +77,8 @@ Last updated: 2026-10-20 (Phase 9 complete).
 - [x] Approval to start Phase 7 (course creation and publishing)
 - [x] Approval to start Phase 8 (catalogue, enrollment requests and approvals, student dashboard, lesson player)
 - [x] Approval to start Phase 9 (student management: search, profiles, suspend/reactivate, manual enroll, exports)
-- [ ] Approval to start Phase 10 (announcements, notifications, support tickets, certificates, newsletter); needs approval of a PDF library for certificates
+- [x] Approval to start Phase 10 (announcements, notifications, support tickets, certificates, newsletter)
+- [ ] Approval to start Phase 11 (website content management: homepage, FAQs, testimonials, case studies, blog, legal pages, SEO fields)
 
 ## Assumptions (to confirm or correct)
 
@@ -102,3 +106,5 @@ Last updated: 2026-10-20 (Phase 9 complete).
 | 2026-10-19 | Phase 7: course editor, curriculum (modules/lessons, reordering), Drive video links with preview, resources, instructors, publishing checklist and permissions, student preview, 53-check e2e run | `cb36e7c` |
 | 2026-10-19 | Phase 8: course catalogue and pages, free previews, access requests and Enrollments queue, approval/rejection emails, My learning dashboard and profile, lesson player with progress, private files for students, 45-check e2e run | `6008c4d` |
 | 2026-10-20 | Phase 9: student list, search and filters, profiles with progress and history, manual enrollment, edit/suspend (Super Admin), CSV export, 31-check e2e run | `4026856` |
+| 2026-10-20 | Glass design v1 and v2 (owner request): glass UI, floating header, new footer, social rail, preloader, richer home | `0ba1984`, `b31f3dd` |
+| 2026-10-20 | Phase 10: notifications, announcements, support tickets, certificates with review and verification, newsletter with double opt-in, 37-check e2e run | _pending_ |

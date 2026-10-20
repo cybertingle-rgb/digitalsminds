@@ -141,6 +141,19 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - Super Admin only: edit a student's details (e.g. fix a mistyped Google email), suspend/reactivate (signs them out
   everywhere; progress is kept), and **Export CSV** (honours filters, logged in Activity).
 
+## Communication, support and certificates
+
+- **Announcements** (Admin → Announcements): to all students or one course's students; shown in their account, on the
+  course page and as notifications, optionally emailed.
+- **Notifications**: students see a "Notifications" tab with an unread count (approvals, announcements, support replies, certificates).
+- **Support** (My learning → Support / Admin → Support): students open requests (optionally about a course) and reply in a
+  thread; staff reply, add internal notes and set the status. Instructors see requests about their own courses.
+- **Certificates** (Admin → Certificates): students who finish every lesson appear in a review queue; issuing emails the
+  student a link to a printable certificate (Download / Print PDF). Anyone can check an ID at `/verify`. Revoking makes the link
+  show the certificate is no longer valid.
+- **Newsletter**: sign-up in the footer with email confirmation; Admin → Newsletter lists subscribers; CSV export (Super Admin)
+  includes each subscriber's unsubscribe link for use in mailings.
+
 ## Languages
 
 - English is served at `/…`, Urdu at `/ur/…` (right-to-left, Noto Naskh Arabic font, self-hosted).
