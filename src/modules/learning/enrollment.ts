@@ -6,6 +6,7 @@ import { localizePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { db } from "@/lib/db";
+import { idsContaining } from "@/lib/text-search";
 import { sendMail } from "@/lib/mailer";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
@@ -99,7 +100,7 @@ export async function listEnrollments(filter: QueueFilter, page: number, pageSiz
     status: filter.status,
     ...(filter.courseId ? { courseId: filter.courseId } : {}),
     ...(filter.q
-      ? { user: { OR: [{ name: { contains: filter.q } }, { email: { contains: filter.q } }, { googleEmail: { contains: filter.q } }] } }
+      ? { userId: { in: await idsContaining("User", ["name", "email", "googleEmail"], filter.q) } }
       : {}),
   };
   const [items, total, counts] = await Promise.all([

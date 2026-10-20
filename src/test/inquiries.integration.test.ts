@@ -36,7 +36,7 @@ run("lead management (integration)", async () => {
   });
 
   const ids = async (f: Parameters<typeof leads.buildWhere>[0], actor = admin) =>
-    (await db().inquiry.findMany({ where: { AND: [leads.buildWhere(f, actor), { email: { endsWith: `${tag}@lead.test` } }] }, select: { name: true } }))
+    (await db().inquiry.findMany({ where: { AND: [await leads.buildWhere(f, actor), { email: { endsWith: `${tag}@lead.test` } }] }, select: { name: true } }))
       .map((r) => r.name)
       .sort();
 

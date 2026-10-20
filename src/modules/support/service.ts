@@ -6,6 +6,7 @@ import { localizePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { db } from "@/lib/db";
+import { idsContaining } from "@/lib/text-search";
 import { sendMail } from "@/lib/mailer";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
@@ -111,7 +112,7 @@ export async function listTickets(actor: Actor, f: TicketFilter, page: number, p
       supportScope(actor),
       f.status === "ACTIVE" ? { status: { in: ["OPEN", "AWAITING_STUDENT"] } } : f.status ? { status: f.status } : {},
       f.courseId ? { courseId: f.courseId } : {},
-      f.q ? { OR: [{ subject: { contains: f.q } }, { user: { OR: [{ name: { contains: f.q } }, { email: { contains: f.q } }] } }] } : {},
+      f.q ? { OR: [{ id: { in: await idsContaining("SupportTicket", ["subject"], f.q) } }, { userId: { in: await idsContaining("User", ["name", "email"], f.q) } }] } : {},
     ],
   };
   const [items, total, open] = await Promise.all([

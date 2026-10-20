@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
+import { idsContaining } from "@/lib/text-search";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
 import type { CurrentUser } from "@/modules/auth/session";
@@ -36,10 +37,10 @@ export function parseStudentFilters(sp: Record<string, string | string[] | undef
   };
 }
 
-export function buildStudentWhere(f: StudentFilters): Prisma.UserWhereInput {
+export async function buildStudentWhere(f: StudentFilters): Promise<Prisma.UserWhereInput> {
   const and: Prisma.UserWhereInput[] = [{ role: "STUDENT" }];
   if (f.q) {
-    and.push({ OR: [{ name: { contains: f.q } }, { email: { contains: f.q } }, { googleEmail: { contains: f.q } }, { phone: { contains: f.q } }, { city: { contains: f.q } }] });
+    and.push({ id: { in: await idsContaining("User", ["name", "email", "googleEmail", "phone", "city"], f.q) } });
   }
   if (f.status) and.push({ status: f.status });
   if (f.courseId) and.push({ enrollments: { some: { courseId: f.courseId, status: "APPROVED" } } });
@@ -55,7 +56,7 @@ const listInclude = {
 } satisfies Prisma.UserInclude;
 
 export async function listStudents(f: StudentFilters, page: number, pageSize: number) {
-  const where = buildStudentWhere(f);
+  const where = await buildStudentWhere(f);
   const [items, total] = await Promise.all([
     db().user.findMany({ where, orderBy: { createdAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize, include: listInclude }),
     db().user.count({ where }),
@@ -76,7 +77,7 @@ function summarise(u: Prisma.UserGetPayload<{ include: typeof listInclude }>) {
 
 /** Every matching student, for the CSV export (capped to keep memory bounded). */
 export async function studentsForExport(f: StudentFilters) {
-  const rows = await db().user.findMany({ where: buildStudentWhere(f), orderBy: { createdAt: "desc" }, take: 20_000, include: listInclude });
+  const rows = await db().user.findMany({ where: await buildStudentWhere(f), orderBy: { createdAt: "desc" }, take: 20_000, include: listInclude });
   return rows.map(summarise);
 }
 

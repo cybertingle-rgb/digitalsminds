@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { IMAGE_MIME_TYPES } from "@/lib/text-search";
 import { audit } from "@/modules/audit/log";
 import type { Permission } from "@/modules/auth/permissions";
 import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/auth/session";
@@ -111,7 +112,7 @@ export async function saveSeoAction(_prev: WebsiteState, fd: FormData): Promise<
     );
     for (const p of seoPages) {
       const id = value[p]?.imageId;
-      if (id && !(await db().mediaAsset.findFirst({ where: { id, visibility: "PUBLIC", mimeType: { startsWith: "image/" } } }))) {
+      if (id && !(await db().mediaAsset.findFirst({ where: { id, visibility: "PUBLIC", mimeType: { in: IMAGE_MIME_TYPES } } }))) {
         throw new z.ZodError([{ code: "custom", path: [p, "imageId"], message: "Choose a public image from the Media library", input: id }]);
       }
     }

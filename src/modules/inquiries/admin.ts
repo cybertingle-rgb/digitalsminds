@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
+import { idsContaining } from "@/lib/text-search";
 import { pkDayStart, pkTodayRange } from "@/lib/pk-time";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
@@ -34,10 +35,10 @@ export function parseFilters(sp: Record<string, string | string[] | undefined>):
   return filtersSchema.parse({ q: one(sp.q), status: one(sp.status), service: one(sp.service), assignee: one(sp.assignee), followUp: one(sp.followUp) });
 }
 
-export function buildWhere(f: InquiryFilters, actor: Actor, now = new Date()): Prisma.InquiryWhereInput {
+export async function buildWhere(f: InquiryFilters, actor: Actor, now = new Date()): Promise<Prisma.InquiryWhereInput> {
   const { start, end } = pkTodayRange(now);
   const and: Prisma.InquiryWhereInput[] = [];
-  if (f.q) and.push({ OR: [{ name: { contains: f.q } }, { email: { contains: f.q } }, { company: { contains: f.q } }, { message: { contains: f.q } }] });
+  if (f.q) and.push({ id: { in: await idsContaining("Inquiry", ["name", "email", "company", "message"], f.q) } });
   // Spam is hidden unless asked for.
   and.push(f.status ? { status: f.status } : { status: { not: "SPAM" } });
   if (f.service) and.push({ service: f.service });
@@ -54,7 +55,7 @@ export function buildWhere(f: InquiryFilters, actor: Actor, now = new Date()): P
 }
 
 export async function listInquiries(f: InquiryFilters, actor: Actor, page: number, pageSize: number) {
-  const where = buildWhere(f, actor);
+  const where = await buildWhere(f, actor);
   const [items, total] = await Promise.all([
     db().inquiry.findMany({
       where,
@@ -132,7 +133,7 @@ export async function deleteInquiry(id: string, actor: Actor) {
 
 export async function inquiriesForExport(f: InquiryFilters, actor: Actor) {
   return db().inquiry.findMany({
-    where: buildWhere(f, actor),
+    where: await buildWhere(f, actor),
     orderBy: { createdAt: "desc" },
     take: 10_000,
     include: { assignedTo: { select: { name: true } } },

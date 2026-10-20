@@ -44,7 +44,7 @@ run("student management (integration)", async () => {
   });
 
   const names = async (sp: Record<string, string>) =>
-    (await db().user.findMany({ where: mine(students.buildStudentWhere(students.parseStudentFilters(sp))), select: { name: true }, orderBy: { name: "asc" } })).map((u) => u.name);
+    (await db().user.findMany({ where: mine(await students.buildStudentWhere(students.parseStudentFilters(sp))), select: { name: true }, orderBy: { name: "asc" } })).map((u) => u.name);
 
   it("lists only students and filters by search, city, status and enrollment", async () => {
     expect(await names({})).toEqual(["Ayesha Khan", "Bilal Ahmed"]);

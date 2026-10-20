@@ -6,6 +6,7 @@ import { LEGAL_EFFECTIVE_DATE, legalDefaults } from "@/content/legal";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { db } from "@/lib/db";
+import { IMAGE_MIME_TYPES } from "@/lib/text-search";
 import { mediaUrl } from "@/modules/media/service";
 
 /**
@@ -233,7 +234,7 @@ export const getLogos = cache(async (): Promise<{ light: Logo; dark: Logo }> => 
 /** Public images from the Media library, for image pickers. */
 export async function publicImages() {
   const rows = await db().mediaAsset.findMany({
-    where: { visibility: "PUBLIC", mimeType: { startsWith: "image/" } },
+    where: { visibility: "PUBLIC", mimeType: { in: IMAGE_MIME_TYPES } },
     orderBy: { createdAt: "desc" },
     take: 300,
     select: { id: true, originalName: true, storageKey: true, visibility: true },

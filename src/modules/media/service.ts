@@ -2,6 +2,7 @@ import "server-only";
 import { createHash, randomUUID } from "node:crypto";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
+import { IMAGE_MIME_TYPES, idsContaining } from "@/lib/text-search";
 import { deleteFile, putFile } from "@/lib/storage/local";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
@@ -178,8 +179,8 @@ export async function updateAltText(id: string, altText: string, altTextUr: stri
 export async function listAssets(user: Actor, opts: { q?: string; type?: "image" | "document"; page: number; pageSize: number }) {
   const where: Prisma.MediaAssetWhereInput = {
     ...mediaScope(user),
-    ...(opts.q ? { OR: [{ originalName: { contains: opts.q } }, { altText: { contains: opts.q } }] } : {}),
-    ...(opts.type === "image" ? { mimeType: { startsWith: "image/" } } : opts.type === "document" ? { NOT: { mimeType: { startsWith: "image/" } } } : {}),
+    ...(opts.q ? { id: { in: await idsContaining("MediaAsset", ["originalName", "altText"], opts.q) } } : {}),
+    ...(opts.type === "image" ? { mimeType: { in: IMAGE_MIME_TYPES } } : opts.type === "document" ? { mimeType: { notIn: IMAGE_MIME_TYPES } } : {}),
   };
   const [items, total] = await Promise.all([
     db().mediaAsset.findMany({

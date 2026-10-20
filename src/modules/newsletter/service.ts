@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { localizePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { db } from "@/lib/db";
+import { idsContaining } from "@/lib/text-search";
 import { sendMail } from "@/lib/mailer";
 import { actionEmail } from "@/modules/email/templates";
 
@@ -116,9 +117,9 @@ export function unsubscribeUrl(token: string, locale: Locale = "en") {
 
 // --- Admin --------------------------------------------------------------------
 
-export function listSubscribers(opts: { q?: string; status?: "SUBSCRIBED" | "UNSUBSCRIBED"; take?: number }) {
+export async function listSubscribers(opts: { q?: string; status?: "SUBSCRIBED" | "UNSUBSCRIBED"; take?: number }) {
   return db().newsletterSubscriber.findMany({
-    where: { ...(opts.q ? { email: { contains: opts.q.toLowerCase() } } : {}), ...(opts.status ? { status: opts.status } : {}) },
+    where: { ...(opts.q ? { id: { in: await idsContaining("NewsletterSubscriber", ["email"], opts.q) } } : {}), ...(opts.status ? { status: opts.status } : {}) },
     orderBy: { createdAt: "desc" },
     take: opts.take ?? 200,
   });

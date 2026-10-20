@@ -5,6 +5,7 @@ import { localizePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { db } from "@/lib/db";
+import { idsContaining } from "@/lib/text-search";
 import { sendMail } from "@/lib/mailer";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
@@ -96,9 +97,9 @@ export async function revokeCertificate(id: string, actor: Actor) {
   await audit({ actorId: actor.id, action: "certificate.revoked", entityType: "Certificate", entityId: id, metadata: { course: cert.courseTitle, code: cert.code } });
 }
 
-export function issuedCertificates(q?: string) {
+export async function issuedCertificates(q?: string) {
   return db().certificate.findMany({
-    where: q ? { OR: [{ code: { contains: q.toUpperCase() } }, { recipientName: { contains: q } }, { courseTitle: { contains: q } }] } : {},
+    where: q ? { id: { in: await idsContaining("Certificate", ["code", "recipientName", "courseTitle"], q) } } : {},
     orderBy: { issuedAt: "desc" },
     take: 200,
     include: { user: { select: { email: true } } },
