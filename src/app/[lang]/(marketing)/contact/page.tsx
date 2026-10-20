@@ -21,7 +21,7 @@ export default async function ContactPage({ params, searchParams }: PageProps<"/
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const requested = (await searchParams).service;
-  const defaultService = typeof requested === "string" && isServiceSlug(requested) ? requested : undefined;
+  const defaultService = typeof requested === "string" && (isServiceSlug(requested) || requested === "ebay-course") ? requested : undefined;
 
   return (
     <Section>

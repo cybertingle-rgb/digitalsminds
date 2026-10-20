@@ -12,5 +12,6 @@ export type InquiryStatus = keyof typeof statusLabels;
 export const inquiryStatuses = Object.keys(statusLabels) as InquiryStatus[];
 
 export function serviceLabel(slug: string): string {
+  if (slug === "ebay-course") return en.form.serviceEbayCourse;
   return isServiceSlug(slug) ? en.services[slug].title : "General inquiry";
 }

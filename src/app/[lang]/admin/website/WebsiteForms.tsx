@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import {
   saveAnalyticsAction,
   saveContactAction,
+  saveFeaturedAction,
   saveHomeAction,
   saveLegalAction,
   saveLogoAction,
@@ -80,6 +81,39 @@ function Group({ title, hint, children }: { title: string; hint?: string; childr
   );
 }
 
+// --- Featured course (homepage hero) -------------------------------------------------
+
+type Featured = Partial<Record<"eyebrow" | "title" | "text" | "points" | "price" | "button" | "disclaimer" | "href" | "logoId", string>> &
+  Partial<Record<"eyebrowUr" | "titleUr" | "textUr" | "pointsUr" | "priceUr" | "buttonUr" | "disclaimerUr", string>> & { enabled: boolean };
+type FeaturedDefaults = { eyebrow: string; title: string; text: string; price: string; button: string; disclaimer: string };
+
+export function FeaturedForm({ value, defaults, images }: { value: Featured; defaults: FeaturedDefaults; images: ImageOption[] }) {
+  const [state, onSubmit, pending] = useFormAction(saveFeaturedAction, idle);
+  const e = (k: string) => state.errors?.[k];
+  return (
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
+      <Group title="Featured course (top of the homepage)" hint="Shows the eBay course as the first thing visitors see. Switch it off to show the standard introduction below instead.">
+        <label className="flex items-center gap-3 text-sm font-medium text-charcoal-900">
+          <input type="checkbox" name="enabled" defaultChecked={value.enabled} className="h-4 w-4 accent-charcoal-900" />
+          Show the featured course at the top of the homepage
+        </label>
+        <ImagePicker name="logoId" label="Logo (upload it in Media first as a public image; empty = the name in text)" images={images} value={value.logoId ?? ""} error={e("logoId")} />
+        <Pair state={state} name="eyebrow" label="Small label" en={value.eyebrow} ur={value.eyebrowUr} placeholder={defaults.eyebrow} max={80} />
+        <Pair state={state} name="title" label="Headline" en={value.title} ur={value.titleUr} placeholder={defaults.title} max={200} />
+        <Pair state={state} name="text" label="Introduction" en={value.text} ur={value.textUr} placeholder={defaults.text} rows={3} max={600} />
+        <Pair state={state} name="points" label="What you'll learn (one point per line, up to 8)" en={value.points} ur={value.pointsUr} placeholder="e.g. Setting up your eBay seller account" rows={5} max={1200} />
+        <Pair state={state} name="price" label="Price / how to join" en={value.price} ur={value.priceUr} placeholder={defaults.price} max={160} />
+        <Pair state={state} name="button" label="Button text" en={value.button} ur={value.buttonUr} placeholder={defaults.button} max={80} />
+        <Field label="Button link" name="href" error={e("href")} hint="A page on this website. Default: the contact form with “eBay course enrollment” selected. Once the course is published, you can use /courses/its-web-address.">
+          <input id="href" name="href" dir="ltr" defaultValue={value.href ?? ""} placeholder="/contact?service=ebay-course" className={inputClass} aria-invalid={e("href") ? true : undefined} aria-describedby={describedBy("href", e("href"))} />
+        </Field>
+        <Pair state={state} name="disclaimer" label="Trademark note" en={value.disclaimer} ur={value.disclaimerUr} placeholder={defaults.disclaimer} rows={2} max={300} />
+      </Group>
+      <Footer state={state} pending={pending} label="Save featured course" />
+    </form>
+  );
+}
+
 // --- Homepage ---------------------------------------------------------------------
 
 type Home = {
@@ -94,7 +128,7 @@ export function HomeForm({ value, defaults }: { value: Home; defaults: HomeDefau
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate>
       <p className="text-sm text-muted">Leave a box empty to keep the text shown in grey. Urdu boxes are optional; English is used until you fill them.</p>
-      <Group title="Top of the page">
+      <Group title="Top of the page (standard introduction)" hint="Shown when the featured course above is switched off.">
         <Pair state={state} name="heroTitle" label="Headline" en={value.heroTitle} ur={value.heroTitleUr} placeholder={defaults.heroTitle} max={200} />
         <Pair state={state} name="heroText" label="Introduction" en={value.heroText} ur={value.heroTextUr} placeholder={defaults.heroText} rows={3} max={600} />
       </Group>

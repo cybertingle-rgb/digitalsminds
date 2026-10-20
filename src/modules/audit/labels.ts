@@ -24,6 +24,7 @@ export const actionLabels: Record<string, string> = {
   "settings.social": "Changed social media links",
   "settings.analytics": "Changed Google Analytics / Search Console settings",
   "content.home": "Edited the homepage",
+  "content.featured": "Edited the featured course on the homepage",
   "content.contact": "Changed the contact details",
   "content.seo": "Changed search & sharing settings",
   "content.legal": "Edited a legal page",

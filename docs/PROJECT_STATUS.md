@@ -66,6 +66,7 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 57 | Structured data | Organization (Faisalabad address, email, logo, social links), WebSite, FAQ, blog posts, courses, services and breadcrumbs; no ratings, reviews or phone numbers |
 | 58 | Backups | Super Admin downloads (Admin → Backups): database as .sql.gz (restorable with phpMyAdmin), uploaded files as .tar.gz; plus Hostinger automatic backups; restore drill tested (docs/BACKUP.md) |
 | 59 | Security review | Findings fixed (open redirect, per-account auth limits, email greeting, profile validation, newsletter, delete permissions); accepted risks in docs/SECURITY_REVIEW.md |
+| 60 | eBay course focus | Owner request: the homepage opens with the paid eBay course (editable "Featured course" in Admin → Website → Homepage, can be switched off). "Enroll" opens the contact form with "eBay course enrollment" selected; leads arrive in Inquiries. Official eBay logo used at the owner's request via Media upload, with a "not affiliated with or endorsed by eBay" note. Courses wording, FAQ and Terms updated for paid courses |
 
 ## Open items (waiting on owner)
 
@@ -77,6 +78,8 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
 - [x] Privacy Policy and Terms & Conditions written and published (owner delegated); have them reviewed by a lawyer when convenient
 - [ ] Urdu translations (provided when the bilingual structure is ready)
+- [ ] eBay logo: download it from the Wikimedia link, upload in Admin → Media (public), choose it in Admin → Website → Homepage → Featured course
+- [ ] eBay course details: name, what it covers (points), length, language, fee and how payment works; then create the course in Admin → Courses
 - [ ] Launch checklist: docs/LAUNCH.md (production settings, tests on the live site, uptime monitor on `/api/health`)
 - [ ] Weekly backups from Admin → Backups, stored privately (docs/BACKUP.md)
 - [ ] Ask Hostinger support whether requests pass through more than one proxy (only if yes: set `TRUSTED_PROXY_HOPS`)

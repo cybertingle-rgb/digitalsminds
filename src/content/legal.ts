@@ -108,7 +108,7 @@ Digitals Minds offers business growth services through five divisions: Digital M
 - We may suspend or close an account that breaks these Terms or is used to misuse the website.
 
 ## Courses
-- Our courses are currently free of charge. If we introduce paid courses, the price and conditions will be shown before you pay.
+- Most of our courses are free of charge. Some courses, such as our eBay course, are paid: the fee and conditions are confirmed with you in writing before you pay, and that agreement applies to the paid course.
 - Access to a course is given after our team approves your request. We may decline or end access, for example if these Terms are broken.
 - Course videos are shared from Google Drive with the Google account you give us. Do not share your access, download, record, copy or redistribute course materials. They are for your personal learning only.
 - We may update, replace or withdraw course content.

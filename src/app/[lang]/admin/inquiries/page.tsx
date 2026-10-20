@@ -68,7 +68,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
           <label htmlFor="service" className="block text-sm font-medium">Service</label>
           <select id="service" name="service" defaultValue={filters.service ?? ""} className={inputClass}>
             <option value="">Any</option>
-            {[...serviceSlugs, "general"].map((s) => <option key={s} value={s}>{serviceLabel(s)}</option>)}
+            {[...serviceSlugs, "ebay-course", "general"].map((s) => <option key={s} value={s}>{serviceLabel(s)}</option>)}
           </select>
         </div>
         <div>

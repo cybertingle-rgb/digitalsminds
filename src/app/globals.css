@@ -209,6 +209,32 @@
     animation: dm-border-run 1.6s linear infinite;
   }
 }
+/* Like border-run, but always running (featured offer card); still with reduced motion. */
+@utility border-run-live {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    pointer-events: none;
+    background: conic-gradient(from var(--run-angle), transparent 0 60%, rgb(253 207 49) 78%, rgb(255 255 255) 84%, rgb(253 207 49) 90%, transparent 100%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    animation: dm-border-run 4s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      animation: none;
+    }
+  }
+}
 @keyframes dm-border-run {
   to {
     --run-angle: 360deg;

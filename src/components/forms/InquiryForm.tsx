@@ -105,6 +105,7 @@ export function InquiryForm({ strings, services, defaultService = "general" }: P
       <FormField label={strings.service} name="service" error={invalid.has("service") ? strings.errors.service : undefined}>
         <select id="service" name="service" defaultValue={defaultService} className={inputClass} {...aria("service")}>
           <option value="general">{strings.serviceGeneral}</option>
+          <option value="ebay-course">{strings.serviceEbayCourse}</option>
           {services.map((s) => (
             <option key={s.slug} value={s.slug}>
               {s.title}

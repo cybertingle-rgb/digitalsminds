@@ -9,6 +9,7 @@ import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/au
 import {
   analyticsInput,
   contactInput,
+  featuredInput,
   homeInput,
   legalInput,
   legalPages,
@@ -159,5 +160,31 @@ export async function saveAnalyticsAction(_prev: WebsiteState, fd: FormData): Pr
     await saveSetting("site.analytics", value, actor.id);
     await audit({ actorId: actor.id, action: "settings.analytics", entityType: "Setting", entityId: "site.analytics", metadata: { gaId: value.gaId, verification: Boolean(value.googleVerification) } });
     return value.gaId ? "Saved. Visitors who accept analytics cookies are now counted in Google Analytics." : "Saved. Google Analytics is off.";
+  });
+}
+
+export async function saveFeaturedAction(_prev: WebsiteState, fd: FormData): Promise<WebsiteState> {
+  return run("content.manage", async (actor) => {
+    const t = (k: string) => str(fd, k);
+    const value = featuredInput.parse({
+      enabled: fd.get("enabled") === "on",
+      ...Object.fromEntries(
+        ["eyebrow", "title", "text", "points", "price", "button", "disclaimer"].flatMap((k) => [
+          [k, t(k)],
+          [`${k}Ur`, t(`${k}Ur`)],
+        ]),
+      ),
+      href: t("href"),
+      logoId: t("logoId"),
+    });
+    if (value.logoId) {
+      const a = await db().mediaAsset.findUnique({ where: { id: value.logoId } });
+      if (!a || a.visibility !== "PUBLIC" || !a.mimeType.startsWith("image/") || !a.width || !a.height) {
+        throw new z.ZodError([{ code: "custom", path: ["logoId"], message: "Choose a public PNG, JPG or WebP image", input: value.logoId }]);
+      }
+    }
+    await saveSetting("site.featured", value, actor.id);
+    await audit({ actorId: actor.id, action: "content.featured", entityType: "Setting", entityId: "site.featured", metadata: { enabled: value.enabled } });
+    return value.enabled ? "Featured course saved. It's live at the top of the homepage." : "Saved. The homepage shows the standard introduction.";
   });
 }

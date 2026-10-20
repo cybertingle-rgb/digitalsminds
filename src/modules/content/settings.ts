@@ -82,6 +82,36 @@ export const logoInput = z.object({ lightId: z.string().max(64).nullable(), dark
 export type LogoSetting = z.infer<typeof logoInput>;
 export type Logo = { src: string; width: number; height: number };
 
+// --- Featured course (homepage hero) ---------------------------------------------
+
+/** Internal path (e.g. /contact?service=ebay-course or /courses/ebay) for the hero button. */
+const internalPath = z
+  .string()
+  .trim()
+  .max(300)
+  .refine((v) => v === "" || (/^\/(?![/\\])[^\s\\]*$/.test(v)), "Use a link on this website that starts with /, e.g. /courses/ebay");
+
+export const featuredInput = z.object({
+  enabled: z.boolean(),
+  eyebrow: opt(80),
+  eyebrowUr: opt(80),
+  title: opt(200),
+  titleUr: opt(200),
+  text: opt(600),
+  textUr: opt(600),
+  points: opt(1200),
+  pointsUr: opt(1200),
+  price: opt(160),
+  priceUr: opt(160),
+  button: opt(80),
+  buttonUr: opt(80),
+  href: internalPath.optional().transform((v) => v || undefined),
+  logoId: opt(64),
+  disclaimer: opt(300),
+  disclaimerUr: opt(300),
+});
+export type FeaturedContent = z.infer<typeof featuredInput>;
+
 // --- Analytics & Search Console ---------------------------------------------------
 
 /** Accepts the bare code or the whole <meta name="google-site-verification" ...> tag. */
@@ -135,6 +165,7 @@ export async function getLegalPage(page: LegalPage): Promise<(LegalContent & { b
   return { title: d.title, titleUr: undefined, body: d.body, bodyUr: undefined, published: true, updatedAt: `${LEGAL_EFFECTIVE_DATE}T00:00:00+05:00`, builtIn: true };
 }
 export const getLogoSetting = async () => (await readParsed("site.logo", logoInput)) ?? { lightId: null, darkId: null };
+export const getFeaturedSetting = () => readParsed("site.featured", featuredInput);
 const storedAnalytics = z.object({ gaId: z.string().nullable(), googleVerification: z.string().nullable() });
 export const getAnalyticsSetting = async (): Promise<AnalyticsSetting> =>
   (await readParsed("site.analytics", storedAnalytics)) ?? { gaId: null, googleVerification: null };
@@ -208,4 +239,30 @@ export async function publicImages() {
     select: { id: true, originalName: true, storageKey: true, visibility: true },
   });
   return rows.map((r) => ({ id: r.id, name: r.originalName, url: mediaUrl(r) }));
+}
+
+/** The featured course shown at the top of the homepage (eBay course by default), or null when switched off. */
+export async function featuredText(locale: Locale, dict: Dictionary) {
+  const f = (await getFeaturedSetting()) ?? featuredInput.parse({ enabled: true });
+  if (!f.enabled) return null;
+  const d = dict.featured;
+  let logo: { src: string; width: number; height: number; alt: string } | null = null;
+  if (f.logoId) {
+    const a = await db()
+      .mediaAsset.findUnique({ where: { id: f.logoId } })
+      .catch(() => null);
+    if (a?.visibility === "PUBLIC" && a.mimeType.startsWith("image/") && a.width && a.height) logo = { src: mediaUrl(a), width: a.width, height: a.height, alt: a.altText || d.logoFallback };
+  }
+  const lines = (v: string) => v.split("\n").map((l) => l.replace(/^[-•*]\s*/, "").trim()).filter(Boolean).slice(0, 8);
+  return {
+    eyebrow: pick(locale, f.eyebrow, f.eyebrowUr, d.eyebrow),
+    title: pick(locale, f.title, f.titleUr, d.title),
+    text: pick(locale, f.text, f.textUr, d.text),
+    points: lines(pick(locale, f.points, f.pointsUr, "")),
+    price: pick(locale, f.price, f.priceUr, d.price),
+    button: pick(locale, f.button, f.buttonUr, d.button),
+    href: f.href ?? "/contact?service=ebay-course",
+    disclaimer: pick(locale, f.disclaimer, f.disclaimerUr, d.disclaimer),
+    logo,
+  };
 }

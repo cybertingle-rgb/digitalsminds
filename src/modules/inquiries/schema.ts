@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { serviceSlugs } from "@/content/services";
 
-export const INQUIRY_SERVICE_OPTIONS = [...serviceSlugs, "general"] as const;
+/** "ebay-course": enrollment requests for the paid eBay course (featured on the homepage). */
+export const INQUIRY_SERVICE_OPTIONS = [...serviceSlugs, "ebay-course", "general"] as const;
 
 const trimmed = (max: number, label: string) =>
   z.string().trim().max(max, `${label} must be at most ${max} characters`);
