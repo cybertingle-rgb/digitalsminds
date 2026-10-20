@@ -118,3 +118,4 @@ Last updated: 2026-10-20 (Phase 12 complete).
 | 2026-10-20 | Phase 10: notifications, announcements, support tickets, certificates with review and verification, newsletter with double opt-in, 37-check e2e run | `e033e49`, `8b12b97` |
 | 2026-10-20 | Phase 11: website content management (homepage, blog, FAQs, testimonials, case studies, legal pages, SEO, contact, logo), 27-check e2e run | `958b3ba` |
 | 2026-10-20 | Published Privacy Policy and Terms, final Why-us/FAQ text, privacy account deletion; Hostinger build fix (2 build workers) | `2421be9` |
+| 2026-10-20 | Phase 12: structured data, GA4 behind a consent banner with events, Search Console verification, robots rules, WCAG 2.1 AA audit (no violations), login/password-form fixes, 28-check e2e run | `08eec38` |
