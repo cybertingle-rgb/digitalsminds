@@ -124,3 +124,4 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 2026-10-20 | Phase 11: website content management (homepage, blog, FAQs, testimonials, case studies, legal pages, SEO, contact, logo), 27-check e2e run | `958b3ba` |
 | 2026-10-20 | Published Privacy Policy and Terms, final Why-us/FAQ text, privacy account deletion; Hostinger build fix (2 build workers) | `2421be9` |
 | 2026-10-20 | Phase 12: structured data, GA4 behind a consent banner with events, Search Console verification, robots rules, WCAG 2.1 AA audit (no violations), login/password-form fixes, 28-check e2e run | `08eec38` |
+| 2026-10-20 | Phase 13: Admin → Backups (database .sql.gz + files .tar.gz) with a tested restore drill, security review and fixes, dependency audit, launch checklist and maintenance runbook | `1ffc2f4` |
