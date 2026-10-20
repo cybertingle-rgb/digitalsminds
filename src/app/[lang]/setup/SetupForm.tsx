@@ -9,7 +9,7 @@ export function SetupForm({ email }: { email: string }) {
   const [state, onSubmit, pending] = useFormAction<SetupState>(setupAction, {});
   const f = state.fields ?? {};
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form method="post" onSubmit={onSubmit} className="space-y-4">
       <Field label="Email (Super Admin)" name="email">
         <input id="email" value={email} disabled readOnly className={inputClass} />
       </Field>

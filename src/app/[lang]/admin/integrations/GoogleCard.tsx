@@ -88,7 +88,7 @@ export function GoogleCard({ status, origin, redirectUri, flash }: Props) {
         </div>
       </details>
 
-      <form onSubmit={onSave} className="mt-5 grid gap-4">
+      <form method="post" onSubmit={onSave} className="mt-5 grid gap-4">
         <Field label="Client ID" name="clientId" error={f.clientId}>
           <input id="clientId" name="clientId" dir="ltr" defaultValue={status.clientId ?? ""} required autoComplete="off" className={inputClass} aria-invalid={!!f.clientId} placeholder="1234567890-abc.apps.googleusercontent.com" />
         </Field>

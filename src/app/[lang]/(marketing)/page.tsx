@@ -14,7 +14,9 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { homeText } from "@/modules/content/settings";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { contactDetails, homeText } from "@/modules/content/settings";
+import { organizationGraph } from "@/modules/seo/structured-data";
 import { editablePageMetadata } from "@/modules/content/metadata";
 
 // Published courses and testimonials come from the database; refreshed every 5 minutes.
@@ -31,9 +33,10 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const h = await homeText(lang, dict);
+  const [h, contact] = await Promise.all([homeText(lang, dict), contactDetails(lang, dict)]);
   return (
     <>
+      <JsonLd data={await organizationGraph(lang, dict, contact)} />
       <Hero locale={lang} dict={dict} />
       <Section>
         <SectionHeading eyebrow={dict.home.servicesEyebrow} title={dict.home.servicesTitle} description={dict.home.servicesDescription} />

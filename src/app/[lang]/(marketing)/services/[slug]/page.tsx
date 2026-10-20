@@ -5,7 +5,9 @@ import { CtaBanner } from "@/components/sections/CtaBanner";
 import { LinkButton } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getService, getServices, serviceSlugs } from "@/content/services";
+import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
 import { hasLocale, locales, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
@@ -38,6 +40,23 @@ export default async function ServicePage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: service.title,
+            description: service.description,
+            url: absolute(localizePath(`/services/${service.slug}`, lang)),
+            provider: await orgRef(dict),
+          },
+          breadcrumbs(lang, [
+            { name: dict.nav.home, path: "/" },
+            { name: dict.nav.services, path: "/services" },
+            { name: service.title, path: `/services/${service.slug}` },
+          ]),
+        ]}
+      />
       <Section>
         <nav aria-label={dict.a11y.breadcrumb} className="text-sm text-muted">
           <Link href={localizePath("/services", lang)} className="hover:text-charcoal-900">

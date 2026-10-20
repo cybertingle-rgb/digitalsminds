@@ -151,7 +151,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Public pages read from the database with caching, and changes appear without a redeploy.
 - **Acceptance:** each D11 item is editable by a Content Manager and shows on the site within a minute.
 
-## Phase 12: SEO, analytics, performance and accessibility (M)
+## Phase 12: SEO, analytics, performance and accessibility (M) ✅
 - **Deliverables:**
   - Structured data: Organization, LocalBusiness with the Faisalabad address, Course, Article and FAQ, plus breadcrumbs. No fabricated ratings.
   - Bilingual sitemap with `hreflang`, and Search Console verification.

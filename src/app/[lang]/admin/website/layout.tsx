@@ -20,7 +20,10 @@ export default async function WebsiteLayout({ children }: LayoutProps<"/[lang]/a
           { label: "Contact & social", href: "/admin/website/contact" },
         ]
       : []),
-    ...(can(user.role, "settings.manage") ? [{ label: "Logo", href: "/admin/website/logo" }] : []),
+    ...(can(user.role, "settings.manage") ? [
+          { label: "Logo", href: "/admin/website/logo" },
+          { label: "Analytics", href: "/admin/website/analytics" },
+        ] : []),
   ];
   return (
     <div className="max-w-5xl space-y-6">

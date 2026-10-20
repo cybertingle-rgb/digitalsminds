@@ -1,15 +1,18 @@
 import { notFound } from "next/navigation";
+import { CookieConsent } from "@/components/analytics/CookieConsent";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SocialRail } from "@/components/effects/SocialLinks";
-import { hasLocale } from "@/i18n/config";
+import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { getAnalyticsSetting } from "@/modules/content/settings";
 
 /** Public marketing site shell. Phase 2 portal/admin get their own route groups. */
 export default async function MarketingLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
+  const { gaId } = await getAnalyticsSetting();
   return (
     <>
       <a
@@ -24,6 +27,7 @@ export default async function MarketingLayout({ children, params }: LayoutProps<
       </main>
       <SiteFooter locale={lang} dict={dict} />
       <SocialRail label={dict.a11y.social} />
+      <CookieConsent gaId={gaId} labels={dict.consent} privacyHref={localizePath("/privacy", lang)} />
     </>
   );
 }

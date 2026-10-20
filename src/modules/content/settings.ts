@@ -82,6 +82,28 @@ export const logoInput = z.object({ lightId: z.string().max(64).nullable(), dark
 export type LogoSetting = z.infer<typeof logoInput>;
 export type Logo = { src: string; width: number; height: number };
 
+// --- Analytics & Search Console ---------------------------------------------------
+
+/** Accepts the bare code or the whole <meta name="google-site-verification" ...> tag. */
+const verificationCode = z
+  .string()
+  .trim()
+  .max(300)
+  .transform((v) => v.match(/content=["']([^"']+)["']/)?.[1]?.trim() ?? v)
+  .pipe(z.union([z.literal(""), z.string().regex(/^[A-Za-z0-9_-]{10,100}$/, "Paste the code from Search Console (HTML tag method)")]))
+  .transform((v) => v || null);
+
+export const analyticsInput = z.object({
+  gaId: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .pipe(z.union([z.literal(""), z.string().regex(/^G-[A-Z0-9]{4,20}$/, "A GA4 Measurement ID looks like G-XXXXXXXXXX")]))
+    .transform((v) => v || null),
+  googleVerification: verificationCode,
+});
+export type AnalyticsSetting = z.infer<typeof analyticsInput>;
+
 // ---------------------------------------------------------------------------------
 
 const read = cache(async (key: string): Promise<unknown> => {
@@ -113,6 +135,9 @@ export async function getLegalPage(page: LegalPage): Promise<(LegalContent & { b
   return { title: d.title, titleUr: undefined, body: d.body, bodyUr: undefined, published: true, updatedAt: `${LEGAL_EFFECTIVE_DATE}T00:00:00+05:00`, builtIn: true };
 }
 export const getLogoSetting = async () => (await readParsed("site.logo", logoInput)) ?? { lightId: null, darkId: null };
+const storedAnalytics = z.object({ gaId: z.string().nullable(), googleVerification: z.string().nullable() });
+export const getAnalyticsSetting = async (): Promise<AnalyticsSetting> =>
+  (await readParsed("site.analytics", storedAnalytics)) ?? { gaId: null, googleVerification: null };
 
 const pick = (locale: Locale, en: string | undefined, ur: string | undefined, fallback: string) => (locale === "ur" ? ur || en || fallback : en || fallback);
 

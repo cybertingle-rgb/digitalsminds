@@ -11,6 +11,8 @@ import { hasLocale, localeMeta, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { homeText } from "@/modules/content/settings";
 import { pageMetadata } from "@/i18n/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
 
 type Props = PageProps<"/[lang]/blog/[slug]">;
 
@@ -35,9 +37,35 @@ export default async function BlogPostPage({ params }: Props) {
   const dict = getDictionary(lang);
   const h = await homeText(lang, dict);
   const postMeta = localeMeta[post.lang];
+  const org = await orgRef(dict);
+  const url = absolute(localizePath(`/blog/${slug}`, lang));
 
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "@id": `${url}#article`,
+            headline: post.title,
+            description: post.seoDescription || post.excerpt,
+            datePublished: post.publishedAt,
+            ...(post.updatedAt && { dateModified: post.updatedAt }),
+            inLanguage: postMeta.htmlLang,
+            mainEntityOfPage: url,
+            ...(post.cover && { image: absolute(post.cover.url) }),
+            ...(post.tags.length && { keywords: post.tags.join(", ") }),
+            author: /digitals minds/i.test(post.author) ? org : { "@type": "Person", name: post.author },
+            publisher: org,
+          },
+          breadcrumbs(lang, [
+            { name: dict.nav.home, path: "/" },
+            { name: dict.nav.blog, path: "/blog" },
+            { name: post.title, path: `/blog/${slug}` },
+          ]),
+        ]}
+      />
       <article className="py-16 sm:py-20">
         <Container className="max-w-3xl">
           <Link href={localizePath("/blog", lang)} className="text-sm text-muted hover:text-charcoal-900">

@@ -47,7 +47,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
         </ol>
       </details>
 
-      <form onSubmit={onSave} className="mt-5 grid gap-4 sm:grid-cols-2">
+      <form method="post" onSubmit={onSave} className="mt-5 grid gap-4 sm:grid-cols-2">
         <Field label="SMTP host" name="host" error={f.host}>
           <input id="host" name="host" dir="ltr" required defaultValue={status.host ?? "smtp.hostinger.com"} className={inputClass} aria-invalid={!!f.host} />
         </Field>

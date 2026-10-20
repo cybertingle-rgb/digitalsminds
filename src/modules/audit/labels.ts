@@ -22,6 +22,7 @@ export const actionLabels: Record<string, string> = {
   "export.inquiries": "Exported inquiries (CSV)",
   "settings.lead_alerts": "Changed lead alert emails",
   "settings.social": "Changed social media links",
+  "settings.analytics": "Changed Google Analytics / Search Console settings",
   "content.home": "Edited the homepage",
   "content.contact": "Changed the contact details",
   "content.seo": "Changed search & sharing settings",

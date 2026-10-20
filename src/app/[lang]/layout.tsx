@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { hasLocale, localeMeta, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { getAnalyticsSetting } from "@/modules/content/settings";
 import { CAMPAIGN_HEAD_SCRIPT } from "@/components/analytics/campaign-script";
 import { AmbientBackground } from "@/components/effects/AmbientBackground";
 import { GlowTracker } from "@/components/effects/GlowTracker";
@@ -18,7 +19,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const dict = getDictionary(lang);
+  const { googleVerification } = await getAnalyticsSetting();
   return {
+    ...(googleVerification && { verification: { google: googleVerification } }),
     metadataBase: new URL(siteConfig.url),
     title: { default: dict.meta.siteTitle, template: `%s | ${dict.brand.name}` },
     description: dict.meta.description,

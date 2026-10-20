@@ -27,7 +27,7 @@ export function ResetPasswordForm({ t, token, loginHref }: { t: Dictionary["auth
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+    <form method="post" onSubmit={onSubmit} className="space-y-4" noValidate>
       <Field label={t.password} name="password" hint={t.passwordHint}>
         <input id="password" name="password" type="password" autoComplete="new-password" required minLength={10} maxLength={128} className={inputClass} aria-describedby={describedBy("password", undefined, t.passwordHint)} />
       </Field>

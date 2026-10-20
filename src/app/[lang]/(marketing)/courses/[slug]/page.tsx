@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { formatDuration, lessonCount } from "@/components/learning/format";
 import { RequestAccessForm } from "@/components/learning/RequestAccessForm";
 import { FormAlert } from "@/components/forms/Field";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { LinkButton } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { hasLocale, localeMeta, localizePath, type Locale } from "@/i18n/config";
@@ -16,6 +17,7 @@ import { RichText } from "@/modules/courses/richtext";
 import { courseBySlug, lessonsOf, listingText, objectivesOf, totalMinutes } from "@/modules/learning/catalogue";
 import { learnerContext } from "@/modules/learning/progress";
 import { mediaUrl } from "@/modules/media/service";
+import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
 
 export const dynamic = "force-dynamic";
 
@@ -56,9 +58,32 @@ export default async function CoursePage({ params }: Props) {
   const learnHref = (lessonId?: string) => localizePath(`/learn/${course.slug}${lessonId ? `/${lessonId}` : ""}`, lang);
   const canOpenAll = mode === "student" || mode === "staff";
   const news = canOpenAll ? await courseAnnouncements(course.id) : [];
+  const structured =
+    course.status === "PUBLISHED"
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: text.title,
+            description: text.summary,
+            url: absolute(localizePath(`/courses/${course.slug}`, lang)),
+            inLanguage: localeMeta[course.language].htmlLang,
+            provider: await orgRef(dict),
+            ...(course.accessType === "FREE" && { isAccessibleForFree: true }),
+            ...(course.thumbnail?.visibility === "PUBLIC" && { image: absolute(mediaUrl(course.thumbnail)) }),
+            ...(course.instructors.length && { instructor: course.instructors.map((i) => ({ "@type": "Person", name: i.user.name })) }),
+          },
+          breadcrumbs(lang, [
+            { name: dict.nav.home, path: "/" },
+            { name: t.title, path: "/courses" },
+            { name: text.title, path: `/courses/${course.slug}` },
+          ]),
+        ]
+      : [];
 
   return (
     <>
+      {structured.length > 0 && <JsonLd data={structured} />}
       <Section tone="alt" className="!py-12">
         <nav aria-label={dict.a11y.breadcrumb} className="text-sm text-muted">
           <Link href={localizePath("/courses", lang)} className="hover:text-charcoal-900">{t.title}</Link> /{" "}

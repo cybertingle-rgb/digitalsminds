@@ -7,6 +7,7 @@ import { audit } from "@/modules/audit/log";
 import type { Permission } from "@/modules/auth/permissions";
 import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/auth/session";
 import {
+  analyticsInput,
   contactInput,
   homeInput,
   legalInput,
@@ -149,5 +150,14 @@ export async function saveLogoAction(_prev: WebsiteState, fd: FormData): Promise
     await saveSetting("site.logo", value, actor.id);
     await audit({ actorId: actor.id, action: "content.logo", entityType: "Setting", entityId: "site.logo", metadata: value });
     return value.lightId || value.darkId ? "Logo updated across the site." : "Back to the official logo.";
+  });
+}
+
+export async function saveAnalyticsAction(_prev: WebsiteState, fd: FormData): Promise<WebsiteState> {
+  return run("settings.manage", async (actor) => {
+    const value = analyticsInput.parse({ gaId: str(fd, "gaId"), googleVerification: str(fd, "googleVerification") });
+    await saveSetting("site.analytics", value, actor.id);
+    await audit({ actorId: actor.id, action: "settings.analytics", entityType: "Setting", entityId: "site.analytics", metadata: { gaId: value.gaId, verification: Boolean(value.googleVerification) } });
+    return value.gaId ? "Saved. Visitors who accept analytics cookies are now counted in Google Analytics." : "Saved. Google Analytics is off.";
   });
 }

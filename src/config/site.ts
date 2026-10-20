@@ -27,6 +27,14 @@ export const siteConfig = {
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "info@digitalsminds.com",
   },
 
+  /** Office address for search engines (structured data). The address shown on the site is editable in Admin → Website. */
+  postalAddress: {
+    streetAddress: "4th Floor, GM Plaza, Kohinoor Jaranwala Road",
+    addressLocality: "Faisalabad",
+    addressRegion: "Punjab",
+    addressCountry: "PK",
+  },
+
   /** `key` refers to dict.nav. */
   nav: [
     { key: "home", href: "/" },

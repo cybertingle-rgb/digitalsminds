@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// Google Analytics, loaded only after the visitor accepts analytics cookies (Phase 12).
+const ga = {
+  script: "https://www.googletagmanager.com",
+  connect: "https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+  img: "https://*.google-analytics.com https://www.googletagmanager.com",
+};
+
 /**
  * Static CSP that keeps pages statically renderable. Next.js injects inline
  * bootstrap scripts, so script-src needs 'unsafe-inline' unless we switch to
@@ -9,11 +16,11 @@ const isDev = process.env.NODE_ENV !== "production";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' ${ga.script}${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob: ${ga.img}`,
   "font-src 'self' data:",
-  `connect-src 'self'${isDev ? " ws:" : ""}`,
+  `connect-src 'self' ${ga.connect}${isDev ? " ws:" : ""}`,
   // Course videos are embedded from Google Drive (Phase 8).
   "frame-src 'self' https://drive.google.com",
   "frame-ancestors 'none'",

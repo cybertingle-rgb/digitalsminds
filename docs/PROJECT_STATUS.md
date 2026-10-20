@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-20 (Phase 11 complete).
+Last updated: 2026-10-20 (Phase 12 complete).
 
 ## Confirmed decisions
 
@@ -62,6 +62,8 @@ Last updated: 2026-10-20 (Phase 11 complete).
 | 53 | Content editing | Simple formatting (no visual editor library) with images from Media; draft/publish switch on every item; Super Admin + Content Manager edit content; logo replaceable by Super Admin only |
 | 54 | Legal pages and home text | Owner asked us to write them: built-in Privacy Policy and Terms & Conditions (effective 2026-10-20, Pakistan law, Faisalabad courts) are published by default and can be edited in Admin → Website → Legal pages; "Why Digitals Minds" and 8 FAQs finalised without promised response times |
 | 55 | Hostinger build | Next.js build limited to 2 workers (shared hosting thread limit); Node.js 22 recommended |
+| 56 | Analytics and consent | GA4 loads only after a visitor presses "Accept analytics" (Consent Mode, ads signals always denied); banner shown only once a Measurement ID is saved; "Cookie settings" link in the footer; events: inquiry, newsletter sign-up, course access request, without personal details |
+| 57 | Structured data | Organization (Faisalabad address, email, logo, social links), WebSite, FAQ, blog posts, courses, services and breadcrumbs; no ratings, reviews or phone numbers |
 
 ## Open items (waiting on owner)
 
@@ -73,7 +75,8 @@ Last updated: 2026-10-20 (Phase 11 complete).
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
 - [x] Privacy Policy and Terms & Conditions written and published (owner delegated); have them reviewed by a lawyer when convenient
 - [ ] Urdu translations (provided when the bilingual structure is ready)
-- [ ] Later: GA4 Measurement ID and Search Console verification (Phase 12)
+- [ ] Google Analytics: create a GA4 property (Web data stream for https://digitalsminds.com), paste the Measurement ID (G-...) in Admin → Website → Analytics
+- [ ] Search Console: add the URL-prefix property https://digitalsminds.com, choose "HTML tag", paste it in Admin → Website → Analytics, press Verify, then submit `sitemap.xml`
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
 - [x] Replaced `BETTER_AUTH_SECRET` (owner confirmed). Re-enter the SMTP password / Google secret in Integrations if they were saved before the change
 - [x] Removed `ADMIN_SETUP_CODE` from Hostinger (owner confirmed)

@@ -104,7 +104,7 @@ export function RegisterForm({ t, locale, verifiedCallback, googleEnabled, googl
           </p>
         </>
       )}
-      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      <form method="post" onSubmit={onSubmit} className="space-y-4" noValidate>
         <Field label={t.name} name="name" error={err("name")}>
           <input id="name" name="name" autoComplete="name" required maxLength={120} className={inputClass} {...a11y("name")} />
         </Field>

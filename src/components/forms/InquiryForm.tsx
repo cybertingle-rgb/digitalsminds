@@ -4,6 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { readCampaign } from "@/components/analytics/CampaignCapture";
+import { track } from "@/components/analytics/track";
 import { inquiryInputSchema } from "@/modules/inquiries/schema";
 
 type Strings = Dictionary["form"];
@@ -57,6 +58,7 @@ export function InquiryForm({ strings, services, defaultService = "general" }: P
       const json = await res.json().catch(() => null);
       if (res.ok) {
         form.reset();
+        track("generate_lead", { service: parsed.data.service });
         setStatus({ kind: "success" });
         return;
       }

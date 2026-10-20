@@ -478,6 +478,14 @@ export const en = {
     privacy: "Privacy Policy",
     terms: "Terms & Conditions",
     updated: "Last updated {date}",
+    cookieSettings: "Cookie settings",
+  },
+  consent: {
+    title: "Cookies on this website",
+    text: "We use essential cookies to keep you signed in. With your permission, we would also like to use Google Analytics cookies to understand how visitors use the site. You can change your choice at any time with \"Cookie settings\" at the bottom of the page.",
+    accept: "Accept analytics",
+    decline: "Essential only",
+    privacy: "Privacy Policy",
   },
   notifications: {
     title: "Notifications",

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { describedBy, Field, FormAlert, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
+import { track } from "@/components/analytics/track";
 import { Button } from "@/components/ui/Button";
 import { requestAccessAction, type RequestState } from "@/app/[lang]/(marketing)/courses/actions";
 
@@ -13,8 +14,10 @@ export function RequestAccessForm({ lang, courseId, googleEmail, labels }: { lan
   const [state, onSubmit, pending] = useFormAction<RequestState>(requestAccessAction.bind(null, lang, courseId), { status: "idle" });
   const router = useRouter();
   useEffect(() => {
-    if (state.status === "success") router.refresh();
-  }, [state, router]);
+    if (state.status !== "success") return;
+    track("enrollment_request", { course_id: courseId });
+    router.refresh();
+  }, [state, router, courseId]);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>

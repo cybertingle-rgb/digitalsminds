@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CtaBanner } from "@/components/sections/CtaBanner";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Section } from "@/components/ui/Section";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { pageMetadata } from "@/i18n/metadata";
 import { caseStudyBySlug } from "@/modules/content/items";
 import { homeText } from "@/modules/content/settings";
+import { breadcrumbs } from "@/modules/seo/structured-data";
 import { RichText } from "@/modules/courses/richtext";
 import { serviceLabel } from "@/modules/inquiries/labels";
 import { mediaUrl } from "@/modules/media/service";
@@ -36,6 +38,13 @@ export default async function CaseStudyPage({ params }: Props) {
   const ur = lang === "ur" && !!c.bodyUr;
   return (
     <>
+      <JsonLd
+        data={breadcrumbs(lang, [
+          { name: dict.nav.home, path: "/" },
+          { name: dict.caseStudies.title, path: "/case-studies" },
+          { name: c.title, path: `/case-studies/${c.slug}` },
+        ])}
+      />
       <Section>
         <nav aria-label={dict.a11y.breadcrumb} className="text-sm text-muted">
           <Link href={localizePath("/case-studies", lang)} className="hover:text-charcoal-900">{dict.caseStudies.back}</Link>

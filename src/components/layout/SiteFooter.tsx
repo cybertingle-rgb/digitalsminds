@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettingsButton } from "@/components/analytics/CookieConsent";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { SocialRow } from "@/components/effects/SocialLinks";
 import { Container } from "@/components/ui/Container";
@@ -87,6 +88,7 @@ export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dicti
               <p>{format(dict.footer.copyright, { year: String(year) })}</p>
               {privacy?.published && <Link href={localizePath("/privacy", locale)} className="hover:text-charcoal-900 hover:underline">{dict.legal.privacy}</Link>}
               {terms?.published && <Link href={localizePath("/terms", locale)} className="hover:text-charcoal-900 hover:underline">{dict.legal.terms}</Link>}
+              <CookieSettingsButton label={dict.legal.cookieSettings} className="hover:text-charcoal-900 hover:underline" />
             </div>
             <a href="#main" className="font-medium hover:text-charcoal-900">{dict.footer.backToTop} ↑</a>
           </div>

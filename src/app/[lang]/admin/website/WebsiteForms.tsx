@@ -6,6 +6,7 @@ import { describedBy, Field, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
 import {
+  saveAnalyticsAction,
   saveContactAction,
   saveHomeAction,
   saveLegalAction,
@@ -212,6 +213,30 @@ export function LogoForm({ value, images, official }: { value: { lightId: string
       </div>
       <p className="text-xs text-muted">Upload the new logo in Media first (public image). The browser tab icon and app icon are separate files and stay as they are.</p>
       <Footer state={state} pending={pending} label="Save logo" />
+    </form>
+  );
+}
+
+// --- Analytics & Search Console ----------------------------------------------------------
+
+export function AnalyticsForm({ value }: { value: { gaId: string; googleVerification: string } }) {
+  const [state, onSubmit, pending] = useFormAction(saveAnalyticsAction, idle);
+  const e = (k: string) => state.errors?.[k];
+  return (
+    <form onSubmit={onSubmit} className="glass space-y-5 rounded-2xl p-6" noValidate>
+      <Field label="Google Analytics 4 Measurement ID" name="gaId" error={e("gaId")} hint="Google Analytics → Admin → Data streams → your website. Looks like G-XXXXXXXXXX. Leave empty to turn analytics off.">
+        <input id="gaId" name="gaId" dir="ltr" autoComplete="off" placeholder="G-XXXXXXXXXX" defaultValue={value.gaId} className={inputClass} aria-invalid={e("gaId") ? true : undefined} aria-describedby={describedBy("gaId", e("gaId"))} />
+      </Field>
+      <p className="text-sm text-muted">
+        Analytics runs only for visitors who press &quot;Accept&quot; in the cookie banner (Consent Mode, nothing loads before). It records page views and
+        three events without personal details: <code>generate_lead</code> (inquiry sent), <code>sign_up</code> (newsletter) and{" "}
+        <code>enrollment_request</code> (course access requested).
+      </p>
+      <Field label="Google Search Console verification code" name="googleVerification" error={e("googleVerification")} hint='Search Console → Add property → URL prefix → "HTML tag". Paste the whole tag or just the code.'>
+        <input id="googleVerification" name="googleVerification" dir="ltr" autoComplete="off" defaultValue={value.googleVerification} className={inputClass} aria-invalid={e("googleVerification") ? true : undefined} aria-describedby={describedBy("googleVerification", e("googleVerification"))} />
+      </Field>
+      <p className="text-sm text-muted">After verifying, submit the sitemap in Search Console: <code dir="ltr">/sitemap.xml</code></p>
+      <Footer state={state} pending={pending} label="Save" />
     </form>
   );
 }

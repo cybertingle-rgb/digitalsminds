@@ -1,8 +1,10 @@
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { publicFaqs } from "@/modules/content/items";
+import { faqPage } from "@/modules/seo/structured-data";
 
 /** Accordion of common questions (native <details>, works without JavaScript). */
 export async function Faq({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -10,6 +12,7 @@ export async function Faq({ locale, dict }: { locale: Locale; dict: Dictionary }
   if (faqs.length === 0) return null;
   return (
     <Section>
+      <JsonLd data={faqPage(faqs)} />
       <div className="grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <SectionHeading eyebrow={dict.home.faqEyebrow} title={dict.home.faqTitle} />

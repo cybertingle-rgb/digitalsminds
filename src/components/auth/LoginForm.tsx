@@ -40,8 +40,11 @@ export function LoginForm({ t, next, staffHome, forgotHref, googleEnabled, googl
     }
     const role = (data?.user as { role?: string } | undefined)?.role;
     const isStaff = role && role !== "STUDENT";
-    // Full navigation so server components see the new session cookie.
-    window.location.assign(isStaff && next.endsWith("/account") ? staffHome : next);
+    // Full navigation so server components see the new session cookie. Better Auth
+    // already navigates to callbackURL (`next`); a second navigation to the same
+    // page would cancel the first, so only step in when staff go elsewhere.
+    const target = isStaff && next.endsWith("/account") ? staffHome : next;
+    if (target !== next || !(data as { redirect?: boolean } | undefined)?.redirect) window.location.assign(target);
   }
 
   return (
@@ -56,7 +59,7 @@ export function LoginForm({ t, next, staffHome, forgotHref, googleEnabled, googl
           </p>
         </>
       )}
-      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      <form method="post" onSubmit={onSubmit} className="space-y-4" noValidate>
         <Field label={t.email} name="email">
           <input id="email" name="email" type="email" dir="ltr" autoComplete="email" required className={inputClass} />
         </Field>

@@ -73,6 +73,22 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## SEO, analytics, accessibility (Phase 12)
+
+- Structured data (`src/modules/seo/structured-data.ts`, rendered by `<JsonLd>`, escaped against `</script>`):
+  Organization + WebSite on the homepage (address from `siteConfig.postalAddress`, email, logo, `sameAs` social links),
+  FAQPage (homepage FAQs), BlogPosting, Course (published only), Service, and BreadcrumbList on detail pages. No ratings,
+  reviews, prices or phone numbers.
+- `site.analytics` setting (Admin → Website → Analytics, `settings.manage`): GA4 Measurement ID and the Search Console
+  HTML-tag code (rendered as `<meta name="google-site-verification">` by the root layout).
+- Consent (`src/components/analytics`): `CookieConsent` asks only when a Measurement ID is set; the choice is kept in
+  `localStorage` (`dm_consent`). gtag.js is injected only after "Accept", with Consent Mode defaults denied and only
+  `analytics_storage` granted. "Cookie settings" in the footer reopens it; withdrawing deletes `_ga*` cookies. Events via
+  `track()`: `generate_lead` (service slug), `sign_up` (newsletter), `enrollment_request` (course id), never personal data.
+  Admin pages never load analytics. CSP allows only googletagmanager.com and the google-analytics.com collectors.
+- robots.txt disallows `/admin`, `/account`, `/learn`, `/setup`, `/api/`; those pages are also `noindex`.
+- Password forms use `method="post"`, so a submit before JavaScript loads never puts credentials in the URL.
+
 ## Website content management (Phase 11)
 
 - `src/modules/content/settings.ts`: SiteSetting-backed content with built-in fallbacks: `site.home` (hero, why-us, CTA; EN+UR),
@@ -83,7 +99,7 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
   draft/published/scheduled; built-in posts in `src/content/blog.ts` are shown until the first DB post exists (import button).
 - Rich text gained images: `![alt](/media/...)` on its own line, only from this site's public Media files.
 - Caching: the `[lang]` root layout revalidates every 60 s; every save calls `revalidatePath("/[lang]", "layout")` so edits
-  appear at once. Admin: `/admin/website` with tabs (content.manage; Logo needs settings.manage).
+  appear at once. Admin: `/admin/website` with tabs (content.manage; Logo and Analytics need settings.manage).
 
 ## Communication, support, certificates, newsletter (Phase 10)
 

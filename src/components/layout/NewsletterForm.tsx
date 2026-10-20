@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/components/analytics/track";
 
 type Labels = { label: string; button: string; sent: string; invalid: string; tooMany: string; error: string };
 
@@ -29,6 +30,7 @@ export function NewsletterForm({ locale, labels }: { locale: string; labels: Lab
             body: JSON.stringify({ email, locale, source: window.location.pathname, website: fd.get("website") }),
           });
           if (res.ok) {
+            track("sign_up", { method: "newsletter" });
             setState("sent");
             setMessage(labels.sent);
           } else {
