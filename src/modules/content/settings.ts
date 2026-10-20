@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { z } from "zod";
 import { siteConfig } from "@/config/site";
+import { LEGAL_EFFECTIVE_DATE, legalDefaults } from "@/content/legal";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { db } from "@/lib/db";
@@ -104,7 +105,13 @@ export async function saveSetting(key: string, value: unknown, actorId: string) 
 export const getHomeContent = () => readParsed("site.home", homeInput);
 export const getContactSetting = () => readParsed("site.contact", contactInput);
 export const getSeoSetting = async (): Promise<Partial<SeoContent>> => (await readParsed("site.seo", seoInput)) ?? {};
-export const getLegalPage = (page: LegalPage) => readParsed(`page.${page}`, legalInput.extend({ updatedAt: z.string().optional() }));
+/** Saved page from the admin, or the built-in published text (src/content/legal.ts). */
+export async function getLegalPage(page: LegalPage): Promise<(LegalContent & { builtIn: boolean }) | null> {
+  const saved = await readParsed(`page.${page}`, legalInput.extend({ updatedAt: z.string().optional() }));
+  if (saved) return { ...saved, builtIn: false };
+  const d = legalDefaults[page];
+  return { title: d.title, titleUr: undefined, body: d.body, bodyUr: undefined, published: true, updatedAt: `${LEGAL_EFFECTIVE_DATE}T00:00:00+05:00`, builtIn: true };
+}
 export const getLogoSetting = async () => (await readParsed("site.logo", logoInput)) ?? { lightId: null, darkId: null };
 
 const pick = (locale: Locale, en: string | undefined, ur: string | undefined, fallback: string) => (locale === "ur" ? ur || en || fallback : en || fallback);

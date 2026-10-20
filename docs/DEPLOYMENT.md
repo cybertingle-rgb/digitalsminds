@@ -22,6 +22,14 @@ machine that can reach the database (never use `migrate dev` in production).
 Set at **build** time: `NEXT_PUBLIC_SITE_URL` (and any `NEXT_PUBLIC_CONTACT_*`).
 Set at **runtime**: `DATABASE_URL`, `INQUIRY_WEBHOOK_URL` (optional).
 
+The build uses 2 worker processes (`experimental.cpus` in `next.config.ts`). Shared hosting
+reports many CPUs but limits how many threads an account may start, and the default (one worker
+per CPU) crashed the Hostinger build with `OS can't spawn worker thread (os error 11)`. Raise it
+with the `NEXT_BUILD_CPUS` environment variable only on a host with spare capacity.
+
+Some dependencies (e.g. `kysely`, used by Better Auth) now ask for Node.js 22+, so choose
+**Node.js 22** in the host's settings (Hostinger: Deployments → Build and output settings).
+
 After deploying, check `GET /api/health`. It should return `{"status":"ok","database":"ok"}`.
 Point an uptime monitor at it.
 

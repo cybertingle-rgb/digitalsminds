@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { Permission } from "@/modules/auth/permissions";
 import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/auth/session";
 import { EnrollmentError, manualEnroll } from "@/modules/learning/enrollment";
-import { setStudentSuspended, StudentError, studentEditInput, updateStudent } from "@/modules/students/service";
+import { deleteStudent, setStudentSuspended, StudentError, studentEditInput, updateStudent } from "@/modules/students/service";
 
 export type StudentState = { status: "idle" | "success" | "error"; message?: string; errors?: Record<string, string> };
 
@@ -48,4 +48,17 @@ export async function manualEnrollAction(id: string, _prev: StudentState, fd: Fo
     await manualEnroll(studentId, courseId, actor);
     return "Enrolled. The student has been emailed.";
   });
+}
+
+export async function deleteStudentAction(id: string, confirmEmail: string): Promise<StudentState> {
+  try {
+    const actor = await assertPermission("students.export");
+    await deleteStudent(z.string().min(1).max(64).parse(id), z.string().max(254).parse(confirmEmail), actor);
+    revalidatePath("/admin/students");
+    return { status: "success", message: "Account deleted." };
+  } catch (e) {
+    if (e instanceof ForbiddenError || e instanceof StudentError) return { status: "error", message: e.message };
+    console.error("[students] delete failed", e);
+    return { status: "error", message: "Something went wrong. Please try again." };
+  }
 }

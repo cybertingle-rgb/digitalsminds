@@ -52,7 +52,7 @@ Last updated: 2026-10-20 (Phase 11 complete).
 | 43 | Google email | Required on every access request (prefilled from the profile), saved to the student's profile |
 | 44 | Request alerts | Email to the lead-alert address (default info@digitalsminds.com) plus a waiting count on the dashboard |
 | 45 | Learning access | Completion is a "Mark as complete" button; revoking or unpublishing ends access immediately; archived courses stay open to enrolled students |
-| 46 | Student management | Super Admin + Content Manager view students; enrollment staff can enroll directly; editing, suspending and CSV export are Super Admin only. No account deletion yet (ask if needed for privacy requests) |
+| 46 | Student management | Super Admin + Content Manager view students; enrollment staff can enroll directly; editing, suspending and CSV export are Super Admin only. Super Admin can permanently delete an account for a privacy request (email typed to confirm; audit log keeps counts, not personal data) |
 | 47 | Social links | Facebook, Instagram, LinkedIn shown as an expanding icon rail on the right (tablet/desktop) and in the footer; links pasted by the owner in Admin → Website (validated official URLs) |
 | 48 | Preloader | Neon-glow logo preloader on the first page of each visit (about 1 s, max 2.5 s); never shown without JavaScript |
 | 49 | Home content | Adds live courses, division details, "Why Digitals Minds", FAQ and testimonials (published + consent only). Why-us and FAQ wording drafted from confirmed facts: **owner to approve** |
@@ -60,15 +60,18 @@ Last updated: 2026-10-20 (Phase 11 complete).
 | 51 | Support | Super Admin + Content Manager see all requests; instructors see requests about their own courses; internal notes are staff-only |
 | 52 | Newsletter | Footer sign-up with email confirmation; list for Super Admin + Content Manager; CSV export and removal Super Admin only. Sending newsletters is a later option |
 | 53 | Content editing | Simple formatting (no visual editor library) with images from Media; draft/publish switch on every item; Super Admin + Content Manager edit content; logo replaceable by Super Admin only |
+| 54 | Legal pages and home text | Owner asked us to write them: built-in Privacy Policy and Terms & Conditions (effective 2026-10-20, Pakistan law, Faisalabad courts) are published by default and can be edited in Admin → Website → Legal pages; "Why Digitals Minds" and 8 FAQs finalised without promised response times |
+| 55 | Hostinger build | Next.js build limited to 2 workers (shared hosting thread limit); Node.js 22 recommended |
 
 ## Open items (waiting on owner)
 
 - [ ] File storage: Admin → Integrations → File storage → Run check, redeploy, Run check again (enables uploads); confirm Hostinger backups include the upload folder
 - [ ] Social media links: paste Facebook, Instagram and LinkedIn URLs in Admin → Website
-- [ ] Review the "Why Digitals Minds" and FAQ text: now editable in Admin → Website (Homepage, FAQs)
+- [x] "Why Digitals Minds" and FAQ text written (owner delegated); editable in Admin → Website (Homepage, FAQs)
+- [ ] Switch Hostinger to Node.js 22 (Deployments → Build and output settings) and redeploy
 - [ ] Send verified testimonials (name, role/company, quote, photo if any, permission)
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
-- [ ] Privacy Policy and Terms & Conditions text: paste in Admin → Website → Legal pages and publish
+- [x] Privacy Policy and Terms & Conditions written and published (owner delegated); have them reviewed by a lawyer when convenient
 - [ ] Urdu translations (provided when the bilingual structure is ready)
 - [ ] Later: GA4 Measurement ID and Search Console verification (Phase 12)
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
@@ -80,7 +83,7 @@ Last updated: 2026-10-20 (Phase 11 complete).
 - [x] Approval to start Phase 9 (student management: search, profiles, suspend/reactivate, manual enroll, exports)
 - [x] Approval to start Phase 10 (announcements, notifications, support tickets, certificates, newsletter)
 - [x] Approval to start Phase 11 (website content management)
-- [ ] Approval to start Phase 12 (SEO, analytics with consent, performance and accessibility; needs GA4 Measurement ID and Search Console access)
+- [x] Approval to start Phase 12 (SEO, analytics with consent, performance and accessibility; needs GA4 Measurement ID and Search Console access)
 
 ## Assumptions (to confirm or correct)
 

@@ -67,10 +67,10 @@ run("content management (integration)", async () => {
     expect(await settings.seoFor("home", "en")).toEqual({});
   });
 
-  it("hides legal pages until published", async () => {
-    expect(await settings.getLegalPage("privacy")).toBeNull();
+  it("publishes the built-in legal text until an edited version is saved", async () => {
+    expect(await settings.getLegalPage("privacy")).toMatchObject({ title: "Privacy Policy", published: true, builtIn: true });
     await settings.saveSetting("page.privacy", { ...settings.legalInput.parse({ title: "Privacy Policy", body: "We respect your privacy and explain here.", published: false }) }, actor);
-    expect((await settings.getLegalPage("privacy"))?.published).toBe(false);
+    expect(await settings.getLegalPage("privacy")).toMatchObject({ published: false, builtIn: false });
   });
 
   it("imports built-in FAQs once, then serves only published ones in order", async () => {

@@ -1,11 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Notice } from "@/components/admin/ui";
 import { describedBy, Field, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
-import { manualEnrollAction, suspendStudentAction, updateStudentAction, type StudentState } from "./actions";
+import { deleteStudentAction, manualEnrollAction, suspendStudentAction, updateStudentAction, type StudentState } from "./actions";
 
 const idle: StudentState = { status: "idle" };
 const Result = ({ state }: { state: StudentState | null }) =>
@@ -80,5 +81,44 @@ export function ManualEnrollForm({ id, courses }: { id: string; courses: { id: s
       <Button type="submit" variant="dark" className="py-2.5" disabled={pending}>Enroll</Button>
       <div className="w-full"><Result state={state} /></div>
     </form>
+  );
+}
+
+/** Permanent deletion for privacy requests (Super Admin). */
+export function DeleteStudent({ id, email, inquiries }: { id: string; email: string; inquiries: number }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [result, setResult] = useState<StudentState | null>(null);
+  const [pending, start] = useTransition();
+  if (!open) {
+    return <button type="button" className="text-sm text-red-700 underline-offset-4 hover:underline" onClick={() => setOpen(true)}>Delete account permanently</button>;
+  }
+  return (
+    <div role="alertdialog" aria-label="Delete account permanently" className="space-y-3 rounded-xl border border-red-300 bg-red-50 p-4 text-sm">
+      <p className="font-semibold text-red-900">This permanently deletes the account, enrollments, progress, certificates, support requests, notifications and newsletter subscription. It can&apos;t be undone.</p>
+      {inquiries > 0 && <p className="text-red-900">{inquiries} inquiry/inquiries from this email stay in Inquiries; delete them there if the request covers them too.</p>}
+      <label htmlFor="confirm-email" className="block font-medium text-charcoal-900">Type <span dir="ltr" className="font-mono">{email}</span> to confirm</label>
+      <input id="confirm-email" value={typed} onChange={(e) => setTyped(e.target.value)} dir="ltr" autoComplete="off" className={inputClass} />
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="dark"
+          className="py-2"
+          disabled={pending || typed.trim().toLowerCase() !== email.toLowerCase()}
+          onClick={() =>
+            start(async () => {
+              const r = await deleteStudentAction(id, typed);
+              setResult(r);
+              if (r.status === "success") router.push("/admin/students");
+            })
+          }
+        >
+          Delete permanently
+        </Button>
+        <Button type="button" variant="secondary" className="py-2" onClick={() => setOpen(false)}>Cancel</Button>
+      </div>
+      <Result state={result} />
+    </div>
   );
 }

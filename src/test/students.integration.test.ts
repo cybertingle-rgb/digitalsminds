@@ -92,4 +92,18 @@ run("student management (integration)", async () => {
     expect(data.history.map((h) => h.action)).toContain("enrollment.manual");
     expect(await students.getStudent(id("cm"))).toBeNull();
   });
+
+  it("deletes an account for a privacy request (Super Admin, email confirmed)", async () => {
+    const email = `ayesha.${tag}@example.com`;
+    await db().newsletterSubscriber.create({ data: { email, unsubscribeToken: id("unsub") } });
+    await expect(students.deleteStudent(id("s1"), email, cm)).rejects.toThrow(/Super Admins/);
+    await expect(students.deleteStudent(id("s1"), "wrong@example.com", sa)).rejects.toThrow(/exactly/);
+    await students.deleteStudent(id("s1"), ` ${email.toUpperCase()} `, sa);
+    expect(await db().user.findUnique({ where: { id: id("s1") } })).toBeNull();
+    expect(await db().enrollment.count({ where: { userId: id("s1") } })).toBe(0);
+    expect(await db().newsletterSubscriber.count({ where: { email } })).toBe(0);
+    const log = await db().auditLog.findFirstOrThrow({ where: { entityId: id("s1"), action: "student.deleted" } });
+    expect(log.metadata).toEqual({ enrollments: 1, certificates: 0 });
+    await expect(students.deleteStudent(id("s1"), email, sa)).rejects.toThrow(/Student not found/);
+  });
 });

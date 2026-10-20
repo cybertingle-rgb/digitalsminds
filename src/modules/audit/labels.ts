@@ -54,6 +54,7 @@ export const actionLabels: Record<string, string> = {
   "enrollment.revoked": "Revoked a student's course access",
   "enrollment.manual": "Enrolled a student in a course",
   "student.updated": "Edited a student's details",
+  "student.deleted": "Deleted a student account (privacy request)",
   "export.students": "Exported students (CSV)",
   "export.newsletter": "Exported newsletter subscribers (CSV)",
   "newsletter.deleted": "Removed a newsletter subscriber",

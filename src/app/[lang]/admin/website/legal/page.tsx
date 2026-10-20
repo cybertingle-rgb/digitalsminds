@@ -20,7 +20,7 @@ export default async function LegalSettingsPage() {
           <h2 id={`legal-${p.key}`} className="mb-4 flex flex-wrap items-center gap-3 text-lg font-semibold text-charcoal-900">
             {p.label}
             <span className={`rounded-full px-3 py-0.5 text-xs font-semibold ${values[i]?.published ? "bg-green-100 text-green-900" : "bg-charcoal-100 text-charcoal-700"}`}>
-              {values[i]?.published ? "Published" : values[i] ? "Draft" : "Not written yet"}
+              {values[i]?.published ? (values[i]?.builtIn ? "Published (built-in text)" : "Published") : "Draft"}
             </span>
           </h2>
           <LegalForm page={p.key} url={p.url} value={values[i] ?? { title: p.label, body: "", published: false }} />

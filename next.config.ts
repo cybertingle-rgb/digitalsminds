@@ -34,6 +34,10 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Shared hosting (Hostinger) reports many CPUs but limits how many threads an
+  // account may start, so a default build spawns ~60 workers and crashes with
+  // "OS can't spawn worker thread". A few workers are plenty for this site.
+  experimental: { cpus: Number(process.env.NEXT_BUILD_CPUS) || 2 },
   // `NEXT_OUTPUT=standalone npm run build` produces a self-contained server for VPS/cPanel/Docker.
   output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   async headers() {

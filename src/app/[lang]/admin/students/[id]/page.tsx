@@ -5,9 +5,9 @@ import { CopyField, StatusBadge } from "@/components/admin/ui";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
 import { describeAction } from "@/modules/audit/labels";
-import { enrollableCourses, getStudent } from "@/modules/students/service";
+import { enrollableCourses, getStudent, inquiriesFromEmail } from "@/modules/students/service";
 import { EnrollmentActions } from "../../enrollments/EnrollmentActions";
-import { EditStudentForm, ManualEnrollForm, SuspendControl } from "../StudentForms";
+import { DeleteStudent, EditStudentForm, ManualEnrollForm, SuspendControl } from "../StudentForms";
 
 export const metadata: Metadata = { title: "Student" };
 
@@ -140,6 +140,7 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
                 </div>
               </details>
               <SuspendControl id={user.id} suspended={user.status === "SUSPENDED"} />
+              {can(viewer.role, "students.export") && <DeleteStudent id={user.id} email={user.email} inquiries={await inquiriesFromEmail(user.email)} />}
             </section>
           )}
         </aside>
