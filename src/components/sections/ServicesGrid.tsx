@@ -11,7 +11,7 @@ export function ServicesGrid({ locale, dict }: { locale: Locale; dict: Dictionar
         <li key={s.slug}>
           <Link
             href={localizePath(`/services/${s.slug}`, locale)}
-            className="group flex h-full flex-col rounded-2xl border border-line bg-white p-6 transition hover:-translate-y-0.5 hover:border-sun-400 hover:shadow-md"
+            className="glass group flex h-full flex-col rounded-3xl p-6 transition hover:-translate-y-0.5 hover:bg-white/85 hover:shadow-lg"
           >
             <span aria-hidden="true" className="mb-4 h-1 w-10 rounded-full bg-sun-400 transition-all group-hover:w-16" />
             <h3 className="text-lg font-semibold text-charcoal-900">{s.title}</h3>

@@ -56,7 +56,7 @@ export function MediaGrid({ items, siteUrl }: { items: MediaItem[]; siteUrl: str
     router.refresh();
   }
 
-  if (items.length === 0) return <p className="rounded-2xl border border-line bg-white p-6 text-muted">No files yet. Upload your first file above.</p>;
+  if (items.length === 0) return <p className="glass rounded-2xl p-6 text-muted">No files yet. Upload your first file above.</p>;
 
   return (
     <section aria-label="Files" className="space-y-4">
@@ -75,7 +75,7 @@ export function MediaGrid({ items, siteUrl }: { items: MediaItem[]; siteUrl: str
       />
       <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((m) => (
-          <li key={m.id} className="flex flex-col overflow-hidden rounded-2xl border border-line bg-white">
+          <li key={m.id} className="flex flex-col overflow-hidden glass rounded-2xl">
             <div className="relative flex aspect-video items-center justify-center overflow-hidden border-b border-line bg-charcoal-50">
               {m.isImage ? (
                 // eslint-disable-next-line @next/next/no-img-element -- admin preview of an uploaded file, sizes vary

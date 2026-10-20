@@ -68,7 +68,7 @@ export default async function LessonPage({ params }: PageProps<"/[lang]/learn/[s
           <Link href={coursePage} className="font-semibold underline underline-offset-4">{t.previewCta}</Link>
         </div>
       )}
-      {mode === "staff" && <p className="mb-6 rounded-xl bg-surface-alt px-4 py-3 text-sm text-muted">{t.staffBanner}</p>}
+      {mode === "staff" && <p className="mb-6 glass-subtle rounded-xl px-4 py-3 text-sm text-muted">{t.staffBanner}</p>}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <article className="min-w-0 space-y-6 lg:col-span-2">
@@ -89,14 +89,14 @@ export default async function LessonPage({ params }: PageProps<"/[lang]/learn/[s
             />
           )}
           {lesson.content && (
-            <div className="rounded-2xl p-6 ring-1 ring-line" dir={courseDir} lang={course.language}>
+            <div className="glass rounded-2xl p-6" dir={courseDir} lang={course.language}>
               <RichText text={lesson.content} className="text-charcoal-800" />
             </div>
           )}
-          {!lesson.videoUrl && !lesson.content && <p className="rounded-2xl bg-surface-alt p-6 text-muted">{t.noContent}</p>}
+          {!lesson.videoUrl && !lesson.content && <p className="glass-subtle rounded-2xl p-6 text-muted">{t.noContent}</p>}
 
           {resources.length > 0 && (
-            <section aria-labelledby="res-title" className="rounded-2xl p-6 ring-1 ring-line">
+            <section aria-labelledby="res-title" className="glass rounded-2xl p-6">
               <h2 id="res-title" className="font-semibold text-charcoal-900">{t.resources}</h2>
               <ul className="mt-3 space-y-2">
                 {resources.map((r) => (
@@ -130,7 +130,7 @@ export default async function LessonPage({ params }: PageProps<"/[lang]/learn/[s
         </article>
 
         <aside className="min-w-0">
-          <nav aria-labelledby="contents-title" className="rounded-2xl p-4 ring-1 ring-line lg:sticky lg:top-24">
+          <nav aria-labelledby="contents-title" className="glass rounded-2xl p-4 lg:sticky lg:top-24">
             <h2 id="contents-title" className="px-2 font-semibold text-charcoal-900">{t.contents}</h2>
             {student && (
               <div className="mt-3 px-2">

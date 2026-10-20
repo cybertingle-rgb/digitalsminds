@@ -51,7 +51,7 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="min-w-0 space-y-6 lg:col-span-2">
-          <section aria-labelledby="courses" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="courses" className="glass rounded-2xl p-6">
             <h2 id="courses" className="text-lg font-semibold text-charcoal-900">Courses</h2>
             {enrollments.length === 0 ? (
               <p className="mt-2 text-sm text-muted">No course requests or enrollments yet.</p>
@@ -92,7 +92,7 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
             )}
           </section>
 
-          <section aria-labelledby="history" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="history" className="glass rounded-2xl p-6">
             <h2 id="history" className="text-lg font-semibold text-charcoal-900">History</h2>
             {history.length === 0 ? (
               <p className="mt-2 text-sm text-muted">Nothing recorded yet.</p>
@@ -117,7 +117,7 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
         </div>
 
         <aside className="min-w-0 space-y-6">
-          <section aria-labelledby="profile" className="space-y-4 rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="profile" className="space-y-4 glass rounded-2xl p-6">
             <h2 id="profile" className="text-lg font-semibold text-charcoal-900">Profile</h2>
             <CopyField label="Google email (share videos with)" value={user.googleEmail ?? user.email} />
             <dl className="space-y-2 text-sm">
@@ -131,7 +131,7 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
           </section>
 
           {canManage && (
-            <section aria-labelledby="manage" className="space-y-4 rounded-2xl border border-line bg-white p-6">
+            <section aria-labelledby="manage" className="space-y-4 glass rounded-2xl p-6">
               <h2 id="manage" className="text-lg font-semibold text-charcoal-900">Manage account</h2>
               <details>
                 <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">Edit details</summary>

@@ -10,7 +10,7 @@ type Strings = Dictionary["form"];
 type Status = { kind: "idle" } | { kind: "submitting" } | { kind: "success" } | { kind: "error"; message: string };
 
 const inputClass =
-  "mt-1 block w-full rounded-lg border border-charcoal-200 bg-white px-3 py-2.5 text-charcoal-900 shadow-sm focus:border-charcoal-900 focus:outline-none focus:ring-2 focus:ring-sun-400 aria-[invalid=true]:border-red-600";
+  "mt-1 block w-full rounded-xl border border-white/80 bg-white/60 shadow-sm px-3 py-2.5 text-charcoal-900 shadow-sm focus:border-charcoal-900 focus:outline-none focus:ring-2 focus:ring-sun-400 aria-[invalid=true]:border-red-600";
 
 const FIELDS = ["name", "email", "phone", "company", "service", "message"] as const;
 type Field = (typeof FIELDS)[number];

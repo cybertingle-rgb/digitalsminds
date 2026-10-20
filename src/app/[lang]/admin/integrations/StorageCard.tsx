@@ -22,7 +22,7 @@ export function StorageCard({ status }: { status: StorageStatus }) {
   );
 
   return (
-    <section id="storage" aria-labelledby="storage-title" className="rounded-2xl border border-line bg-white p-6">
+    <section id="storage" aria-labelledby="storage-title" className="glass rounded-2xl p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="storage-title" className="text-lg font-semibold text-charcoal-900">File storage</h2>

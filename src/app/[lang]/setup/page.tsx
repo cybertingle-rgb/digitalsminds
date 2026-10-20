@@ -15,8 +15,8 @@ export default async function SetupPage({ params }: PageProps<"/[lang]/setup">) 
   if (await isSetupComplete()) notFound();
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-surface-alt px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border border-line border-t-4 border-t-sun-400 bg-white p-6 shadow-sm sm:p-8">
+    <main className="flex min-h-dvh items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6 sm:p-8">
         <Image src={siteConfig.logo.light.src} alt="Digitals Minds" width={siteConfig.logo.light.width} height={siteConfig.logo.light.height} className="h-14 w-auto" priority />
         <h1 className="mt-6 text-2xl font-bold text-charcoal-900">Create the Super Admin account</h1>
         <p className="mt-2 text-sm text-muted">

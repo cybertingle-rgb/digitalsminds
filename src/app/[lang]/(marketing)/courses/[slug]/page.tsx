@@ -69,7 +69,7 @@ export default async function CoursePage({ params }: Props) {
             <ul className="mt-6 flex flex-wrap gap-2 text-sm">
               {[t.free, t.levels[course.level], t.languages[course.language], lessonCount(lessons.length, dict), formatDuration(totalMinutes(course), dict), course.certificateEnabled ? t.certificate : null]
                 .filter(Boolean)
-                .map((m) => <li key={m} className="rounded-full bg-white px-3 py-1 font-medium text-charcoal-800 ring-1 ring-line">{m}</li>)}
+                .map((m) => <li key={m} className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800">{m}</li>)}
             </ul>
             {course.instructors.length > 0 && (
               <p className="mt-4 text-sm text-muted">{t.instructors}: {course.instructors.map((i) => i.user.name).join(", ")}</p>
@@ -88,7 +88,7 @@ export default async function CoursePage({ params }: Props) {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
           <div className="min-w-0 space-y-10 lg:col-span-2" dir={courseDir} lang={course.language}>
             {objectives.length > 0 && (
-              <section aria-labelledby="learn-title" className="rounded-2xl p-6 ring-1 ring-line">
+              <section aria-labelledby="learn-title" className="glass rounded-2xl p-6">
                 <h2 id="learn-title" className="text-xl font-bold text-charcoal-900">{t.whatYouLearn}</h2>
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                   {objectives.map((o) => (
@@ -116,8 +116,8 @@ export default async function CoursePage({ params }: Props) {
               <h2 id="contents-title" className="text-xl font-bold text-charcoal-900">{t.contents}</h2>
               <ol className="mt-4 space-y-4">
                 {course.modules.filter((m) => m.lessons.length).map((m) => (
-                  <li key={m.id} className="overflow-hidden rounded-2xl ring-1 ring-line">
-                    <h3 className="bg-surface-alt px-5 py-3 font-semibold text-charcoal-900">{m.title}</h3>
+                  <li key={m.id} className="glass overflow-hidden rounded-2xl">
+                    <h3 className="bg-white/50 px-5 py-3 font-semibold text-charcoal-900">{m.title}</h3>
                     <ol className="divide-y divide-line">
                       {m.lessons.map((l) => {
                         const open = canOpenAll || l.isPreview;
@@ -143,7 +143,7 @@ export default async function CoursePage({ params }: Props) {
           </div>
 
           <aside className="min-w-0">
-            <div className="space-y-4 rounded-2xl bg-white p-6 ring-1 ring-line lg:sticky lg:top-24" aria-labelledby="access-title">
+            <div className="space-y-4 glass rounded-2xl p-6 lg:sticky lg:top-24" aria-labelledby="access-title">
               <h2 id="access-title" className="text-lg font-bold text-charcoal-900">{t.accessTitle}</h2>
               <AccessPanel
                 lang={lang}
@@ -210,7 +210,7 @@ function AccessPanel(p: {
   return (
     <>
       {(p.status === "REJECTED" || p.status === "REVOKED") && (
-        <div className="space-y-1 rounded-lg bg-surface-alt p-4 text-sm text-charcoal-900">
+        <div className="space-y-1 glass-subtle rounded-xl p-4 text-sm text-charcoal-900">
           <p className="font-semibold">{p.status === "REJECTED" ? t.rejected : t.revoked}</p>
           {p.decisionNote && <p dir="auto">{format(t.reason, { note: p.decisionNote })}</p>}
         </div>

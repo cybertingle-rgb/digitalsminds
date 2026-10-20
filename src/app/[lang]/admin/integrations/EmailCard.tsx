@@ -15,7 +15,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
   const f = saveState.fields ?? {};
 
   return (
-    <section aria-labelledby="email-title" className="rounded-2xl border border-line bg-white p-6">
+    <section aria-labelledby="email-title" className="glass rounded-2xl p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="email-title" className="text-lg font-semibold text-charcoal-900">Email (SMTP)</h2>
@@ -38,7 +38,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
         {testState?.message && <Notice tone={testState.status === "error" ? "error" : "success"}>{testState.message}</Notice>}
       </div>
 
-      <details className="mt-5 rounded-xl bg-surface-alt p-4" open={!status.configured}>
+      <details className="mt-5 glass-subtle rounded-xl p-4" open={!status.configured}>
         <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">Hostinger mailbox settings</summary>
         <ol className="mt-3 list-decimal space-y-2 ps-5 text-sm text-charcoal-800">
           <li>In hPanel → Emails, create the mailbox <strong>noreply@digitalsminds.com</strong> with a strong password.</li>

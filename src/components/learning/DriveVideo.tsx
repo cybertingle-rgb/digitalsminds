@@ -21,7 +21,7 @@ export function DriveVideo({ url, title, openLabel, help }: { url: string; title
           href={driveViewUrl(id)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex shrink-0 rounded-lg border border-charcoal-200 bg-white px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-charcoal-50"
+          className="inline-flex shrink-0 rounded-xl border border-white/80 bg-white/60 shadow-sm px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-white/90"
         >
           {openLabel}
         </a>

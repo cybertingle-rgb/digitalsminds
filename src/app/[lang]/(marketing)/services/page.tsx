@@ -55,7 +55,7 @@ export default async function ServicesPage({ params }: PageProps<"/[lang]/servic
             </div>
             <ul className="grid gap-2 sm:grid-cols-2">
               {s.offerings.map((o) => (
-                <li key={o} className="rounded-lg bg-white p-3 text-sm ring-1 ring-line">
+                <li key={o} className="glass-subtle rounded-xl p-3 text-sm">
                   {o}
                 </li>
               ))}

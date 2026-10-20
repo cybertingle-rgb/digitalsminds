@@ -10,7 +10,7 @@ export function InviteForm() {
   const [state, onSubmit, pending] = useFormAction<TeamState>(inviteAction, { status: "idle" });
   const f = state.fields ?? {};
   return (
-    <section aria-labelledby="invite-title" className="rounded-2xl border border-line bg-white p-6">
+    <section aria-labelledby="invite-title" className="glass rounded-2xl p-6">
       <h2 id="invite-title" className="text-lg font-semibold text-charcoal-900">Invite a team member</h2>
       <p className="mt-1 text-sm text-muted">They receive an email link to set their own password. If the email already has a student account, it gets team access instead.</p>
       <form onSubmit={onSubmit} className="mt-5 grid gap-4 sm:grid-cols-3">

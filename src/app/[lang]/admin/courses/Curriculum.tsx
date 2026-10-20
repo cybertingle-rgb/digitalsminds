@@ -91,7 +91,7 @@ export function Curriculum({ courseId, modules }: { courseId: string; modules: C
                     {modules.length > 1 && (
                       <select
                         aria-label={`Move lesson “${l.title}” to another module`}
-                        className="rounded-md border border-line bg-white px-2 py-1 text-xs"
+                        className="rounded-lg border border-white/80 bg-white/70 px-2 py-1 text-xs"
                         value=""
                         disabled={pending}
                         onChange={(e) => e.target.value && act(() => moveLessonToModuleAction(l.id, e.target.value))}
@@ -118,7 +118,7 @@ export function Curriculum({ courseId, modules }: { courseId: string; modules: C
               ))}
               {m.lessons.length === 0 && <li className="px-4 py-3 text-sm text-red-800">This module has no lessons yet. Add one below before publishing.</li>}
             </ol>
-            <div className="border-t border-line bg-surface-alt px-4 py-3">
+            <div className="border-t border-white/70 bg-white/40 px-4 py-3">
               <AddLessonForm moduleId={m.id} />
             </div>
           </li>

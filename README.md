@@ -77,6 +77,9 @@ No phone or WhatsApp number is displayed anywhere on the site (owner decision); 
 
 - **Logos:** official files in `public/brand/` (web versions) and `assets/brand/originals/` (as supplied). See `public/brand/README.md`.
 - **Colours:** `@theme` block in `src/app/globals.css` (charcoal `#2B323C`, yellow `#FDCF31` from the logo).
+- **Glass look:** utilities in `src/app/globals.css`: `glass` (cards), `glass-subtle` (callouts), `glass-strong` (forms),
+  `glass-blur` (floating header/sidebar; the only ones with a backdrop blur, to stay light on phones) and `glass-ink`
+  (charcoal call-to-action panels). Falls back to near-solid panels when blur isn't supported or reduced transparency is requested.
 - **All page text:** `src/i18n/dictionaries/en.ts` (English) and `ur.ts` (Urdu). Services text lives there too.
 - **Navigation, email, social links:** `src/config/site.ts`.
 - **Blog posts:** `src/content/blog.ts` (each post has one language).

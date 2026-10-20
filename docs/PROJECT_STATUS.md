@@ -11,7 +11,7 @@ Last updated: 2026-10-20 (Phase 9 complete).
 | 2 | Stack | Next.js 16 (App Router, TypeScript), Tailwind CSS 4, Prisma 7 + MySQL/MariaDB (Hostinger database), Zod |
 | 3 | Build | `npm run build` uses webpack (Turbopack's PostCSS child process is blocked in Hostinger's build sandbox); `prebuild` applies migrations |
 | 4 | Brand | Official logos supplied by owner (transparent PNG, dark JPG, light JPG). Colours from logo: yellow `#FDCF31`, charcoal `#2B323C`, logo text `#373643`. Logo used unaltered. |
-| 5 | Visual direction | Light and clean, charcoal text, yellow accents/CTAs, dark charcoal footer |
+| 5 | Visual direction | Light glassmorphism (owner choice, Oct 2026): warm off-white canvas with soft yellow/charcoal glows, frosted white glass panels, charcoal text, yellow accents/CTAs, charcoal glass for call-to-action panels. Subtle effect; floating glass header, glass footer and admin sidebar; content up to 1280px wide |
 | 6 | Contact | info@digitalsminds.com · 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan. **No phone or WhatsApp number anywhere on the site or in docs until the owner says otherwise.** |
 | 7 | Course pricing | All free at launch; schema ready for paid courses later |
 | 8 | Enrollment | Student requests access; an admin approves |

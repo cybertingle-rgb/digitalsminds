@@ -50,13 +50,13 @@ export default async function CoursePreviewPage({ params, searchParams }: PagePr
                   <div className="relative aspect-video overflow-hidden rounded-2xl bg-charcoal-900">
                     <iframe src={driveEmbedUrl(fileId)} title={lesson.title} allow="autoplay; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" className="absolute inset-0 h-full w-full" />
                   </div>
-                  <a href={lesson.videoUrl!} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-lg border border-charcoal-200 bg-white px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-charcoal-50">
+                  <a href={lesson.videoUrl!} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-xl border border-white/80 bg-white/60 shadow-sm px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-white/90">
                     Open in Google Drive
                   </a>
                 </div>
               )}
-              {lesson.content && <div className="rounded-2xl border border-line bg-white p-6"><RichText text={lesson.content} className="text-charcoal-800" /></div>}
-              {!fileId && !lesson.content && <p className="rounded-2xl border border-dashed border-charcoal-200 bg-white p-6 text-muted">This lesson has no video or text yet.</p>}
+              {lesson.content && <div className="glass rounded-2xl p-6"><RichText text={lesson.content} className="text-charcoal-800" /></div>}
+              {!fileId && !lesson.content && <p className="glass-subtle rounded-2xl border-dashed !border-charcoal-300/70 p-6 text-muted">This lesson has no video or text yet.</p>}
               <ResourceList items={resourceItems(lesson.resources)} />
               <nav className="flex justify-between gap-4 text-sm" aria-label="Lesson navigation">
                 {lessons[index - 1] ? <Link href={href(lessons[index - 1]!.id)} className="underline underline-offset-4">← {lessons[index - 1]!.title}</Link> : <span />}
@@ -83,16 +83,16 @@ export default async function CoursePreviewPage({ params, searchParams }: PagePr
                 </p>
               </header>
               {objectives.length > 0 && (
-                <section className="rounded-2xl border border-line bg-white p-6">
+                <section className="glass rounded-2xl p-6">
                   <h2 className="font-semibold text-charcoal-900">What you&apos;ll learn</h2>
                   <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                     {objectives.map((o) => <li key={o} className="flex gap-2 text-charcoal-800"><span aria-hidden className="text-sun-500">✓</span>{o}</li>)}
                   </ul>
                 </section>
               )}
-              {course.description && <section className="rounded-2xl border border-line bg-white p-6"><RichText text={course.description} className="text-charcoal-800" /></section>}
+              {course.description && <section className="glass rounded-2xl p-6"><RichText text={course.description} className="text-charcoal-800" /></section>}
               {course.prerequisites && (
-                <section className="rounded-2xl border border-line bg-white p-6">
+                <section className="glass rounded-2xl p-6">
                   <h2 className="font-semibold text-charcoal-900">Before you start</h2>
                   <RichText text={course.prerequisites} className="mt-3 text-charcoal-800" />
                 </section>
@@ -103,7 +103,7 @@ export default async function CoursePreviewPage({ params, searchParams }: PagePr
         </article>
 
         <aside className="min-w-0">
-          <nav aria-label="Course contents" className="rounded-2xl border border-line bg-white p-4 lg:sticky lg:top-4">
+          <nav aria-label="Course contents" className="glass rounded-2xl p-4 lg:sticky lg:top-4">
             <h2 className="px-2 font-semibold text-charcoal-900">Course contents</h2>
             {course.modules.length === 0 && <p className="mt-2 px-2 text-sm text-muted">No lessons yet.</p>}
             <ol className="mt-2 space-y-3">
@@ -116,7 +116,7 @@ export default async function CoursePreviewPage({ params, searchParams }: PagePr
                         <Link
                           href={href(l.id)}
                           aria-current={l.id === lesson?.id ? "page" : undefined}
-                          className={`flex justify-between gap-2 rounded-lg px-2 py-1.5 text-sm ${l.id === lesson?.id ? "bg-sun-100 font-semibold text-charcoal-900" : "text-charcoal-800 hover:bg-charcoal-50"}`}
+                          className={`flex justify-between gap-2 rounded-lg px-2 py-1.5 text-sm ${l.id === lesson?.id ? "bg-sun-100 font-semibold text-charcoal-900" : "text-charcoal-800 hover:bg-white/90"}`}
                         >
                           <span>{l.title}</span>
                           {formatMinutes(l.durationMinutes) && <span className="shrink-0 text-xs text-muted" dir="ltr">{formatMinutes(l.durationMinutes)}</span>}
@@ -137,7 +137,7 @@ export default async function CoursePreviewPage({ params, searchParams }: PagePr
 function ResourceList({ items }: { items: ReturnType<typeof resourceItems> }) {
   if (items.length === 0) return null;
   return (
-    <section className="rounded-2xl border border-line bg-white p-6">
+    <section className="glass rounded-2xl p-6">
       <h2 className="font-semibold text-charcoal-900">Resources</h2>
       <ul className="mt-3 space-y-2">
         {items.map((r) => (

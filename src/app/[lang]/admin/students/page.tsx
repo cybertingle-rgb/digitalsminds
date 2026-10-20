@@ -38,7 +38,7 @@ export default async function StudentsPage({ searchParams }: PageProps<"/[lang]/
           <p className="mt-1 text-muted">{total} {total === 1 ? "student" : "students"}{filtered ? " match these filters" : ""}.</p>
         </div>
         {can(user.role, "students.export") && (
-          <a href={`/api/admin/students/export?${params()}`} className="rounded-lg border border-charcoal-200 bg-white px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-charcoal-50">
+          <a href={`/api/admin/students/export?${params()}`} className="rounded-xl border border-white/80 bg-white/60 shadow-sm px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-white/90">
             Export CSV
           </a>
         )}
@@ -78,13 +78,13 @@ export default async function StudentsPage({ searchParams }: PageProps<"/[lang]/
       </form>
 
       {items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-charcoal-200 bg-white p-8 text-center text-muted">
+        <p className="glass-subtle rounded-2xl border-dashed !border-charcoal-300/70 p-8 text-center text-muted">
           {filtered ? "No students match these filters." : "No student accounts yet. Students appear here when they register."}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+        <div className="overflow-x-auto glass rounded-2xl">
           <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="border-b border-line bg-surface-alt text-xs uppercase tracking-wider text-muted">
+            <thead className="border-b border-white/70 bg-white/50 text-xs uppercase tracking-wider text-muted">
               <tr>
                 <th scope="col" className="px-4 py-3">Student</th>
                 <th scope="col" className="px-4 py-3">City</th>

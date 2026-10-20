@@ -24,13 +24,13 @@ export function MobileNav({ items, homeHref, cta, labels, extra }: Props) {
   }, [open]);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-md text-charcoal-900 hover:bg-charcoal-50"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-charcoal-900 hover:bg-white/70"
       >
         <span className="sr-only">{open ? labels.close : labels.open}</span>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
@@ -38,12 +38,12 @@ export function MobileNav({ items, homeHref, cta, labels, extra }: Props) {
         </svg>
       </button>
       {open && (
-        <div id="mobile-menu" className="absolute inset-x-0 top-full border-b border-line bg-white px-4 pb-6 pt-2 shadow-lg">
+        <div id="mobile-menu" className="absolute inset-x-0 top-full mt-2 max-h-[calc(100dvh-6rem)] overflow-y-auto rounded-2xl border border-white bg-white p-3 pb-4 shadow-xl">
           <nav aria-label={labels.nav}>
             <NavLinks items={items} homeHref={homeHref} vertical onNavigate={() => setOpen(false)} />
           </nav>
           {extra && (
-            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-charcoal-200/60 pt-3" onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}>
               {extra}
             </div>
           )}

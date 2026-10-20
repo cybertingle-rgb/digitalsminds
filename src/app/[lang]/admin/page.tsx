@@ -24,7 +24,7 @@ function Stat({ label, value, hint, href }: { label: string; value: string | num
     </>
   );
   return (
-    <li className="rounded-xl border border-line bg-white p-5">
+    <li className="glass rounded-2xl p-4 sm:p-5">
       {href ? <Link href={href} className="block hover:opacity-80">{body}</Link> : body}
     </li>
   );
@@ -32,7 +32,7 @@ function Stat({ label, value, hint, href }: { label: string; value: string | num
 
 function Panel({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <section className="rounded-2xl border border-line bg-white p-6">
+    <section className="glass rounded-2xl p-6">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-semibold text-charcoal-900">{title}</h2>
         {action}
@@ -72,7 +72,7 @@ export default async function AdminOverview() {
         </section>
       )}
 
-      <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {learning && <Stat label="Access requests waiting" value={learning.waiting} hint={`${learning.enrolled} enrolled · ${learning.published} published courses`} href="/admin/enrollments" />}
         {leads && <Stat label="New inquiries (last 7 days)" value={leads.lastWeek} href="/admin/inquiries" />}
         {leads && <Stat label="Not yet answered" value={leads.unanswered} hint="Status: New" href="/admin/inquiries?status=NEW" />}

@@ -44,7 +44,7 @@ export default async function InquiryPage({ params }: PageProps<"/[lang]/admin/i
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <section aria-labelledby="msg" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="msg" className="glass rounded-2xl p-6">
             <h2 id="msg" className="font-semibold text-charcoal-900">Message</h2>
             <p className="mt-3 whitespace-pre-wrap break-words text-charcoal-800" dir="auto">{inquiry.message}</p>
             <dl className="mt-6 grid gap-3 border-t border-line pt-4 text-sm sm:grid-cols-2">
@@ -57,11 +57,11 @@ export default async function InquiryPage({ params }: PageProps<"/[lang]/admin/i
             </dl>
           </section>
 
-          <section aria-labelledby="notes" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="notes" className="glass rounded-2xl p-6">
             <h2 id="notes" className="font-semibold text-charcoal-900">Notes ({inquiry.notes.length})</h2>
             <ol className="mt-4 space-y-4">
               {inquiry.notes.map((n) => (
-                <li key={n.id} className="rounded-xl bg-surface-alt p-4 text-sm">
+                <li key={n.id} className="glass-subtle rounded-xl p-4 text-sm">
                   <p className="whitespace-pre-wrap break-words text-charcoal-900" dir="auto">{n.body}</p>
                   <p className="mt-2 text-xs text-muted">{n.author?.name ?? "Former team member"} · {dateFmt.format(n.createdAt)}</p>
                 </li>
@@ -73,7 +73,7 @@ export default async function InquiryPage({ params }: PageProps<"/[lang]/admin/i
         </div>
 
         <aside className="space-y-6">
-          <section aria-labelledby="manage" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="manage" className="glass rounded-2xl p-6">
             <h2 id="manage" className="font-semibold text-charcoal-900">Manage</h2>
             <div className="mt-4">
               <LeadUpdateForm

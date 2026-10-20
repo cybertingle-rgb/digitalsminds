@@ -17,7 +17,7 @@ export default async function NewCoursePage() {
         <h1 className="text-2xl font-bold text-charcoal-900">New course</h1>
         <p className="mt-1 text-muted">Start with the basics. You can add details, modules and lessons next. Nothing is visible to students until it&apos;s published.</p>
       </div>
-      <div className="rounded-2xl border border-line bg-white p-6">
+      <div className="glass rounded-2xl p-6">
         <NewCourseForm />
       </div>
     </div>

@@ -28,9 +28,9 @@ export default async function ContactPage({ params, searchParams }: PageProps<"/
       <div className="grid gap-12 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <SectionHeading as="h1" eyebrow={dict.contact.eyebrow} title={dict.contact.title} description={dict.contact.description} />
-          <ContactDetails dict={dict} className="mt-10 rounded-2xl bg-surface-alt p-6 text-muted" />
+          <ContactDetails dict={dict} className="mt-10 glass-subtle rounded-2xl p-6 text-muted" />
         </div>
-        <div className="rounded-2xl border border-line border-t-4 border-t-sun-400 p-6 shadow-sm sm:p-8 lg:col-span-3">
+        <div className="glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6 sm:p-8 lg:col-span-3">
           <InquiryForm
             strings={dict.form}
             services={getServices(dict).map((s) => ({ slug: s.slug, title: s.title }))}

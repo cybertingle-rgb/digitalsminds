@@ -61,7 +61,7 @@ export default async function ServicePage({ params }: Props) {
             <h2 className="text-2xl font-bold text-charcoal-900">{dict.servicePage.included}</h2>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {service.offerings.map((o) => (
-                <li key={o} className="flex gap-3 rounded-lg bg-white p-4 ring-1 ring-line">
+                <li key={o} className="flex gap-3 glass-subtle rounded-xl p-4">
                   <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sun-400 text-xs font-bold text-charcoal-900">
                     ✓
                   </span>
@@ -74,7 +74,7 @@ export default async function ServicePage({ params }: Props) {
             <h2 className="text-2xl font-bold text-charcoal-900">{dict.servicePage.idealFor}</h2>
             <ul className="mt-6 space-y-3">
               {service.idealFor.map((i) => (
-                <li key={i} className="rounded-lg bg-white p-4 ring-1 ring-line">
+                <li key={i} className="glass-subtle rounded-xl p-4">
                   {i}
                 </li>
               ))}

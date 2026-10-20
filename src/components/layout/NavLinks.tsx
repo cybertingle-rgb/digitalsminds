@@ -18,7 +18,7 @@ export function NavLinks({ items, homeHref, onNavigate, vertical = false }: Prop
   // Normalised: English pages are rendered at "/en/..." on the server but shown at "/..." in the browser.
   const pathname = publicPathname(usePathname());
   return (
-    <ul className={vertical ? "flex flex-col gap-1" : "flex items-center gap-1"}>
+    <ul className={vertical ? "flex flex-col gap-1" : "flex items-center gap-0.5"}>
       {items.map((item) => {
         const active = isActive(pathname, item.href, homeHref);
         return (
@@ -27,17 +27,17 @@ export function NavLinks({ items, homeHref, onNavigate, vertical = false }: Prop
               href={item.href}
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
-              className={`relative block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              className={`relative block rounded-xl px-3.5 py-2 text-sm font-medium transition-colors ${
                 active
                   ? vertical
-                    ? "bg-sun-50 text-charcoal-900 shadow-[inset_3px_0_0_var(--color-sun-400)] rtl:shadow-[inset_-3px_0_0_var(--color-sun-400)]"
-                    : "text-charcoal-900"
-                  : "text-muted hover:bg-charcoal-50 hover:text-charcoal-900"
+                    ? "bg-sun-100 text-charcoal-900"
+                    : "bg-white/85 text-charcoal-900 shadow-sm ring-1 ring-white"
+                  : "text-charcoal-700 hover:bg-white/60 hover:text-charcoal-900"
               }`}
             >
               {item.label}
               {active && !vertical && (
-                <span aria-hidden="true" className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-sun-400" />
+                <span aria-hidden="true" className="absolute inset-x-0 -bottom-1 mx-auto h-1 w-1 rounded-full bg-sun-500" />
               )}
             </Link>
           </li>

@@ -38,11 +38,11 @@ export default async function ActivityPage({ searchParams }: PageProps<"/[lang]/
         <p className="mt-1 text-muted">A permanent record of sensitive admin actions: who did what, and when (Pakistan time).</p>
       </div>
       {entries.length === 0 ? (
-        <p className="rounded-xl border border-line bg-white p-6 text-muted">No activity recorded yet.</p>
+        <p className="glass rounded-xl p-6 text-muted">No activity recorded yet.</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+        <div className="overflow-x-auto glass rounded-2xl">
           <table className="w-full text-start text-sm">
-            <thead className="bg-surface-alt text-xs uppercase tracking-wide text-muted">
+            <thead className="bg-white/50 text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th scope="col" className="px-4 py-3 text-start">When</th>
                 <th scope="col" className="px-4 py-3 text-start">Who</th>

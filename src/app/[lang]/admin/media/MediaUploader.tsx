@@ -35,7 +35,7 @@ export function MediaUploader() {
   }
 
   return (
-    <section aria-labelledby="upload-title" className="rounded-2xl border border-line bg-white p-6">
+    <section aria-labelledby="upload-title" className="glass rounded-2xl p-6">
       <h2 id="upload-title" className="text-lg font-semibold text-charcoal-900">Upload files</h2>
       <p className="mt-1 text-sm text-muted">
         Images: JPG, PNG or WebP up to 8 MB (location and camera data are removed). Documents: PDF, Word, Excel or PowerPoint up to 25 MB.
@@ -82,7 +82,7 @@ export function MediaUploader() {
       {items.length > 0 && (
         <ul className="mt-4 space-y-2" aria-live="polite">
           {items.map((it, i) => (
-            <li key={i} className="rounded-lg bg-surface-alt p-3 text-sm">
+            <li key={i} className="glass-subtle rounded-xl p-3 text-sm">
               <div className="flex justify-between gap-3">
                 <span className="truncate font-medium text-charcoal-900">{it.name}</span>
                 <span className="shrink-0 text-muted">{formatBytes(it.size)}</span>

@@ -44,7 +44,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
           <p className="mt-1 text-muted">Leads from the website contact forms. Spam is hidden unless you filter for it.</p>
         </div>
         {can(user.role, "inquiries.export") && (
-          <a href={`/api/admin/inquiries/export?${qs({})}`} className="rounded-lg border border-charcoal-200 bg-white px-4 py-2.5 text-sm font-semibold hover:bg-charcoal-50">
+          <a href={`/api/admin/inquiries/export?${qs({})}`} className="rounded-xl border border-white/80 bg-white/60 shadow-sm px-4 py-2.5 text-sm font-semibold hover:bg-white/90">
             Export CSV{filtered ? " (filtered)" : ""}
           </a>
         )}
@@ -52,7 +52,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
 
       {can(user.role, "settings.manage") && <AlertSettingForm enabled={alerts.enabled} email={alerts.email} smtpReady={!!smtp.verifiedAt} />}
 
-      <form role="search" className="grid gap-3 rounded-2xl border border-line bg-white p-4 sm:grid-cols-2 lg:grid-cols-6">
+      <form role="search" className="grid gap-3 glass rounded-2xl p-4 sm:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <label htmlFor="q" className="block text-sm font-medium">Search</label>
           <input id="q" name="q" defaultValue={filters.q ?? ""} placeholder="Name, email, company or message" className={inputClass} />
@@ -97,11 +97,11 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
       </form>
 
       {items.length === 0 ? (
-        <p className="rounded-2xl border border-line bg-white p-6 text-muted">{filtered ? "No inquiries match these filters." : "No inquiries yet. They will appear here when visitors use the contact form."}</p>
+        <p className="glass rounded-2xl p-6 text-muted">{filtered ? "No inquiries match these filters." : "No inquiries yet. They will appear here when visitors use the contact form."}</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+        <div className="overflow-x-auto glass rounded-2xl">
           <table className="w-full text-sm">
-            <thead className="bg-surface-alt text-xs uppercase tracking-wide text-muted">
+            <thead className="bg-white/50 text-xs uppercase tracking-wide text-muted">
               <tr>
                 <th scope="col" className="px-4 py-3 text-start">Received</th>
                 <th scope="col" className="px-4 py-3 text-start">From</th>
@@ -115,7 +115,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
               {items.map((i) => {
                 const overdue = i.followUpAt && i.followUpAt < start && ["NEW", "CONTACTED", "QUALIFIED"].includes(i.status);
                 return (
-                  <tr key={i.id} className="align-top hover:bg-surface-alt">
+                  <tr key={i.id} className="align-top hover:bg-white/50">
                     <td className="whitespace-nowrap px-4 py-3 text-muted">{dateFmt.format(i.createdAt)}</td>
                     <td className="px-4 py-3">
                       <Link href={`/admin/inquiries/${i.id}`} className="font-semibold text-charcoal-900 underline-offset-4 hover:underline">{i.name}</Link>

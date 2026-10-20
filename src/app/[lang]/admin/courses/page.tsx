@@ -43,7 +43,7 @@ export default async function CoursesPage({ searchParams }: PageProps<"/[lang]/a
             key={t.href}
             href={t.href}
             aria-current={t.active ? "page" : undefined}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium ${t.active ? "bg-charcoal-900 text-white" : "border border-line bg-white text-charcoal-800 hover:bg-charcoal-50"}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium ${t.active ? "bg-charcoal-900 text-white" : "glass-subtle text-charcoal-800 hover:bg-white/80"}`}
           >
             {t.label}
           </Link>
@@ -51,14 +51,14 @@ export default async function CoursesPage({ searchParams }: PageProps<"/[lang]/a
       </nav>
 
       {list.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-charcoal-200 bg-white p-10 text-center">
+        <div className="glass-subtle rounded-2xl border-dashed !border-charcoal-300/70 p-10 text-center">
           <p className="font-semibold text-charcoal-900">{status ? `No ${courseStatusLabels[status].toLowerCase()} courses.` : "No courses yet."}</p>
           {!status && <p className="mt-1 text-sm text-muted">Create your first course, add modules and lessons, then publish it.</p>}
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((c) => (
-            <li key={c.id} className="flex flex-col overflow-hidden rounded-2xl border border-line bg-white">
+            <li key={c.id} className="flex flex-col overflow-hidden glass rounded-2xl">
               <div className="relative aspect-video bg-charcoal-100">
                 {c.thumbnail ? (
                   // eslint-disable-next-line @next/next/no-img-element

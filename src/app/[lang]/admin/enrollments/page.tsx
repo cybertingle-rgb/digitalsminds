@@ -52,7 +52,7 @@ export default async function EnrollmentsPage({ searchParams }: PageProps<"/[lan
             key={t.status}
             href={qs({ status: t.status, page: undefined })}
             aria-current={filter.status === t.status ? "page" : undefined}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium ${filter.status === t.status ? "bg-charcoal-900 text-white" : "border border-line bg-white text-charcoal-800 hover:bg-charcoal-50"}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium ${filter.status === t.status ? "bg-charcoal-900 text-white" : "glass-subtle text-charcoal-800 hover:bg-white/80"}`}
           >
             {t.label} ({byStatus[t.status] ?? 0})
           </Link>
@@ -76,7 +76,7 @@ export default async function EnrollmentsPage({ searchParams }: PageProps<"/[lan
       </form>
 
       {items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-charcoal-200 bg-white p-8 text-center text-muted">
+        <p className="glass-subtle rounded-2xl border-dashed !border-charcoal-300/70 p-8 text-center text-muted">
           {filter.status === "REQUESTED" ? "No requests waiting. New requests appear here and are emailed to the lead alert address." : "Nothing here yet."}
         </p>
       ) : (
@@ -84,7 +84,7 @@ export default async function EnrollmentsPage({ searchParams }: PageProps<"/[lan
           {items.map((e) => {
             const videos = e.course.modules.flatMap((m) => m.lessons).filter((l) => l.videoUrl && driveFileId(l.videoUrl));
             return (
-              <li key={e.id} className="rounded-2xl border border-line bg-white p-5" aria-label={`${e.user.name}: ${e.course.title}`}>
+              <li key={e.id} className="glass rounded-2xl p-5" aria-label={`${e.user.name}: ${e.course.title}`}>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="min-w-0 space-y-2 text-sm">
                     <p className="text-base font-semibold text-charcoal-900" dir="auto">
@@ -100,7 +100,7 @@ export default async function EnrollmentsPage({ searchParams }: PageProps<"/[lan
                       Requested {dateFmt.format(e.requestedAt)}
                       {e.decidedAt && ` · ${e.status === "APPROVED" ? "approved" : e.status === "REJECTED" ? "rejected" : "revoked"} ${dateFmt.format(e.decidedAt)}${e.decidedBy ? ` by ${e.decidedBy.name}` : ""}`}
                     </p>
-                    {e.requestNote && <p className="rounded-lg bg-surface-alt p-3 text-charcoal-800" dir="auto">“{e.requestNote}”</p>}
+                    {e.requestNote && <p className="glass-subtle rounded-xl p-3 text-charcoal-800" dir="auto">“{e.requestNote}”</p>}
                     {e.decisionNote && <p className="text-charcoal-800" dir="auto">Note to student: {e.decisionNote}</p>}
                   </div>
                   <div className="min-w-0 space-y-4">

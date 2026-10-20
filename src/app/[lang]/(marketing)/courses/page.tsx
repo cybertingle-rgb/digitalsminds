@@ -31,7 +31,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
     <Section>
       <SectionHeading as="h1" title={t.title} description={t.description} />
       {courses.length === 0 ? (
-        <div className="mt-10 rounded-2xl bg-surface-alt p-8 text-center">
+        <div className="mt-10 glass-subtle rounded-2xl p-8 text-center">
           <p className="text-charcoal-900">{t.empty}</p>
           <LinkButton href={localizePath("/contact", lang)} className="mt-4">{dict.nav.contact}</LinkButton>
         </div>

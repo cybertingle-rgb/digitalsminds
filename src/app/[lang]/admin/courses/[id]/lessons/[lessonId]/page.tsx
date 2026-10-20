@@ -31,7 +31,7 @@ export default async function EditLessonPage({ params }: PageProps<"/[lang]/admi
         <h1 className="text-2xl font-bold text-charcoal-900" dir="auto">{lesson.title}</h1>
       </div>
 
-      <section aria-label="Lesson" className="rounded-2xl border border-line bg-white p-6">
+      <section aria-label="Lesson" className="glass rounded-2xl p-6">
         <LessonForm
           lesson={{
             id: lesson.id,
@@ -44,7 +44,7 @@ export default async function EditLessonPage({ params }: PageProps<"/[lang]/admi
         />
       </section>
 
-      <section aria-labelledby="lesson-resources" className="rounded-2xl border border-line bg-white p-6">
+      <section aria-labelledby="lesson-resources" className="glass rounded-2xl p-6">
         <h2 id="lesson-resources" className="mb-4 text-lg font-semibold text-charcoal-900">Lesson resources</h2>
         <Resources
           courseId={course.id}

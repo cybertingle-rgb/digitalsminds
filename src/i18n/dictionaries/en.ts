@@ -224,6 +224,7 @@ export const en = {
     company: "Company",
     contact: "Contact",
     copyright: "© {year} Digitals Minds. All rights reserved.",
+    backToTop: "Back to top",
   },
   auth: {
     loginTitle: "Log in to your account",

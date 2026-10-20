@@ -3,9 +3,9 @@ import { Container } from "@/components/ui/Container";
 
 export function AuthCard({ title, subtitle, children, footer }: { title: string; subtitle?: string; children: ReactNode; footer?: ReactNode }) {
   return (
-    <section className="bg-surface-alt py-16 sm:py-20">
+    <section className="py-12 sm:py-16">
       <Container className="max-w-lg">
-        <div className="rounded-2xl border border-line border-t-4 border-t-sun-400 bg-white p-6 shadow-sm sm:p-8">
+        <div className="glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6 sm:p-8">
           <h1 className="text-2xl font-bold text-charcoal-900">{title}</h1>
           {subtitle && <p className="mt-2 text-muted">{subtitle}</p>}
           <div className="mt-6">{children}</div>

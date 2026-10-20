@@ -82,7 +82,7 @@ export default async function MediaPage({ searchParams }: PageProps<"/[lang]/adm
             <option value="document">Documents</option>
           </select>
         </div>
-        <button type="submit" className="rounded-lg border border-charcoal-200 bg-white px-4 py-2.5 text-sm font-semibold hover:bg-charcoal-50">Filter</button>
+        <button type="submit" className="rounded-xl border border-white/80 bg-white/60 shadow-sm px-4 py-2.5 text-sm font-semibold hover:bg-white/90">Filter</button>
         <p className="ms-auto text-sm text-muted">{total} file{total === 1 ? "" : "s"}</p>
       </form>
 

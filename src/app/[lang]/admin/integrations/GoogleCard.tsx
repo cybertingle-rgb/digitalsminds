@@ -42,7 +42,7 @@ export function GoogleCard({ status, origin, redirectUri, flash }: Props) {
   const f = saveState.fields ?? {};
 
   return (
-    <section aria-labelledby="google-title" className="rounded-2xl border border-line bg-white p-6">
+    <section aria-labelledby="google-title" className="glass rounded-2xl p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="google-title" className="text-lg font-semibold text-charcoal-900">Google</h2>
@@ -67,7 +67,7 @@ export function GoogleCard({ status, origin, redirectUri, flash }: Props) {
         {saveState.message && <Notice tone={saveState.status === "error" ? "error" : "success"}>{saveState.message}</Notice>}
       </div>
 
-      <details className="mt-5 rounded-xl bg-surface-alt p-4" open={!status.configured}>
+      <details className="mt-5 glass-subtle rounded-xl p-4" open={!status.configured}>
         <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">How to get your Google credentials (5 minutes)</summary>
         <ol className="mt-3 list-decimal space-y-2 ps-5 text-sm text-charcoal-800">
           <li>

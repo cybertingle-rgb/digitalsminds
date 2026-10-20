@@ -35,7 +35,7 @@ export function TeamTable({ members }: { members: Member[] }) {
     });
 
   return (
-    <section aria-labelledby="team-title" className="rounded-2xl border border-line bg-white p-6">
+    <section aria-labelledby="team-title" className="glass rounded-2xl p-6">
       <h2 id="team-title" className="text-lg font-semibold text-charcoal-900">Team ({members.length})</h2>
       {result?.message && <div className="mt-4"><Notice tone={result.status === "error" ? "error" : "success"}>{result.message}</Notice></div>}
       <ul className="mt-4 divide-y divide-line">

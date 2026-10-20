@@ -40,7 +40,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
         <SectionHeading title={dict.about.divisionsTitle} description={dict.about.divisionsDescription} />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2">
           {getServices(dict).map((s) => (
-            <li key={s.slug} className="rounded-xl border border-line border-s-4 border-s-sun-400 p-5">
+            <li key={s.slug} className="glass rounded-2xl !border-s-4 !border-s-sun-400 p-5">
               <h3 className="font-semibold text-charcoal-900">{s.title}</h3>
               <p className="mt-1 text-sm text-muted">{s.summary}</p>
             </li>

@@ -49,14 +49,14 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             <span>· {course._count.enrollments} {course._count.enrollments === 1 ? "student" : "students"}</span>
           </div>
         </div>
-        <Link href={`/admin/courses/${course.id}/preview`} className="rounded-lg border border-charcoal-200 bg-white px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-charcoal-50">
+        <Link href={`/admin/courses/${course.id}/preview`} className="rounded-xl border border-white/80 bg-white/60 shadow-sm px-4 py-2 text-sm font-semibold text-charcoal-900 hover:bg-white/90">
           Preview as student
         </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="min-w-0 space-y-6 lg:col-span-2">
-          <section aria-labelledby="curriculum" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="curriculum" className="glass rounded-2xl p-6">
             <h2 id="curriculum" className="text-lg font-semibold text-charcoal-900">Curriculum</h2>
             <p className="mb-4 mt-1 text-sm text-muted">Modules group lessons. Open a lesson to add its Google Drive video, text and resources.</p>
             <Curriculum
@@ -78,7 +78,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             />
           </section>
 
-          <section aria-labelledby="details" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="details" className="glass rounded-2xl p-6">
             <h2 id="details" className="mb-4 text-lg font-semibold text-charcoal-900">Course details</h2>
             <DetailsForm
               course={{
@@ -106,7 +106,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             />
           </section>
 
-          <section aria-labelledby="course-resources" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="course-resources" className="glass rounded-2xl p-6">
             <h2 id="course-resources" className="text-lg font-semibold text-charcoal-900">Course resources</h2>
             <p className="mb-4 mt-1 text-sm text-muted">Materials for the whole course. Lesson-specific files are added inside each lesson.</p>
             <Resources courseId={course.id} lessonId={null} items={resourceItems(course.resources)} files={files} />
@@ -114,7 +114,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
         </div>
 
         <aside className="min-w-0 space-y-6">
-          <section aria-labelledby="publish" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="publish" className="glass rounded-2xl p-6">
             <h2 id="publish" className="mb-4 text-lg font-semibold text-charcoal-900">Publishing</h2>
             <PublishPanel
               courseId={course.id}
@@ -127,7 +127,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             />
           </section>
 
-          <section aria-labelledby="instructors" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="instructors" className="glass rounded-2xl p-6">
             <h2 id="instructors" className="mb-4 text-lg font-semibold text-charcoal-900">Instructors</h2>
             {manageAll ? (
               <InstructorsForm courseId={course.id} assigned={course.instructors.map((i) => i.userId)} options={instructors} />
@@ -138,7 +138,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             )}
           </section>
 
-          <section aria-labelledby="students" className="rounded-2xl border border-line bg-white p-6">
+          <section aria-labelledby="students" className="glass rounded-2xl p-6">
             <h2 id="students" className="text-lg font-semibold text-charcoal-900">Students ({roster.students.length})</h2>
             {roster.waiting > 0 && (
               <p className="mt-2 text-sm">

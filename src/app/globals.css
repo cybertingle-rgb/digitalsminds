@@ -28,6 +28,8 @@
   --color-muted: #5f6675;
   --color-surface: #ffffff;
   --color-surface-alt: #f6f7f9;
+  /* Page canvas behind the glass panels (warm off-white). */
+  --color-canvas: #f5f5f1;
   --color-line: #e3e6ea;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -38,7 +40,24 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-surface text-ink antialiased;
+    @apply bg-canvas text-ink antialiased;
+  }
+  /*
+   * Soft brand-coloured glows behind the glass. A fixed layer (not
+   * background-attachment: fixed) so it never repaints while scrolling,
+   * including on iPhone.
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(42rem 32rem at 6% -8%, rgb(253 207 49 / 0.32), transparent 62%),
+      radial-gradient(38rem 30rem at 102% 6%, rgb(43 50 60 / 0.11), transparent 60%),
+      radial-gradient(44rem 34rem at 78% 108%, rgb(253 207 49 / 0.2), transparent 62%),
+      radial-gradient(34rem 26rem at -6% 78%, rgb(55 54 67 / 0.09), transparent 60%);
   }
   /* Urdu: Naskh for Arabic-script text, system font for any Latin text. */
   html:lang(ur) body,
@@ -51,6 +70,63 @@
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-charcoal-900;
+  }
+}
+
+/*
+ * Glass surfaces (light, subtle). Cards only need translucency: the canvas
+ * behind them is already soft, so a backdrop blur would cost battery on
+ * phones without changing the look. Blur is reserved for things that float
+ * over scrolling content (header, menus, sidebars): `glass-blur`.
+ */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.66);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 10px 30px -14px rgb(43 50 60 / 0.2);
+}
+@utility glass-subtle {
+  background-color: rgb(255 255 255 / 0.45);
+  border: 1px solid rgb(255 255 255 / 0.65);
+}
+@utility glass-strong {
+  background-color: rgb(255 255 255 / 0.85);
+  border: 1px solid rgb(255 255 255 / 0.9);
+  box-shadow: 0 12px 36px -16px rgb(43 50 60 / 0.25);
+}
+@utility glass-blur {
+  background-color: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(255 255 255 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.75),
+    0 12px 32px -16px rgb(43 50 60 / 0.28);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
+}
+/* Accent panel (calls to action): charcoal glass with a yellow glow. */
+@utility glass-ink {
+  color: #fff;
+  background:
+    radial-gradient(30rem 18rem at 100% 0%, rgb(253 207 49 / 0.28), transparent 65%),
+    linear-gradient(135deg, rgb(43 50 60 / 0.96), rgb(31 36 44 / 0.94));
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow: 0 18px 40px -18px rgb(31 36 44 / 0.6);
+}
+
+/* Without backdrop-filter support, or for people who ask for less transparency, go nearly solid. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-blur {
+    background-color: rgb(255 255 255 / 0.95);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-subtle,
+  .glass-blur {
+    background-color: rgb(255 255 255 / 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 

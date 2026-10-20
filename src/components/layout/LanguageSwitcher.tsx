@@ -17,8 +17,8 @@ export function LanguageSwitcher({ label }: { label: string }) {
           hrefLang={localeMeta[locale].htmlLang}
           lang={localeMeta[locale].htmlLang}
           aria-current={locale === current ? "true" : undefined}
-          className={`rounded-md px-2 py-1 ${
-            locale === current ? "bg-charcoal-900 text-white" : "text-muted hover:bg-charcoal-50 hover:text-charcoal-900"
+          className={`rounded-lg px-2 py-1 ${
+            locale === current ? "bg-charcoal-900 text-white" : "text-muted hover:bg-white/70 hover:text-charcoal-900"
           }`}
         >
           {localeMeta[locale].label}

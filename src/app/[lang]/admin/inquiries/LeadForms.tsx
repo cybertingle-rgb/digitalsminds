@@ -101,7 +101,7 @@ export function DeleteLead({ id }: { id: string }) {
 export function AlertSettingForm({ enabled, email, smtpReady }: { enabled: boolean; email: string; smtpReady: boolean }) {
   const [state, onSubmit, pending] = useFormAction<LeadState>(saveAlertSettingAction, { status: "idle" });
   return (
-    <details className="rounded-2xl border border-line bg-white p-5">
+    <details className="glass rounded-2xl p-5">
       <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">
         Lead alert emails: {enabled ? `on, to ${email}` : "off"}
       </summary>

@@ -51,7 +51,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
         <section aria-labelledby="my-courses">
           <h2 id="my-courses" className="text-xl font-bold text-charcoal-900">{t.myCourses}</h2>
           {enrolled.length === 0 ? (
-            <div className="mt-4 rounded-2xl bg-surface-alt p-6">
+            <div className="mt-4 glass-subtle rounded-2xl p-6">
               <p className="text-charcoal-900">{t.noCourses}</p>
               <LinkButton href={localizePath("/courses", locale)} className="mt-4">{t.browseCourses}</LinkButton>
             </div>
@@ -60,7 +60,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
               {enrolled.map(({ course, enrollment, percent, done, total, lastLesson, canLearn }) => {
                 const text = listingText(course, locale);
                 return (
-                  <li key={enrollment.id} className="flex flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-line">
+                  <li key={enrollment.id} className="glass flex flex-col overflow-hidden rounded-3xl">
                     <div className="relative aspect-video bg-charcoal-800">
                       {course.thumbnail?.visibility === "PUBLIC" && (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -98,7 +98,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
         {requests.length > 0 && (
           <section aria-labelledby="requests">
             <h2 id="requests" className="text-xl font-bold text-charcoal-900">{t.requests}</h2>
-            <ul className="mt-4 divide-y divide-line rounded-2xl ring-1 ring-line">
+            <ul className="mt-4 glass divide-y divide-charcoal-200/50 rounded-2xl">
               {requests.map(({ course, enrollment }) => (
                 <li key={enrollment.id} className="flex flex-wrap items-start justify-between gap-3 p-5 text-sm">
                   <div className="min-w-0">
@@ -117,7 +117,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
           </section>
         )}
 
-        <section aria-labelledby="profile" className="rounded-2xl p-6 ring-1 ring-line">
+        <section aria-labelledby="profile" className="glass rounded-2xl p-6">
           <h2 id="profile" className="text-xl font-bold text-charcoal-900">{t.profile}</h2>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
