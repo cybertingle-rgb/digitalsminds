@@ -8,6 +8,7 @@ import { hasLocale, localeMeta, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { certificateByCode, normaliseCode } from "@/modules/certificates/service";
+import { getLogos } from "@/modules/content/settings";
 
 export const dynamic = "force-dynamic";
 // Certificates are shared by link, not listed in search engines.
@@ -49,7 +50,7 @@ export default async function CertificatePage({ params }: PageProps<"/[lang]/cer
             <div aria-hidden="true" className="absolute inset-[4.2%] rounded-xl border border-charcoal-900/15" />
             <div className="relative flex h-full flex-col items-center justify-between px-[8%] py-[6%] text-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={siteConfig.logo.light.src} alt={dict.brand.name} className="h-[11%] w-auto" />
+              <img src={(await getLogos()).light.src} alt={dict.brand.name} className="h-[11%] w-auto" />
               <div className="flex flex-col items-center gap-[0.6em] text-[clamp(10px,1.6vw,18px)]">
                 <p className="text-[1.9em] font-bold uppercase tracking-[0.18em] text-charcoal-900">{t.heading}</p>
                 <span aria-hidden="true" className="h-[3px] w-24 rounded-full bg-sun-400" />

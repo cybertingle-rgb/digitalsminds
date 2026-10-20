@@ -4,58 +4,36 @@ import { notFound } from "next/navigation";
 import { CtaBanner } from "@/components/sections/CtaBanner";
 import { Arrow } from "@/components/ui/Arrow";
 import { Container } from "@/components/ui/Container";
-import { formatDate, getPost, getPosts, type Block } from "@/content/blog";
-import { hasLocale, localeMeta, locales, localizePath } from "@/i18n/config";
+import { formatDate } from "@/content/blog";
+import { publicPost } from "@/modules/content/blog";
+import { RichText } from "@/modules/courses/richtext";
+import { hasLocale, localeMeta, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { homeText } from "@/modules/content/settings";
 import { pageMetadata } from "@/i18n/metadata";
 
 type Props = PageProps<"/[lang]/blog/[slug]">;
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return locales.flatMap((lang) => getPosts().map((p) => ({ lang, slug: p.slug })));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
-  const post = getPost(slug);
-  if (!post || !hasLocale(lang)) return {};
-  const base = pageMetadata(lang, `/blog/${slug}`, { title: post.title, description: post.excerpt });
+  if (!hasLocale(lang)) return {};
+  const post = await publicPost(slug);
+  if (!post) return { robots: { index: false, follow: false } };
+  const base = pageMetadata(lang, `/blog/${slug}`, {
+    title: post.seoTitle || post.title,
+    description: post.seoDescription || post.excerpt,
+    image: post.cover ? { url: post.cover.url, width: post.cover.width, height: post.cover.height } : undefined,
+  });
   return { ...base, openGraph: { ...base.openGraph, type: "article", publishedTime: post.publishedAt } };
-}
-
-function renderBlock(block: Block, i: number) {
-  switch (block.type) {
-    case "h2":
-      return (
-        <h2 key={i} className="mt-10 text-2xl font-bold text-charcoal-900">
-          {block.text}
-        </h2>
-      );
-    case "ul":
-      return (
-        <ul key={i} className="mt-4 list-disc space-y-1 ps-6 marker:text-sun-500">
-          {block.items.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      );
-    default:
-      return (
-        <p key={i} className="mt-4 leading-relaxed">
-          {block.text}
-        </p>
-      );
-  }
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
-  const post = getPost(slug);
+  const post = await publicPost(slug);
   if (!post) notFound();
   const dict = getDictionary(lang);
+  const h = await homeText(lang, dict);
   const postMeta = localeMeta[post.lang];
 
   return (
@@ -70,11 +48,17 @@ export default async function BlogPostPage({ params }: Props) {
             <p className="mt-4 text-sm text-muted">
               {post.author} · <time dateTime={post.publishedAt}>{formatDate(post.publishedAt, postMeta.intl)}</time>
             </p>
-            <div className="mt-8 text-lg text-charcoal-800">{post.body.map(renderBlock)}</div>
+            {post.cover && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={post.cover.url} alt={post.cover.alt} className="mt-8 w-full rounded-3xl ring-1 ring-white" />
+            )}
+            <div className="glass-strong mt-8 rounded-3xl p-6 sm:p-10">
+              <RichText text={post.body} className="text-lg text-charcoal-800" />
+            </div>
           </div>
         </Container>
       </article>
-      <CtaBanner title={dict.cta.title} text={dict.cta.text} label={dict.cta.label} href={localizePath("/contact", lang)} />
+      <CtaBanner title={h.ctaTitle} text={h.ctaText} label={dict.cta.label} href={localizePath("/contact", lang)} />
     </>
   );
 }

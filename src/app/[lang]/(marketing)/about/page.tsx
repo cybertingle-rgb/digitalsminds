@@ -7,19 +7,21 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getServices } from "@/content/services";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { pageMetadata } from "@/i18n/metadata";
+import { homeText } from "@/modules/content/settings";
+import { editablePageMetadata } from "@/modules/content/metadata";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/about">): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const dict = getDictionary(lang);
-  return pageMetadata(lang, "/about", { title: dict.nav.about, description: dict.about.metaDescription });
+  return editablePageMetadata("about", lang, "/about", { title: dict.nav.about, description: dict.about.metaDescription });
 }
 
 export default async function AboutPage({ params }: PageProps<"/[lang]/about">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
+  const h = await homeText(lang, dict);
   return (
     <>
       <Section>
@@ -47,7 +49,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
           ))}
         </ul>
       </Section>
-      <CtaBanner title={dict.about.ctaTitle} text={dict.cta.text} label={dict.cta.label} href={localizePath("/contact", lang)} />
+      <CtaBanner title={dict.about.ctaTitle} text={h.ctaText} label={dict.cta.label} href={localizePath("/contact", lang)} />
     </>
   );
 }

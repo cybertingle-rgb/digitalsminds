@@ -6,9 +6,17 @@ import { Fragment, type ReactNode } from "react";
  *   "## Title"   -> heading
  *   "- item"     -> bullet list
  *   https://...  -> link (opens in a new tab)
+ *   ![alt](/media/...) on its own line -> image from our own Media library only
  */
 
-export type Block = { type: "h"; text: string } | { type: "ul"; items: string[] } | { type: "p"; lines: string[] };
+export type Block =
+  | { type: "h"; text: string }
+  | { type: "ul"; items: string[] }
+  | { type: "p"; lines: string[] }
+  | { type: "img"; alt: string; src: string };
+
+// Only images served by this site (public Media files) can be embedded.
+const IMAGE_RE = /^!\[([^\]]{0,200})\]\((\/media\/[A-Za-z0-9/_.-]{1,300})\)$/;
 
 export function parseRichText(input: string): Block[] {
   const blocks: Block[] = [];
@@ -24,7 +32,11 @@ export function parseRichText(input: string): Block[] {
     };
     for (const line of lines) {
       const t = line.trim();
-      if (t.startsWith("## ")) {
+      const img = IMAGE_RE.exec(t);
+      if (img && !img[2]!.includes("..")) {
+        flush();
+        blocks.push({ type: "img", alt: img[1]!, src: img[2]! });
+      } else if (t.startsWith("## ")) {
         flush();
         blocks.push({ type: "h", text: t.slice(3).trim() });
       } else if (/^[-*•] /.test(t)) {
@@ -58,7 +70,10 @@ export function RichText({ text, className = "" }: { text: string; className?: s
   return (
     <div className={`space-y-4 leading-relaxed ${className}`} dir="auto">
       {parseRichText(text).map((b, i) =>
-        b.type === "h" ? (
+        b.type === "img" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={i} src={b.src} alt={b.alt} loading="lazy" className="h-auto w-full rounded-2xl ring-1 ring-white" />
+        ) : b.type === "h" ? (
           <h3 key={i} className="pt-2 text-xl font-semibold text-charcoal-900">{linkify(b.text)}</h3>
         ) : b.type === "ul" ? (
           <ul key={i} className="list-disc space-y-1 ps-6 marker:text-sun-500">

@@ -1,0 +1,179 @@
+import "server-only";
+import { cache } from "react";
+import { z } from "zod";
+import { siteConfig } from "@/config/site";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries/en";
+import { db } from "@/lib/db";
+import { mediaUrl } from "@/modules/media/service";
+
+/**
+ * Website content edited in Admin → Website, stored as SiteSetting rows.
+ * Every getter falls back to the built-in text, so the site keeps working
+ * when nothing has been edited yet (or the database is unreachable).
+ */
+
+const text = (max: number) => z.string().trim().max(max);
+const opt = (max: number) => text(max).optional().transform((v) => (v ? v : undefined));
+
+// --- Homepage ------------------------------------------------------------------
+
+export const homeInput = z.object({
+  heroTitle: opt(200),
+  heroTitleUr: opt(200),
+  heroText: opt(600),
+  heroTextUr: opt(600),
+  whyTitle: opt(200),
+  whyTitleUr: opt(200),
+  why: z
+    .array(z.object({ title: opt(120), titleUr: opt(120), text: opt(400), textUr: opt(400) }))
+    .max(4)
+    .default([]),
+  ctaTitle: opt(200),
+  ctaTitleUr: opt(200),
+  ctaText: opt(400),
+  ctaTextUr: opt(400),
+});
+export type HomeContent = z.infer<typeof homeInput>;
+
+// --- Contact -------------------------------------------------------------------
+
+export const contactInput = z.object({
+  email: z.email("Enter a valid email address").max(254),
+  address: z.array(text(120)).max(5),
+  addressUr: z.array(text(120)).max(5),
+});
+export type ContactContent = z.infer<typeof contactInput>;
+
+// --- SEO -----------------------------------------------------------------------
+
+export const seoPages = ["home", "about", "services", "courses", "caseStudies", "blog", "contact"] as const;
+export type SeoPage = (typeof seoPages)[number];
+export const seoPageLabels: Record<SeoPage, string> = {
+  home: "Home",
+  about: "About",
+  services: "Services",
+  courses: "Courses",
+  caseStudies: "Case studies",
+  blog: "Blog",
+  contact: "Contact",
+};
+const seoEntry = z.object({ title: opt(70), titleUr: opt(70), description: opt(170), descriptionUr: opt(170), imageId: opt(64) });
+export const seoInput = z.partialRecord(z.enum(seoPages), seoEntry);
+export type SeoContent = z.infer<typeof seoInput>;
+
+// --- Legal pages -----------------------------------------------------------------
+
+export const legalPages = ["privacy", "terms"] as const;
+export type LegalPage = (typeof legalPages)[number];
+export const legalInput = z.object({
+  title: text(200).min(3, "Enter a title"),
+  titleUr: opt(200),
+  body: text(100_000).min(20, "Paste the page text"),
+  bodyUr: opt(100_000),
+  published: z.boolean(),
+});
+export type LegalContent = z.infer<typeof legalInput> & { updatedAt?: string };
+
+// --- Logo ----------------------------------------------------------------------
+
+export const logoInput = z.object({ lightId: z.string().max(64).nullable(), darkId: z.string().max(64).nullable() });
+export type LogoSetting = z.infer<typeof logoInput>;
+export type Logo = { src: string; width: number; height: number };
+
+// ---------------------------------------------------------------------------------
+
+const read = cache(async (key: string): Promise<unknown> => {
+  try {
+    return (await db().siteSetting.findUnique({ where: { key } }))?.value ?? null;
+  } catch {
+    return null;
+  }
+});
+
+async function readParsed<T>(key: string, schema: z.ZodType<T>): Promise<T | null> {
+  const parsed = schema.safeParse(await read(key));
+  return parsed.success ? parsed.data : null;
+}
+
+export async function saveSetting(key: string, value: unknown, actorId: string) {
+  const json = JSON.parse(JSON.stringify(value));
+  await db().siteSetting.upsert({ where: { key }, create: { key, value: json, updatedById: actorId }, update: { value: json, updatedById: actorId } });
+}
+
+export const getHomeContent = () => readParsed("site.home", homeInput);
+export const getContactSetting = () => readParsed("site.contact", contactInput);
+export const getSeoSetting = async (): Promise<Partial<SeoContent>> => (await readParsed("site.seo", seoInput)) ?? {};
+export const getLegalPage = (page: LegalPage) => readParsed(`page.${page}`, legalInput.extend({ updatedAt: z.string().optional() }));
+export const getLogoSetting = async () => (await readParsed("site.logo", logoInput)) ?? { lightId: null, darkId: null };
+
+const pick = (locale: Locale, en: string | undefined, ur: string | undefined, fallback: string) => (locale === "ur" ? ur || en || fallback : en || fallback);
+
+/** Homepage text in the visitor's language, with the dictionary as fallback. */
+export async function homeText(locale: Locale, dict: Dictionary) {
+  const h = (await getHomeContent()) ?? homeInput.parse({});
+  return {
+    heroTitle: pick(locale, h.heroTitle, h.heroTitleUr, dict.brand.positioning),
+    heroText: pick(locale, h.heroText, h.heroTextUr, dict.home.heroText),
+    whyTitle: pick(locale, h.whyTitle, h.whyTitleUr, dict.home.whyTitle),
+    why: dict.home.why.map((d, i) => ({
+      title: pick(locale, h.why[i]?.title, h.why[i]?.titleUr, d.title),
+      text: pick(locale, h.why[i]?.text, h.why[i]?.textUr, d.text),
+    })),
+    ctaTitle: pick(locale, h.ctaTitle, h.ctaTitleUr, dict.cta.title),
+    ctaText: pick(locale, h.ctaText, h.ctaTextUr, dict.cta.text),
+  };
+}
+
+/** Email and office address shown on the site. */
+export async function contactDetails(locale: Locale, dict: Dictionary) {
+  const c = await getContactSetting();
+  const address = c ? (locale === "ur" && c.addressUr.some(Boolean) ? c.addressUr : c.address).filter(Boolean) : [];
+  return { email: c?.email ?? siteConfig.contact.email, address: address.length ? address : dict.contact.address };
+}
+
+/** Search title/description/share image overrides for a page. */
+export async function seoFor(page: SeoPage, locale: Locale) {
+  const s = (await getSeoSetting())[page];
+  if (!s) return {};
+  let image: { url: string; width?: number; height?: number } | undefined;
+  if (s.imageId) {
+    const a = await db()
+      .mediaAsset.findUnique({ where: { id: s.imageId } })
+      .catch(() => null);
+    if (a?.visibility === "PUBLIC") image = { url: mediaUrl(a), width: a.width ?? undefined, height: a.height ?? undefined };
+  }
+  return {
+    title: locale === "ur" ? s.titleUr || s.title : s.title,
+    description: locale === "ur" ? s.descriptionUr || s.description : s.description,
+    image,
+  };
+}
+
+/** Current logos (uploaded replacements, or the official files). */
+export const getLogos = cache(async (): Promise<{ light: Logo; dark: Logo }> => {
+  const s = await getLogoSetting();
+  const load = async (id: string | null, fallback: Logo): Promise<Logo> => {
+    if (!id) return fallback;
+    try {
+      const a = await db().mediaAsset.findUnique({ where: { id } });
+      if (a && a.visibility === "PUBLIC" && a.mimeType.startsWith("image/") && a.width && a.height) return { src: mediaUrl(a), width: a.width, height: a.height };
+    } catch {
+      // fall back below
+    }
+    return fallback;
+  };
+  const [light, dark] = await Promise.all([load(s.lightId, siteConfig.logo.light), load(s.darkId, siteConfig.logo.dark)]);
+  return { light, dark };
+});
+
+/** Public images from the Media library, for image pickers. */
+export async function publicImages() {
+  const rows = await db().mediaAsset.findMany({
+    where: { visibility: "PUBLIC", mimeType: { startsWith: "image/" } },
+    orderBy: { createdAt: "desc" },
+    take: 300,
+    select: { id: true, originalName: true, storageKey: true, visibility: true },
+  });
+  return rows.map((r) => ({ id: r.id, name: r.originalName, url: mediaUrl(r) }));
+}

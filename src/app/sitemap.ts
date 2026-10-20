@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 import { features } from "@/config/features";
 import { siteConfig } from "@/config/site";
-import { getPosts } from "@/content/blog";
 import { serviceSlugs } from "@/content/services";
 import { localizePath, type Locale } from "@/i18n/config";
 import { db } from "@/lib/db";
+import { publicPosts } from "@/modules/content/blog";
+import { publishedCaseStudies } from "@/modules/content/items";
+import { getLegalPage } from "@/modules/content/settings";
 
 // Generated on request (one small query), so newly published courses appear straight away.
 export const dynamic = "force-dynamic";
@@ -19,12 +21,23 @@ async function publishedCourseEntries() {
   }
 }
 
+async function contentEntries() {
+  const [posts, cases, privacy, terms] = await Promise.all([publicPosts(), publishedCaseStudies(), getLegalPage("privacy"), getLegalPage("terms")]);
+  return [
+    ...posts.map((p) => ({ path: `/blog/${p.slug}`, lastModified: p.updatedAt ?? p.publishedAt })),
+    ...(cases.length ? [{ path: "/case-studies" }] : []),
+    ...cases.map((c) => ({ path: `/case-studies/${c.slug}`, lastModified: c.updatedAt.toISOString() })),
+    ...(privacy?.published ? [{ path: "/privacy" }] : []),
+    ...(terms?.published ? [{ path: "/terms" }] : []),
+  ];
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: { path: string; lastModified?: string }[] = [
     ...["/", "/about", "/services", "/courses", "/blog", "/contact"].map((path) => ({ path })),
     ...(await publishedCourseEntries()),
     ...serviceSlugs.map((slug) => ({ path: `/services/${slug}` })),
-    ...getPosts().map((p) => ({ path: `/blog/${p.slug}`, lastModified: p.publishedAt })),
+    ...(await contentEntries()),
   ];
   // Urdu URLs are listed only once the translation is public (see features.urduPublic).
   const sitemapLocales: Locale[] = features.urduPublic ? ["en", "ur"] : ["en"];

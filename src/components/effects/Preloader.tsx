@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site";
+import { getLogos } from "@/modules/content/settings";
 
 /**
  * Neon logo preloader, shown once per browser session. Hidden by default in
@@ -10,8 +10,8 @@ export const PRELOADER_HEAD_SCRIPT = `try{if(!sessionStorage.getItem("dm-seen"))
 
 export const PRELOADER_END_SCRIPT = `(function(){var d=document.documentElement;if(!d.classList.contains("dm-preloading"))return;var t0=Date.now(),done=false;function end(){if(done)return;done=true;var el=document.getElementById("dm-preloader");if(el)el.classList.add("dm-done");setTimeout(function(){d.classList.remove("dm-preloading")},650)}function soon(){setTimeout(end,Math.max(0,900-(Date.now()-t0)))}if(document.readyState==="complete")soon();else window.addEventListener("load",soon);setTimeout(end,2500)})();`;
 
-export function Preloader({ label }: { label: string }) {
-  const logo = siteConfig.logo.light;
+export async function Preloader({ label }: { label: string }) {
+  const logo = (await getLogos()).light;
   return (
     <div id="dm-preloader" role="status" aria-label={label} className="fixed inset-0 z-[100] items-center justify-center overflow-hidden bg-[#fffdf5]">
       {/* Screen-filling neon glow */}

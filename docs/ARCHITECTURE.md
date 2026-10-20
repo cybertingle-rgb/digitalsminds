@@ -73,6 +73,18 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Website content management (Phase 11)
+
+- `src/modules/content/settings.ts`: SiteSetting-backed content with built-in fallbacks: `site.home` (hero, why-us, CTA; EN+UR),
+  `site.contact`, `site.seo` (per-page title/description/share image), `page.privacy` / `page.terms`, `site.logo`
+  (replacement logos from Media; Super Admin). Reads are per-request cached and never throw (DB down -> built-in text).
+- `src/modules/content/items.ts`: FAQs (import built-ins once; built-ins shown until then), testimonials and case studies
+  (publishing requires recorded consent), up/down ordering. `src/modules/content/blog.ts`: posts in the database with
+  draft/published/scheduled; built-in posts in `src/content/blog.ts` are shown until the first DB post exists (import button).
+- Rich text gained images: `![alt](/media/...)` on its own line, only from this site's public Media files.
+- Caching: the `[lang]` root layout revalidates every 60 s; every save calls `revalidatePath("/[lang]", "layout")` so edits
+  appear at once. Admin: `/admin/website` with tabs (content.manage; Logo needs settings.manage).
+
 ## Communication, support, certificates, newsletter (Phase 10)
 
 - `src/modules/notifications/service.ts`: in-app notifications (stored ready to show; links localised when rendered). Created for

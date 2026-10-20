@@ -98,3 +98,16 @@ describe("formatMinutes", () => {
     expect(formatMinutes(null)).toBeNull();
   });
 });
+
+describe("rich text images", () => {
+  it("embeds only images from our own media library", () => {
+    expect(parseRichText("Intro\n\n![Team photo](/media/2026/10/team.webp)\n\nAfter")).toEqual([
+      { type: "p", lines: ["Intro"] },
+      { type: "img", alt: "Team photo", src: "/media/2026/10/team.webp" },
+      { type: "p", lines: ["After"] },
+    ]);
+    for (const bad of ["![x](https://evil.example/a.png)", "![x](/media/../etc/passwd)", "![x](javascript:alert(1))", '![x](/media/a.png" onerror="x)']) {
+      expect(parseRichText(bad)[0]!.type).toBe("p");
+    }
+  });
+});

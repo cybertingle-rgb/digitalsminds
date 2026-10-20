@@ -1,8 +1,10 @@
-import { siteConfig } from "@/config/site";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { contactDetails } from "@/modules/content/settings";
 
 /** Email and office address. No phone numbers are shown (owner decision). */
-export function ContactDetails({ dict, inverse = false, className = "" }: { dict: Dictionary; inverse?: boolean; className?: string }) {
+export async function ContactDetails({ dict, locale, inverse = false, className = "" }: { dict: Dictionary; locale: Locale; inverse?: boolean; className?: string }) {
+  const contact = await contactDetails(locale, dict);
   const label = inverse ? "text-white" : "text-charcoal-900";
   const link = inverse ? "hover:text-sun-400" : "underline-offset-4 hover:underline";
   return (
@@ -10,8 +12,8 @@ export function ContactDetails({ dict, inverse = false, className = "" }: { dict
       <div>
         <dt className={`font-semibold ${label}`}>{dict.contact.emailLabel}</dt>
         <dd className="mt-1">
-          <a className={link} href={`mailto:${siteConfig.contact.email}`} dir="ltr">
-            {siteConfig.contact.email}
+          <a className={link} href={`mailto:${contact.email}`} dir="ltr">
+            {contact.email}
           </a>
         </dd>
       </div>
@@ -19,7 +21,7 @@ export function ContactDetails({ dict, inverse = false, className = "" }: { dict
         <dt className={`font-semibold ${label}`}>{dict.contact.officeLabel}</dt>
         <dd className="mt-1">
           <address className="not-italic">
-            {dict.contact.address.map((line) => (
+            {contact.address.map((line) => (
               <span key={line} className="block">
                 {line}
               </span>

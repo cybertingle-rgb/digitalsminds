@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-20 (Phase 10 complete).
+Last updated: 2026-10-20 (Phase 11 complete).
 
 ## Confirmed decisions
 
@@ -59,15 +59,16 @@ Last updated: 2026-10-20 (Phase 10 complete).
 | 50 | Certificates | Printable A4 certificate page (browser "Save as PDF"), no PDF library; issued after staff review (Super Admin, Content Manager); public verification shows name, course, date and ID only |
 | 51 | Support | Super Admin + Content Manager see all requests; instructors see requests about their own courses; internal notes are staff-only |
 | 52 | Newsletter | Footer sign-up with email confirmation; list for Super Admin + Content Manager; CSV export and removal Super Admin only. Sending newsletters is a later option |
+| 53 | Content editing | Simple formatting (no visual editor library) with images from Media; draft/publish switch on every item; Super Admin + Content Manager edit content; logo replaceable by Super Admin only |
 
 ## Open items (waiting on owner)
 
 - [ ] File storage: Admin → Integrations → File storage → Run check, redeploy, Run check again (enables uploads); confirm Hostinger backups include the upload folder
 - [ ] Social media links: paste Facebook, Instagram and LinkedIn URLs in Admin → Website
-- [ ] Approve or edit the drafted "Why Digitals Minds" and FAQ text on the home page
+- [ ] Review the "Why Digitals Minds" and FAQ text: now editable in Admin → Website (Homepage, FAQs)
 - [ ] Send verified testimonials (name, role/company, quote, photo if any, permission)
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
-- [ ] Privacy Policy and Terms & Conditions text
+- [ ] Privacy Policy and Terms & Conditions text: paste in Admin → Website → Legal pages and publish
 - [ ] Urdu translations (provided when the bilingual structure is ready)
 - [ ] Later: GA4 Measurement ID and Search Console verification (Phase 12)
 - [x] Hostinger env vars set and `/setup` completed (owner confirmed login and setup work)
@@ -78,7 +79,8 @@ Last updated: 2026-10-20 (Phase 10 complete).
 - [x] Approval to start Phase 8 (catalogue, enrollment requests and approvals, student dashboard, lesson player)
 - [x] Approval to start Phase 9 (student management: search, profiles, suspend/reactivate, manual enroll, exports)
 - [x] Approval to start Phase 10 (announcements, notifications, support tickets, certificates, newsletter)
-- [ ] Approval to start Phase 11 (website content management: homepage, FAQs, testimonials, case studies, blog, legal pages, SEO fields)
+- [x] Approval to start Phase 11 (website content management)
+- [ ] Approval to start Phase 12 (SEO, analytics with consent, performance and accessibility; needs GA4 Measurement ID and Search Console access)
 
 ## Assumptions (to confirm or correct)
 
@@ -108,3 +110,4 @@ Last updated: 2026-10-20 (Phase 10 complete).
 | 2026-10-20 | Phase 9: student list, search and filters, profiles with progress and history, manual enrollment, edit/suspend (Super Admin), CSV export, 31-check e2e run | `4026856` |
 | 2026-10-20 | Glass design v1 and v2 (owner request): glass UI, floating header, new footer, social rail, preloader, richer home | `0ba1984`, `b31f3dd` |
 | 2026-10-20 | Phase 10: notifications, announcements, support tickets, certificates with review and verification, newsletter with double opt-in, 37-check e2e run | `e033e49`, `8b12b97` |
+| 2026-10-20 | Phase 11: website content management (homepage, blog, FAQs, testimonials, case studies, legal pages, SEO, contact, logo), 27-check e2e run | _pending_ |

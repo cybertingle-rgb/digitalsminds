@@ -1,0 +1,235 @@
+"use client";
+
+import { useState, type ReactNode } from "react";
+import { Notice } from "@/components/admin/ui";
+import { describedBy, Field, inputClass } from "@/components/forms/Field";
+import { useFormAction } from "@/components/forms/useFormAction";
+import { Button } from "@/components/ui/Button";
+import {
+  saveContactAction,
+  saveHomeAction,
+  saveLegalAction,
+  saveLogoAction,
+  saveSeoAction,
+  type WebsiteState,
+} from "./actions";
+
+const idle: WebsiteState = { status: "idle" };
+export type ImageOption = { id: string; name: string; url: string };
+
+function Footer({ state, pending, label }: { state: WebsiteState; pending: boolean; label: string }) {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button type="submit" variant="dark" disabled={pending}>{pending ? "Saving…" : label}</Button>
+      {state.message && <Notice tone={state.status === "error" ? "error" : "success"}>{state.message}</Notice>}
+    </div>
+  );
+}
+
+/** English + Urdu inputs side by side. `placeholder` shows the current built-in text. */
+function Pair(props: {
+  state: WebsiteState;
+  name: string;
+  label: string;
+  en?: string;
+  ur?: string;
+  placeholder?: string;
+  rows?: number;
+  max: number;
+}) {
+  const field = (lang: "en" | "ur") => {
+    const name = lang === "en" ? props.name : `${props.name}Ur`;
+    const err = props.state.errors?.[name];
+    const common = {
+      id: name,
+      name,
+      defaultValue: (lang === "en" ? props.en : props.ur) ?? "",
+      placeholder: lang === "en" ? props.placeholder : "اردو (اختیاری)",
+      maxLength: props.max,
+      dir: lang === "ur" ? "rtl" : "auto",
+      lang: lang === "ur" ? "ur" : undefined,
+      className: inputClass,
+      "aria-invalid": err ? true : undefined,
+      "aria-describedby": describedBy(name, err),
+    } as const;
+    return (
+      <Field label={`${props.label} (${lang === "en" ? "English" : "Urdu"})`} name={name} error={err}>
+        {props.rows ? <textarea rows={props.rows} {...common} /> : <input {...common} />}
+      </Field>
+    );
+  };
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {field("en")}
+      {field("ur")}
+    </div>
+  );
+}
+
+function Group({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+  return (
+    <fieldset className="glass space-y-4 rounded-2xl p-5 sm:p-6">
+      <legend className="sr-only">{title}</legend>
+      <div>
+        <p className="font-semibold text-charcoal-900">{title}</p>
+        {hint && <p className="text-sm text-muted">{hint}</p>}
+      </div>
+      {children}
+    </fieldset>
+  );
+}
+
+// --- Homepage ---------------------------------------------------------------------
+
+type Home = {
+  heroTitle?: string; heroTitleUr?: string; heroText?: string; heroTextUr?: string;
+  whyTitle?: string; whyTitleUr?: string; why: { title?: string; titleUr?: string; text?: string; textUr?: string }[];
+  ctaTitle?: string; ctaTitleUr?: string; ctaText?: string; ctaTextUr?: string;
+};
+type HomeDefaults = { heroTitle: string; heroText: string; whyTitle: string; why: { title: string; text: string }[]; ctaTitle: string; ctaText: string };
+
+export function HomeForm({ value, defaults }: { value: Home; defaults: HomeDefaults }) {
+  const [state, onSubmit, pending] = useFormAction(saveHomeAction, idle);
+  return (
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
+      <p className="text-sm text-muted">Leave a box empty to keep the text shown in grey. Urdu boxes are optional; English is used until you fill them.</p>
+      <Group title="Top of the page">
+        <Pair state={state} name="heroTitle" label="Headline" en={value.heroTitle} ur={value.heroTitleUr} placeholder={defaults.heroTitle} max={200} />
+        <Pair state={state} name="heroText" label="Introduction" en={value.heroText} ur={value.heroTextUr} placeholder={defaults.heroText} rows={3} max={600} />
+      </Group>
+      <Group title="Why Digitals Minds" hint="Four short points.">
+        <Pair state={state} name="whyTitle" label="Section title" en={value.whyTitle} ur={value.whyTitleUr} placeholder={defaults.whyTitle} max={200} />
+        {defaults.why.map((d, i) => (
+          <div key={i} className="space-y-3 border-t border-charcoal-200/50 pt-4">
+            <p className="text-sm font-medium text-charcoal-800">Point {i + 1}</p>
+            <Pair state={state} name={`why.${i}.title`} label="Title" en={value.why[i]?.title} ur={value.why[i]?.titleUr} placeholder={d.title} max={120} />
+            <Pair state={state} name={`why.${i}.text`} label="Text" en={value.why[i]?.text} ur={value.why[i]?.textUr} placeholder={d.text} rows={2} max={400} />
+          </div>
+        ))}
+      </Group>
+      <Group title="Call to action banner" hint="The yellow panel near the bottom of most pages.">
+        <Pair state={state} name="ctaTitle" label="Title" en={value.ctaTitle} ur={value.ctaTitleUr} placeholder={defaults.ctaTitle} max={200} />
+        <Pair state={state} name="ctaText" label="Text" en={value.ctaText} ur={value.ctaTextUr} placeholder={defaults.ctaText} rows={2} max={400} />
+      </Group>
+      <Footer state={state} pending={pending} label="Save homepage" />
+    </form>
+  );
+}
+
+// --- Contact ------------------------------------------------------------------------
+
+export function ContactForm({ value }: { value: { email: string; address: string[]; addressUr: string[] } }) {
+  const [state, onSubmit, pending] = useFormAction(saveContactAction, idle);
+  const e = (k: string) => state.errors?.[k];
+  return (
+    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      <Field label="Email shown on the website" name="email" error={e("email")}>
+        <input id="email" name="email" type="email" dir="ltr" defaultValue={value.email} className={inputClass} aria-invalid={e("email") ? true : undefined} aria-describedby={describedBy("email", e("email"))} />
+      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Office address (English)" name="address" hint="One line per row.">
+          <textarea id="address" name="address" rows={4} defaultValue={value.address.join("\n")} className={inputClass} />
+        </Field>
+        <Field label="Office address (Urdu, optional)" name="addressUr" hint="One line per row.">
+          <textarea id="addressUr" name="addressUr" rows={4} dir="rtl" lang="ur" defaultValue={value.addressUr.join("\n")} className={inputClass} />
+        </Field>
+      </div>
+      <p className="text-xs text-muted">Phone and WhatsApp numbers are intentionally not shown on the website.</p>
+      <Footer state={state} pending={pending} label="Save contact details" />
+    </form>
+  );
+}
+
+// --- SEO ------------------------------------------------------------------------------
+
+type SeoRow = { key: string; label: string; title?: string; titleUr?: string; description?: string; descriptionUr?: string; imageId?: string; defaultTitle: string; defaultDescription: string };
+
+export function SeoForm({ pages, images }: { pages: SeoRow[]; images: ImageOption[] }) {
+  const [state, onSubmit, pending] = useFormAction(saveSeoAction, idle);
+  return (
+    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      <p className="text-sm text-muted">
+        What Google and social media show for each page. Titles: up to about 60 characters. Descriptions: about 150. Empty boxes keep the
+        built-in text (in grey).
+      </p>
+      {pages.map((p) => (
+        <details key={p.key} className="glass rounded-2xl p-5" open={Object.keys(state.errors ?? {}).some((k) => k.startsWith(`${p.key}.`)) || undefined}>
+          <summary className="cursor-pointer font-semibold text-charcoal-900">{p.label}</summary>
+          <div className="mt-4 space-y-4">
+            <Pair state={state} name={`${p.key}.title`} label="Search title" en={p.title} ur={p.titleUr} placeholder={p.defaultTitle} max={70} />
+            <Pair state={state} name={`${p.key}.description`} label="Search description" en={p.description} ur={p.descriptionUr} placeholder={p.defaultDescription} rows={2} max={170} />
+            <ImagePicker name={`${p.key}.imageId`} label="Share image (optional, 1200×630 works best)" images={images} value={p.imageId ?? ""} error={state.errors?.[`${p.key}.imageId`]} />
+          </div>
+        </details>
+      ))}
+      <Footer state={state} pending={pending} label="Save search settings" />
+    </form>
+  );
+}
+
+export function ImagePicker({ name, label, images, value, error }: { name: string; label: string; images: ImageOption[]; value: string; error?: string }) {
+  const [current, setCurrent] = useState(value);
+  const url = images.find((i) => i.id === current)?.url;
+  return (
+    <div>
+      <Field label={label} name={name} error={error}>
+        <select id={name} name={name} value={current} onChange={(e) => setCurrent(e.target.value)} className={inputClass} aria-invalid={error ? true : undefined}>
+          <option value="">{images.length ? "None" : "No public images yet: upload in Media"}</option>
+          {images.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
+        </select>
+      </Field>
+      {url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={url} alt="" className="mt-2 h-24 w-auto max-w-full rounded-lg object-contain ring-1 ring-white" />
+      )}
+    </div>
+  );
+}
+
+// --- Logo -------------------------------------------------------------------------------
+
+export function LogoForm({ value, images, official }: { value: { lightId: string; darkId: string }; images: ImageOption[]; official: { light: string; dark: string } }) {
+  const [state, onSubmit, pending] = useFormAction(saveLogoAction, idle);
+  return (
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="glass space-y-3 rounded-2xl p-5">
+          <p className="font-semibold text-charcoal-900">Logo for light backgrounds</p>
+          <p className="text-sm text-muted">Header, footer, admin, certificates, preloader. A transparent PNG works best.</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={official.light} alt="Official logo" className="h-12 w-auto" />
+          <ImagePicker name="lightId" label="Replacement (empty = official logo)" images={images} value={value.lightId} error={state.errors?.lightId} />
+        </div>
+        <div className="space-y-3 rounded-2xl bg-charcoal-900 p-5 text-white">
+          <p className="font-semibold">Logo for dark backgrounds</p>
+          <p className="text-sm text-charcoal-200">Used on dark panels.</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={official.dark} alt="Official dark logo" className="h-12 w-auto" />
+          <div className="rounded-xl bg-white/95 p-3 text-charcoal-900">
+            <ImagePicker name="darkId" label="Replacement (empty = official logo)" images={images} value={value.darkId} error={state.errors?.darkId} />
+          </div>
+        </div>
+      </div>
+      <p className="text-xs text-muted">Upload the new logo in Media first (public image). The browser tab icon and app icon are separate files and stay as they are.</p>
+      <Footer state={state} pending={pending} label="Save logo" />
+    </form>
+  );
+}
+
+// --- Legal pages --------------------------------------------------------------------------
+
+export function LegalForm({ page, value, url }: { page: "privacy" | "terms"; value: { title: string; titleUr?: string; body: string; bodyUr?: string; published: boolean }; url: string }) {
+  const [state, onSubmit, pending] = useFormAction(saveLegalAction.bind(null, page), idle);
+  return (
+    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      <Pair state={state} name="title" label="Title" en={value.title} ur={value.titleUr} max={200} />
+      <Pair state={state} name="body" label="Text" en={value.body} ur={value.bodyUr} rows={14} max={100000} />
+      <p className="text-xs text-muted">Blank line = new paragraph · “## ” = heading · “- ” = bullet · links are clickable.</p>
+      <label className="flex items-center gap-3 text-sm text-charcoal-900">
+        <input type="checkbox" name="published" defaultChecked={value.published} className="h-5 w-5 accent-charcoal-900" />
+        Published (shown at <span dir="ltr" className="font-mono text-xs">{url}</span> and linked in the footer)
+      </label>
+      <Footer state={state} pending={pending} label="Save page" />
+    </form>
+  );
+}

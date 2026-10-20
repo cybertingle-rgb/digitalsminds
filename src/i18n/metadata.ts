@@ -10,7 +10,7 @@ import { locales, localeMeta, localizePath, type Locale } from "./config";
 export function pageMetadata(
   locale: Locale,
   path: string,
-  meta: { title?: string; description?: string; absoluteTitle?: boolean },
+  meta: { title?: string; description?: string; absoluteTitle?: boolean; image?: { url: string; width?: number; height?: number } },
 ): Metadata {
   const canonical = localizePath(path, locale);
   const languages = features.urduPublic
@@ -29,7 +29,7 @@ export function pageMetadata(
       locale: localeMeta[locale].intl.replace("-", "_"),
       ...(meta.title && { title: meta.title }),
       ...(meta.description && { description: meta.description }),
-      images: [{ url: siteConfig.ogImage.src, width: siteConfig.ogImage.width, height: siteConfig.ogImage.height }],
+      images: [meta.image ?? { url: siteConfig.ogImage.src, width: siteConfig.ogImage.width, height: siteConfig.ogImage.height }],
     },
     ...(locale === "ur" && !features.urduPublic ? { robots: { index: false, follow: true } } : {}),
   };

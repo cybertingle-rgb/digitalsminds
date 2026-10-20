@@ -141,7 +141,10 @@ Repository and hosting audit, build failure fixed and verified live, requirement
 - **To approve:** a PDF library for certificates (e.g. `pdf-lib`).
 - **Acceptance:** a certificate can't be issued for an incomplete course, and its verification page shows only what you approve.
 
-## Phase 11: Website content management (L)
+## Phase 11: Website content management (L) ✅
+> Built with simple formatting (no editor library), a draft/publish switch per item, logo replacement for Super Admin,
+> FAQs/blog that keep showing the built-in content until imported, and changes live within a minute (immediately on save).
+
 - **Deliverables:**
   - Admin editing (EN + UR fields) for homepage hero and featured items, FAQs, testimonials, case studies, blog (the existing post migrated to the database), contact and social settings, logo, and SEO title/description/share image per page.
   - Legal pages loaded with your text.

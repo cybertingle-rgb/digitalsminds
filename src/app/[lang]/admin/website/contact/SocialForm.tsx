@@ -6,7 +6,7 @@ import { describedBy, Field, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
 import { socialLabels, type SocialPlatform } from "@/modules/settings/social-types";
-import { saveSocialAction, type WebsiteState } from "./actions";
+import { saveSocialAction, type WebsiteState } from "../actions";
 
 const examples: Record<SocialPlatform, string> = {
   facebook: "https://www.facebook.com/yourpage",

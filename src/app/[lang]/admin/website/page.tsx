@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
+import { getDictionary } from "@/i18n/get-dictionary";
 import { requirePagePermission } from "@/modules/auth/session";
-import { getSocialLinks } from "@/modules/settings/social";
-import { SocialForm } from "./SocialForm";
+import { getHomeContent, homeInput } from "@/modules/content/settings";
+import { HomeForm } from "./WebsiteForms";
 
 export const metadata: Metadata = { title: "Website" };
 
-export default async function WebsitePage() {
+export default async function WebsiteHomePage() {
   await requirePagePermission("content.manage", "/admin/website");
-  const links = await getSocialLinks();
+  const dict = getDictionary("en");
+  const value = (await getHomeContent()) ?? homeInput.parse({});
   return (
-    <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-charcoal-900">Website</h1>
-        <p className="mt-1 text-muted">Settings for the public website. More (homepage, FAQs, testimonials, legal pages) arrive with content management.</p>
-      </div>
-      <section aria-labelledby="social" className="glass rounded-2xl p-6">
-        <h2 id="social" className="text-lg font-semibold text-charcoal-900">Social media links</h2>
-        <p className="mb-5 mt-1 text-sm text-muted">Shown as icons on the right side of every page (tablets and computers) and in the footer.</p>
-        <SocialForm values={{ facebook: links.facebook ?? "", instagram: links.instagram ?? "", linkedin: links.linkedin ?? "" }} />
-      </section>
-    </div>
+    <HomeForm
+      value={value}
+      defaults={{ heroTitle: dict.brand.positioning, heroText: dict.home.heroText, whyTitle: dict.home.whyTitle, why: dict.home.why, ctaTitle: dict.cta.title, ctaText: dict.cta.text }}
+    />
   );
 }

@@ -462,6 +462,21 @@ export const en = {
     unsubscribed: "You've been unsubscribed. You won't receive further updates.",
     unknown: "This unsubscribe link isn't valid.",
   },
+  caseStudies: {
+    title: "Case studies",
+    eyebrow: "Our work",
+    description: "Real projects from Digitals Minds clients, shared with their permission.",
+    empty: "Case studies are coming soon.",
+    client: "Client",
+    service: "Service",
+    readMore: "Read the case study",
+    back: "All case studies",
+  },
+  legal: {
+    privacy: "Privacy Policy",
+    terms: "Terms & Conditions",
+    updated: "Last updated {date}",
+  },
   notifications: {
     title: "Notifications",
     empty: "No notifications yet.",

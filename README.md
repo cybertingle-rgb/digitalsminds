@@ -154,6 +154,13 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - **Newsletter**: sign-up in the footer with email confirmation; Admin → Newsletter lists subscribers; CSV export (Super Admin)
   includes each subscriber's unsubscribe link for use in mailings.
 
+## Website content (no redeploy needed)
+
+**Admin → Website** (Super Admin, Content Manager): Homepage text (hero, "Why Digitals Minds", call-to-action; English and
+Urdu), Blog (draft / publish / schedule, cover and in-article images), FAQs, Testimonials and Case studies (publishing needs
+recorded permission), Legal pages (Privacy, Terms; linked in the footer once published), Search & sharing (title,
+description, share image per page), Contact & social links, and Logo (Super Admin). Changes go live straight away.
+
 ## Languages
 
 - English is served at `/…`, Urdu at `/ur/…` (right-to-left, Noto Naskh Arabic font, self-hosted).

@@ -4,8 +4,10 @@ import { Container } from "@/components/ui/Container";
 import { getServices } from "@/content/services";
 import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { homeText } from "@/modules/content/settings";
 
-export function Hero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export async function Hero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+  const h = await homeText(locale, dict);
   return (
     <section className="relative overflow-x-clip">
       <Container className="relative grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:py-24">
@@ -15,9 +17,9 @@ export function Hero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             {dict.brand.tagline}
           </p>
           <h1 className="mt-6 max-w-4xl text-4xl font-bold tracking-tight text-balance text-charcoal-900 sm:text-6xl xl:text-7xl">
-            {dict.brand.positioning}
+            {h.heroTitle}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-charcoal-700 text-pretty">{dict.home.heroText}</p>
+          <p className="mt-6 max-w-2xl text-lg text-charcoal-700 text-pretty">{h.heroText}</p>
           <div className="mt-10 flex flex-wrap gap-3">
             <LinkButton href={localizePath("/contact", locale)}>{dict.home.heroPrimary}</LinkButton>
             <LinkButton href={localizePath("/services", locale)} variant="secondary">

@@ -7,7 +7,7 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
-import { pageMetadata } from "@/i18n/metadata";
+import { editablePageMetadata } from "@/modules/content/metadata";
 import { listingText, publishedCourses } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
 
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/courses">)
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const t = getDictionary(lang).courses;
-  return pageMetadata(lang, "/courses", { title: t.title, description: t.description });
+  return editablePageMetadata("courses", lang, "/courses", { title: t.title, description: t.description });
 }
 
 export default async function CoursesPage({ params }: PageProps<"/[lang]/courses">) {
