@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { isStaleDeployment, reloadOnce } from "@/components/errors/stale-deploy";
 import { useParams } from "next/navigation";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -15,6 +16,8 @@ export default function MarketingError({ error, reset }: { error: Error & { dige
 
   useEffect(() => {
     console.error(error);
+    // Page opened before a deploy: reload to get the new version.
+    if (isStaleDeployment(error)) reloadOnce();
   }, [error]);
 
   return (
@@ -27,7 +30,7 @@ export default function MarketingError({ error, reset }: { error: Error & { dige
         </p>
       )}
       <div className="mt-8 flex justify-center gap-3">
-        <Button onClick={reset}>{t.tryAgain}</Button>
+        <Button onClick={() => (isStaleDeployment(error) ? window.location.reload() : reset())}>{t.tryAgain}</Button>
         <LinkButton href={localizePath("/", locale)} variant="secondary">
           {t.goHome}
         </LinkButton>
