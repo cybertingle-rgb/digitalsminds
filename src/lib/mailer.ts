@@ -9,6 +9,27 @@ export class MailNotConfiguredError extends Error {
   }
 }
 
+/** Plain-language reason for an SMTP failure (nodemailer error codes). */
+export function mailErrorMessage(e: unknown): string {
+  if (e instanceof MailNotConfiguredError) return "Email sending is not set up (or the saved mailbox password needs re-entering) in Admin → Integrations → Email.";
+  const code = (e as { code?: string })?.code;
+  switch (code) {
+    case "EAUTH":
+      return "The mail server rejected the login. Check the mailbox address and password.";
+    case "ECONNECTION":
+    case "ETIMEDOUT":
+    case "EDNS":
+      return "Could not reach the mail server. Check the host name and port.";
+    case "ESOCKET":
+    case "ETLS":
+      return "Security setting mismatch. Use SSL with port 465, or turn SSL off for port 587.";
+    case "EENVELOPE":
+      return "The mail server refused the recipient or sender address.";
+    default:
+      return "The mail server returned an error. Check all settings and try again.";
+  }
+}
+
 function transport(cfg: SmtpConfig) {
   return nodemailer.createTransport({
     host: cfg.host,

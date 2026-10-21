@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { MailNotConfiguredError } from "@/lib/mailer";
+import { mailErrorMessage } from "@/lib/mailer";
 import { assertPermission, ForbiddenError } from "@/modules/auth/session";
-import { changeRole, inviteInput, inviteStaff, removeFromTeam, resendInvite, setSuspended, staffRoles, TeamError } from "@/modules/team/service";
+import { changeRole, InviteEmailError, inviteInput, inviteStaff, removeFromTeam, resendInvite, setSuspended, staffRoles, TeamError } from "@/modules/team/service";
 
 export type TeamState = { status: "idle" | "success" | "error"; message?: string; fields?: Record<string, string> };
 
@@ -26,9 +26,10 @@ async function run(fn: (actorId: string) => Promise<string>): Promise<TeamState>
     return { status: "success", message };
   } catch (e) {
     if (e instanceof TeamError) return { status: "error", message: e.message };
-    if (e instanceof MailNotConfiguredError) {
+    if (e instanceof InviteEmailError) {
+      console.error("[team] invitation email failed", e.cause);
       revalidatePath(PATH);
-      return { status: "error", message: "The person was added, but the invitation email couldn't be sent: set up Email in Integrations, then click “Resend invite”." };
+      return { status: "error", message: `The person is on the team list, but the invitation email couldn't be sent. ${mailErrorMessage(e.cause)} Fix it in Integrations → Email (use Send test email), then click “Resend invite”.` };
     }
     if (e instanceof z.ZodError) return { status: "error", message: "Invalid request." };
     console.error("[team] action failed", e);

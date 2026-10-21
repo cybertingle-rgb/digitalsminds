@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { invalidateAuth } from "@/lib/auth";
-import { sendMail, verifySmtp } from "@/lib/mailer";
+import { mailErrorMessage, sendMail, verifySmtp } from "@/lib/mailer";
 import { audit } from "@/modules/audit/log";
 import { assertPermission, ForbiddenError } from "@/modules/auth/session";
 import {
@@ -89,23 +89,6 @@ export async function removeGoogleAction(): Promise<ActionState> {
 // Email (SMTP)
 // ---------------------------------------------------------------------------
 
-function smtpErrorMessage(e: unknown): string {
-  const code = (e as { code?: string })?.code;
-  switch (code) {
-    case "EAUTH":
-      return "The mail server rejected the login. Check the mailbox address and password.";
-    case "ECONNECTION":
-    case "ETIMEDOUT":
-    case "EDNS":
-      return "Could not reach the mail server. Check the host name and port.";
-    case "ESOCKET":
-    case "ETLS":
-      return "Security setting mismatch. Use SSL with port 465, or turn SSL off for port 587.";
-    default:
-      return "The mail server returned an error. Check all settings and try again.";
-  }
-}
-
 export async function saveSmtpAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const user = await guard();
   if (denied(user)) return user;
@@ -133,7 +116,7 @@ export async function saveSmtpAction(_prev: ActionState, formData: FormData): Pr
   try {
     await verifySmtp(cfg);
   } catch (e) {
-    return { status: "error", message: `Saved, but the connection test failed: ${smtpErrorMessage(e)}` };
+    return { status: "error", message: `Saved, but the connection test failed: ${mailErrorMessage(e)}` };
   }
   return { status: "success", message: "Saved and connected. Send a test email to finish." };
 }
@@ -154,7 +137,7 @@ export async function sendTestEmailAction(): Promise<ActionState> {
       cfg,
     );
   } catch (e) {
-    return { status: "error", message: smtpErrorMessage(e) };
+    return { status: "error", message: mailErrorMessage(e) };
   }
   await markSmtpVerified(user.id);
   await audit({ actorId: user.id, action: "integration.smtp.tested", entityType: "Integration", entityId: "smtp" });

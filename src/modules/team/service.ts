@@ -17,6 +17,14 @@ export type StaffRole = (typeof staffRoles)[number];
 
 const INVITE_TTL_SECONDS = 60 * 60 * 24 * 3;
 
+/** The person was saved, but the invitation email could not be sent. */
+export class InviteEmailError extends Error {
+  constructor(readonly cause: unknown) {
+    super("Invitation email could not be sent");
+    this.name = "InviteEmailError";
+  }
+}
+
 export class TeamError extends Error {
   constructor(message: string) {
     super(message);
@@ -82,18 +90,22 @@ async function sendInvite(user: { id: string; name: string; email: string; role:
     expiresAt: new Date(Date.now() + INVITE_TTL_SECONDS * 1000),
   });
   const dict = getDictionary("en");
-  await sendMail(
-    actionEmail({
-      dict,
-      locale: "en",
-      to: user.email,
-      name: user.name,
-      subject: dict.emails.inviteSubject,
-      intro: format(dict.emails.inviteIntro, { role: roleLabels[user.role] }),
-      buttonLabel: dict.emails.inviteButton,
-      url: `${siteConfig.url}/reset-password?token=${token}`,
-    }),
-  );
+  try {
+    await sendMail(
+      actionEmail({
+        dict,
+        locale: "en",
+        to: user.email,
+        name: user.name,
+        subject: dict.emails.inviteSubject,
+        intro: format(dict.emails.inviteIntro, { role: roleLabels[user.role] }),
+        buttonLabel: dict.emails.inviteButton,
+        url: `${siteConfig.url}/reset-password?token=${token}`,
+      }),
+    );
+  } catch (e) {
+    throw new InviteEmailError(e);
+  }
 }
 
 /** Rules every change to a team member must pass. */
