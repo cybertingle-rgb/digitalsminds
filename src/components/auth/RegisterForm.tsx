@@ -27,8 +27,8 @@ const schema = z
     password: z.string().min(10).max(128),
     confirmPassword: z.string(),
     googleEmail: z.union([z.literal(""), z.email().max(254)]),
-    phone: z.union([z.literal(""), z.string().trim().regex(/^[+()\-\s\d]{6,40}$/)]),
-    city: z.string().trim().max(80),
+    phone: z.string().trim().regex(/^[+()\-\s\d]{6,40}$/),
+    city: z.string().trim().min(2).max(80),
   })
   .refine((v) => v.password === v.confirmPassword, { path: ["confirmPassword"] });
 
@@ -67,8 +67,8 @@ export function RegisterForm({ t, locale, verifiedCallback, googleEnabled, googl
       email: v.email.toLowerCase(),
       password: v.password,
       googleEmail: v.googleEmail || v.email.toLowerCase(),
-      phone: v.phone || undefined,
-      city: v.city || undefined,
+      phone: v.phone,
+      city: v.city,
       preferredLocale: locale,
       callbackURL: verifiedCallback,
     } as Parameters<typeof authClient.signUp.email>[0]);
@@ -122,10 +122,10 @@ export function RegisterForm({ t, locale, verifiedCallback, googleEnabled, googl
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={t.phone} name="phone" error={err("phone")}>
-            <input id="phone" name="phone" type="tel" dir="ltr" autoComplete="tel" maxLength={40} className={inputClass} {...a11y("phone")} />
+            <input id="phone" name="phone" type="tel" dir="ltr" autoComplete="tel" required maxLength={40} className={inputClass} {...a11y("phone")} />
           </Field>
           <Field label={t.city} name="city" error={err("city")}>
-            <input id="city" name="city" autoComplete="address-level2" maxLength={80} className={inputClass} {...a11y("city")} />
+            <input id="city" name="city" autoComplete="address-level2" required minLength={2} maxLength={80} className={inputClass} {...a11y("city")} />
           </Field>
         </div>
         {error && <FormAlert>{error}</FormAlert>}

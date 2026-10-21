@@ -166,7 +166,6 @@ export function publishWarnings(course: CourseForEdit) {
   return [
     !course.thumbnailId && "No thumbnail image: the course will show a plain placeholder in the catalogue.",
     !course.description && "No description: students see only the short summary.",
-    !course.titleUr && "No Urdu catalogue title yet: Urdu visitors will see the English title.",
     lessons.some((l) => !l.videoUrl && !l.content) && "Some lessons have neither a video nor text.",
   ].filter((w): w is string => !!w);
 }

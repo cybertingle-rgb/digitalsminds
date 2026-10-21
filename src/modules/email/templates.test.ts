@@ -21,8 +21,8 @@ describe("actionEmail", () => {
     expect(mail.subject).toBe("Verify your email for Digitals Minds");
   });
 
-  it("marks Urdu emails right-to-left", () => {
+  it("never lays emails out right-to-left (Urdu interface removed)", () => {
     const mail = actionEmail({ dict: en, locale: "ur", to: "a@example.com", name: "علی", subject: "s", intro: "i", buttonLabel: "b", url: "https://x.test" });
-    expect(mail.html).toContain('dir="rtl"');
+    expect(mail.html).not.toContain('dir="rtl"');
   });
 });

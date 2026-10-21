@@ -1,6 +1,7 @@
 import "server-only";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { z } from "zod";
 import { siteConfig } from "@/config/site";
@@ -146,9 +147,15 @@ function createAuth(google: GoogleCredentials) {
     databaseHooks: {
       user: {
         create: {
-          before: async (user) => {
+          before: async (user, ctx) => {
             // The Super Admin account can only be created through /setup.
             if (user.email.toLowerCase() === siteConfig.superAdminEmail) return false;
+            // Students signing up with email must give a phone / WhatsApp number and a city
+            // (Google sign-ups add them later in their profile).
+            const u = user as Record<string, unknown>;
+            if (ctx?.path === "/sign-up/email" && (!phone.safeParse(u.phone).success || !city.safeParse(u.city).success || String(u.city).trim().length < 2)) {
+              throw new APIError("BAD_REQUEST", { message: "Phone and city are required.", code: "PROFILE_REQUIRED" });
+            }
             return { data: { ...user, email: user.email.toLowerCase(), ...cleanProfile(user) } };
           },
         },

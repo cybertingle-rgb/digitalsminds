@@ -39,8 +39,8 @@ describe("resolveLocaleRoute", () => {
     expect(resolveLocaleRoute("/en/contact")).toEqual({ action: "redirect", pathname: "/contact" });
   });
   it("serves Urdu paths as they are", () => {
-    expect(resolveLocaleRoute("/ur/about")).toEqual({ action: "next" });
-    expect(resolveLocaleRoute("/ur")).toEqual({ action: "next" });
+    expect(resolveLocaleRoute("/ur/about")).toEqual({ action: "redirect", pathname: "/about", temporary: true });
+    expect(resolveLocaleRoute("/ur")).toEqual({ action: "redirect", pathname: "/", temporary: true });
   });
   it("does not treat lookalike segments as locales", () => {
     expect(resolveLocaleRoute("/urdu-guide")).toEqual({ action: "rewrite", pathname: "/en/urdu-guide" });

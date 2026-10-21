@@ -22,17 +22,12 @@ export function ProfileForm({ lang, profile, labels }: { lang: string; profile: 
           <input id="googleEmail" name="googleEmail" type="email" dir="ltr" defaultValue={profile.googleEmail} required className={inputClass} {...aria("googleEmail", labels.googleHint)} />
         </Field>
         <Field label={labels.phone} name="phone" error={err("phone")}>
-          <input id="phone" name="phone" type="tel" dir="ltr" defaultValue={profile.phone} maxLength={40} autoComplete="tel" className={inputClass} {...aria("phone")} />
+          <input id="phone" name="phone" type="tel" required dir="ltr" defaultValue={profile.phone} maxLength={40} autoComplete="tel" className={inputClass} {...aria("phone")} />
         </Field>
         <Field label={labels.city} name="city" error={err("city")}>
-          <input id="city" name="city" defaultValue={profile.city} maxLength={80} autoComplete="address-level2" dir="auto" className={inputClass} {...aria("city")} />
+          <input id="city" name="city" required minLength={2} defaultValue={profile.city} maxLength={80} autoComplete="address-level2" dir="auto" className={inputClass} {...aria("city")} />
         </Field>
-        <Field label={labels.language} name="preferredLocale">
-          <select id="preferredLocale" name="preferredLocale" defaultValue={profile.preferredLocale} className={inputClass}>
-            <option value="en">English</option>
-            <option value="ur">اردو</option>
-          </select>
-        </Field>
+<input type="hidden" name="preferredLocale" value="en" />
       </div>
       {state.message && <FormAlert tone={state.status === "success" ? "success" : "error"}>{state.message}</FormAlert>}
       <Button type="submit" variant="dark" disabled={pending}>{labels.save}</Button>

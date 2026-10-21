@@ -153,12 +153,12 @@ export function DetailsForm({ course, images, services }: { course: CourseDetail
       <fieldset className="space-y-5">
         <legend className="text-sm font-semibold uppercase tracking-wider text-muted">Catalogue listing</legend>
         <div className="grid gap-5 sm:grid-cols-2">
-          {f("title", "Title (English)", <input {...a("title")} defaultValue={course.title} maxLength={200} dir="auto" className={inputClass} />)}
-          {f("titleUr", "Title (Urdu, optional)", <input {...a("titleUr", true)} defaultValue={course.titleUr} maxLength={200} dir="rtl" lang="ur" className={inputClass} />, "Shown on the Urdu site. English is used until you add it.")}
+          {f("title", "Title", <input {...a("title")} defaultValue={course.title} maxLength={200} dir="auto" className={inputClass} />)}
+          <input type="hidden" name="titleUr" value={course.titleUr} />
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
-          {f("summary", "Summary (English)", <textarea {...a("summary")} defaultValue={course.summary} rows={3} maxLength={500} dir="auto" className={inputClass} />)}
-          {f("summaryUr", "Summary (Urdu, optional)", <textarea {...a("summaryUr")} defaultValue={course.summaryUr} rows={3} maxLength={500} dir="rtl" lang="ur" className={inputClass} />)}
+          {f("summary", "Summary", <textarea {...a("summary")} defaultValue={course.summary} rows={3} maxLength={500} dir="auto" className={inputClass} />)}
+          <input type="hidden" name="summaryUr" value={course.summaryUr} />
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           {f(

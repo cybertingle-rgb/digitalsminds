@@ -16,6 +16,7 @@ import { RichText } from "@/modules/courses/richtext";
 import { listingText } from "@/modules/learning/catalogue";
 import { studentDashboard, type Activity } from "@/modules/learning/dashboard";
 import { latestPaymentsFor } from "@/modules/payments/service";
+import { profileOf } from "@/modules/learning/profile";
 import { studentLiveClasses } from "@/modules/live/service";
 import { LiveClassCard } from "@/components/learning/LiveClassCard";
 
@@ -63,6 +64,8 @@ export default async function DashboardPage({ params, searchParams }: PageProps<
   const sp = await searchParams;
   const [{ learning, enrolled, stats, continueWith, activity }, news, live] = await Promise.all([studentDashboard(user.id), studentAnnouncements(user.id), studentLiveClasses(user.id)]);
   const nextLive = live.upcoming.find((c) => c.status === "SCHEDULED");
+  const profile = await profileOf(user.id);
+  const incomplete = !profile?.phone || !profile?.city;
   const requests = learning.filter((l) => l.enrollment.status !== "APPROVED");
   const payments = requests.length ? await latestPaymentsFor(user.id) : new Map();
   const dateFmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
@@ -70,6 +73,12 @@ export default async function DashboardPage({ params, searchParams }: PageProps<
   return (
     <div className="space-y-8">
       {sp.verified && <FormAlert tone="success">{dict.auth.verifiedNotice}</FormAlert>}
+      {incomplete && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sun-400 bg-sun-50 p-4 text-sm text-charcoal-900">
+          <p>{t.completeProfile}</p>
+          <Link href={localizePath("/account/profile", locale)} className="font-semibold underline underline-offset-4">{t.completeProfileLink}</Link>
+        </div>
+      )}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-gold-700">{t.navDashboard}</p>

@@ -5,8 +5,8 @@ import { db } from "@/lib/db";
 export const profileInput = z.object({
   name: z.string().trim().min(2).max(120),
   googleEmail: z.email().max(254).transform((v) => v.trim().toLowerCase()),
-  phone: z.string().trim().regex(/^[+()\-\s\d]{6,40}$/).or(z.literal("")).transform((v) => v || null),
-  city: z.string().trim().max(80).transform((v) => v || null),
+  phone: z.string().trim().regex(/^[+()\-\s\d]{6,40}$/),
+  city: z.string().trim().min(2).max(80),
   preferredLocale: z.enum(["en", "ur"]),
 });
 

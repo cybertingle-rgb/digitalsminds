@@ -27,6 +27,8 @@ function useResetKey(state: WebsiteState, enabled: boolean) {
 }
 
 function Input(props: { state: WebsiteState; name: string; label: string; value?: string | null; max: number; rows?: number; ur?: boolean; hint?: string; placeholder?: string; type?: string }) {
+  // Urdu interface removed: keep any saved Urdu text without showing the box.
+  if (props.ur) return <input type="hidden" name={props.name} value={props.value ?? ""} />;
   const err = props.state.errors?.[props.name];
   const common = {
     id: props.name,

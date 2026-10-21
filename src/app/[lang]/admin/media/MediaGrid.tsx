@@ -102,10 +102,9 @@ export function MediaGrid({ items, siteUrl }: { items: MediaItem[]; siteUrl: str
                     run(() => updateAltAction(m.id, String(fd.get("alt") ?? ""), String(fd.get("altUr") ?? "")));
                   }}
                 >
-                  <label className="block text-xs font-medium" htmlFor={`alt-${m.id}`}>Description (English)</label>
+                  <label className="block text-xs font-medium" htmlFor={`alt-${m.id}`}>Description</label>
                   <input id={`alt-${m.id}`} name="alt" defaultValue={m.altText} maxLength={255} className={`${inputClass} mt-0`} />
-                  <label className="block text-xs font-medium" htmlFor={`altur-${m.id}`}>Description (Urdu)</label>
-                  <input id={`altur-${m.id}`} name="altUr" dir="rtl" lang="ur" defaultValue={m.altTextUr} maxLength={255} className={`${inputClass} mt-0`} />
+                  <input type="hidden" name="altUr" defaultValue={m.altTextUr} />
                   <div className="flex gap-2">
                     <Button type="submit" variant="dark" className="py-2" disabled={pending}>Save</Button>
                     <Button type="button" variant="secondary" className="py-2" onClick={() => setEditing(null)}>Cancel</Button>

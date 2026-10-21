@@ -81,12 +81,10 @@ export function PaymentDetailsForm({ value }: { value: Details }) {
         <legend className="sr-only">Extra instructions</legend>
         <p className="font-semibold text-charcoal-900">Extra instructions (optional)</p>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="English" name="instructions">
+          <Field label="Instructions" name="instructions">
             <textarea id="instructions" name="instructions" rows={3} maxLength={1500} defaultValue={value.instructions ?? ""} className={inputClass} placeholder="e.g. Write your email in the transfer description." />
           </Field>
-          <Field label="Urdu" name="instructionsUr">
-            <textarea id="instructionsUr" name="instructionsUr" rows={3} maxLength={1500} dir="rtl" lang="ur" defaultValue={value.instructionsUr ?? ""} className={inputClass} />
-          </Field>
+<input type="hidden" name="instructionsUr" value={value.instructionsUr ?? ""} />
         </div>
       </fieldset>
       <p className="text-xs text-muted">These details are shown only to signed-in students on a paid course&apos;s payment page, never elsewhere on the website.</p>

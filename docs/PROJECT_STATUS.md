@@ -70,6 +70,7 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 61 | Paid courses | PKR only. Students pay by bank transfer, JazzCash or EasyPaisa and send the transaction ID + receipt (image or PDF, stored privately outside the Media library); only Super Admins set prices, enter account details and confirm/reject payments; Content Managers can view. Confirming opens the course (usual access email); rejecting emails the reason and the student can resend. Card gateway is a later option |
 | 62 | Student portal | Sidebar portal: Dashboard (stats, continue learning, progress, activity), My courses, Certificates, Notifications, Support, Profile; account deletion stays by email request |
 | 63 | Live classes | Course staff schedule Zoom / Google Meet / Teams sessions per course (Pakistan time); approved students see them, join from 15 minutes before, add them to their calendar, and get email + in-app reminders 1 day and 1 hour before; new class = in-app notice, time change or cancellation = email |
+| 64 | Urdu removed; phone + city required | Owner request (2026-10-21): no Urdu interface anywhere (no right-to-left layout, /ur pages redirect to English, Urdu boxes hidden in admin with saved text kept, emails English). A course's "Taught in" language stays as information only. Phone/WhatsApp and city are required at email sign-up (server-checked) and in the profile; students missing them see a reminder |
 
 ## Open items (waiting on owner)
 
@@ -80,7 +81,7 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 - [ ] Send verified testimonials (name, role/company, quote, photo if any, permission)
 - [ ] Testimonials and case studies (text, name/role, photo if any, confirmation of permission)
 - [x] Privacy Policy and Terms & Conditions written and published (owner delegated); have them reviewed by a lawyer when convenient
-- [ ] Urdu translations (provided when the bilingual structure is ready)
+- [x] Urdu translations: not needed (Urdu interface removed at the owner's request)
 - [ ] eBay logo: download it from the Wikimedia link, upload in Admin → Media (public), choose it in Admin → Website → Homepage → Featured course
 - [ ] Payments: enter your bank / JazzCash / EasyPaisa details in Admin → Payments → Payment details
 - [ ] eBay course: create it in Admin → Courses, set its price (Price box), publish, then set the homepage button link to /courses/<its address> (Admin → Website → Homepage → Featured course)

@@ -28,7 +28,11 @@ function Footer({ state, pending, label }: { state: WebsiteState; pending: boole
   );
 }
 
-/** English + Urdu inputs side by side. `placeholder` shows the current built-in text. */
+/**
+ * One text box. The Urdu interface was removed (2026-10-21): its saved text is
+ * kept in a hidden field so saving never erases it, but it isn't shown.
+ * `placeholder` shows the current built-in text.
+ */
 function Pair(props: {
   state: WebsiteState;
   name: string;
@@ -39,32 +43,25 @@ function Pair(props: {
   rows?: number;
   max: number;
 }) {
-  const field = (lang: "en" | "ur") => {
-    const name = lang === "en" ? props.name : `${props.name}Ur`;
-    const err = props.state.errors?.[name];
-    const common = {
-      id: name,
-      name,
-      defaultValue: (lang === "en" ? props.en : props.ur) ?? "",
-      placeholder: lang === "en" ? props.placeholder : "اردو (اختیاری)",
-      maxLength: props.max,
-      dir: lang === "ur" ? "rtl" : "auto",
-      lang: lang === "ur" ? "ur" : undefined,
-      className: inputClass,
-      "aria-invalid": err ? true : undefined,
-      "aria-describedby": describedBy(name, err),
-    } as const;
-    return (
-      <Field label={`${props.label} (${lang === "en" ? "English" : "Urdu"})`} name={name} error={err}>
+  const err = props.state.errors?.[props.name];
+  const common = {
+    id: props.name,
+    name: props.name,
+    defaultValue: props.en ?? "",
+    placeholder: props.placeholder,
+    maxLength: props.max,
+    dir: "auto",
+    className: inputClass,
+    "aria-invalid": err ? true : undefined,
+    "aria-describedby": describedBy(props.name, err),
+  } as const;
+  return (
+    <>
+      <Field label={props.label} name={props.name} error={err}>
         {props.rows ? <textarea rows={props.rows} {...common} /> : <input {...common} />}
       </Field>
-    );
-  };
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {field("en")}
-      {field("ur")}
-    </div>
+      <input type="hidden" name={`${props.name}Ur`} value={props.ur ?? ""} />
+    </>
   );
 }
 
@@ -127,7 +124,7 @@ export function HomeForm({ value, defaults }: { value: Home; defaults: HomeDefau
   const [state, onSubmit, pending] = useFormAction(saveHomeAction, idle);
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <p className="text-sm text-muted">Leave a box empty to keep the text shown in grey. Urdu boxes are optional; English is used until you fill them.</p>
+      <p className="text-sm text-muted">Leave a box empty to keep the text shown in grey.</p>
       <Group title="Top of the page (standard introduction)" hint="Shown when the featured course above is switched off.">
         <Pair state={state} name="heroTitle" label="Headline" en={value.heroTitle} ur={value.heroTitleUr} placeholder={defaults.heroTitle} max={200} />
         <Pair state={state} name="heroText" label="Introduction" en={value.heroText} ur={value.heroTextUr} placeholder={defaults.heroText} rows={3} max={600} />
@@ -161,13 +158,11 @@ export function ContactForm({ value }: { value: { email: string; address: string
       <Field label="Email shown on the website" name="email" error={e("email")}>
         <input id="email" name="email" type="email" dir="ltr" defaultValue={value.email} className={inputClass} aria-invalid={e("email") ? true : undefined} aria-describedby={describedBy("email", e("email"))} />
       </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Office address (English)" name="address" hint="One line per row.">
+      <div>
+        <Field label="Office address" name="address" hint="One line per row.">
           <textarea id="address" name="address" rows={4} defaultValue={value.address.join("\n")} className={inputClass} />
         </Field>
-        <Field label="Office address (Urdu, optional)" name="addressUr" hint="One line per row.">
-          <textarea id="addressUr" name="addressUr" rows={4} dir="rtl" lang="ur" defaultValue={value.addressUr.join("\n")} className={inputClass} />
-        </Field>
+        <input type="hidden" name="addressUr" value={value.addressUr.join("\n")} />
       </div>
       <p className="text-xs text-muted">Phone and WhatsApp numbers are intentionally not shown on the website.</p>
       <Footer state={state} pending={pending} label="Save contact details" />

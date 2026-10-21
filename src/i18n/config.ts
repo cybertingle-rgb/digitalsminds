@@ -9,7 +9,9 @@ export const defaultLocale: Locale = "en";
 
 export const localeMeta: Record<Locale, { dir: "ltr" | "rtl"; htmlLang: string; intl: string; label: string }> = {
   en: { dir: "ltr", htmlLang: "en", intl: "en-US", label: "English" },
-  ur: { dir: "rtl", htmlLang: "ur", intl: "ur-PK", label: "اردو" },
+  // Urdu interface removed (owner request, 2026-10-21): nothing is laid out right-to-left and /ur pages
+  // redirect to English. The "ur" value stays so existing data (e.g. a course taught in Urdu) keeps working.
+  ur: { dir: "ltr", htmlLang: "ur", intl: "en-US", label: "اردو" },
 };
 
 export function hasLocale(value: string): value is Locale {
@@ -44,7 +46,7 @@ export function publicPathname(pathname: string): string {
 
 export type LocaleRoute =
   | { action: "rewrite"; pathname: string }
-  | { action: "redirect"; pathname: string }
+  | { action: "redirect"; pathname: string; temporary?: boolean }
   | { action: "next" };
 
 /**
@@ -59,6 +61,8 @@ export function resolveLocaleRoute(pathname: string): LocaleRoute {
     const stripped = pathname.slice(defaultLocale.length + 1) || "/";
     return { action: "redirect", pathname: stripped };
   }
+  // Urdu pages are switched off: send visitors to the English page (temporary, in case it returns).
+  if (first === "ur") return { action: "redirect", pathname: pathname.slice(3) || "/", temporary: true };
   if (first && hasLocale(first)) return { action: "next" };
   return { action: "rewrite", pathname: `/${defaultLocale}${pathname === "/" ? "" : pathname}` };
 }

@@ -7,7 +7,7 @@ export function proxy(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   url.pathname = route.pathname;
-  return route.action === "redirect" ? NextResponse.redirect(url, 308) : NextResponse.rewrite(url);
+  return route.action === "redirect" ? NextResponse.redirect(url, route.temporary ? 307 : 308) : NextResponse.rewrite(url);
 }
 
 export const config = {

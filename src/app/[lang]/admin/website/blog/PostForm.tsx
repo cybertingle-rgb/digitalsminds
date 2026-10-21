@@ -37,12 +37,8 @@ export function PostForm({ post, images }: { post: PostValues; images: ImageOpti
             <input {...a("title")} defaultValue={post.title} maxLength={200} dir="auto" className={inputClass} />
           </Field>
         </div>
-        <Field label="Written in" name="language" hint="Each post is in one language.">
-          <select {...a("language", "hint")} defaultValue={post.language} className={inputClass}>
-            <option value="en">English</option>
-            <option value="ur">Urdu</option>
-          </select>
-        </Field>
+        {/* Urdu interface removed: posts are English; an older post keeps its saved value. */}
+        <input type="hidden" name="language" value={post.language} />
       </div>
       <Field label="Summary" name="excerpt" error={e("excerpt")} hint="Shown on the blog page and in search results.">
         <textarea {...a("excerpt", "hint")} rows={2} defaultValue={post.excerpt} maxLength={500} dir="auto" className={inputClass} />
