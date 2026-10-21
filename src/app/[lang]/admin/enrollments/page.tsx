@@ -122,7 +122,13 @@ export default async function EnrollmentsPage({ searchParams }: PageProps<"/[lan
                         <p className="mt-2 text-xs text-muted">Tip: keep a course&apos;s videos in one Drive folder and share the folder once per student.</p>
                       </details>
                     )}
-                    <EnrollmentActions id={e.id} status={e.status} student={e.user.name} />
+                    {e.course.accessType === "PAID" && e.status === "REQUESTED" ? (
+                      <p className="glass-subtle rounded-xl p-3 text-sm text-charcoal-800">
+                        Paid course: access opens when the payment is confirmed in <Link href="/admin/payments" className="font-semibold underline underline-offset-4">Payments</Link>.
+                      </p>
+                    ) : (
+                      <EnrollmentActions id={e.id} status={e.status} student={e.user.name} />
+                    )}
                   </div>
                 </div>
               </li>

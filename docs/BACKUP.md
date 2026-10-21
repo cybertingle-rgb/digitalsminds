@@ -5,7 +5,7 @@ The website's data lives in two places:
 | What | Where | Backed up by |
 | --- | --- | --- |
 | Database (accounts, courses, progress, certificates, inquiries, content, settings) | Hostinger MySQL/MariaDB | Admin → Backups → **Database** (.sql.gz) and Hostinger's automatic backups |
-| Uploaded files (images, logos, course files) | Upload folder outside the app (`UPLOAD_DIR`, default `~/digitalsminds-uploads`) | Admin → Backups → **Files** (.tar.gz) and Hostinger's file backups |
+| Uploaded files (images, logos, course files, payment receipts) | Upload folder outside the app (`UPLOAD_DIR`, default `~/digitalsminds-uploads`) | Admin → Backups → **Files** (.tar.gz) and Hostinger's file backups |
 | Code | GitHub | Git history |
 | Secrets (`DATABASE_URL`, `BETTER_AUTH_SECRET`, ...) | Hostinger environment variables | Keep a copy in a password manager |
 

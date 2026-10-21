@@ -20,6 +20,7 @@ import { listingText } from "@/modules/learning/catalogue";
 import { profileOf } from "@/modules/learning/profile";
 import { myLearning } from "@/modules/learning/progress";
 import { mediaUrl } from "@/modules/media/service";
+import { latestPaymentsFor } from "@/modules/payments/service";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My account", robots: noindex };
@@ -35,6 +36,7 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
   const [learning, profile, nav, news, certs] = await Promise.all([myLearning(user.id), profileOf(user.id), accountNavItems(user.id, locale, dict), studentAnnouncements(user.id), studentCertificates(user.id)]);
   const enrolled = learning.filter((l) => l.enrollment.status === "APPROVED");
   const requests = learning.filter((l) => l.enrollment.status !== "APPROVED");
+  const payments = requests.length ? await latestPaymentsFor(user.id) : new Map();
   const dateFmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
   const statusLabel = { REQUESTED: t.statusRequested, REJECTED: t.statusRejected, REVOKED: t.statusRevoked, APPROVED: "" } as const;
 
@@ -150,9 +152,16 @@ export default async function AccountPage({ params, searchParams }: PageProps<"/
                     <p className="mt-1 text-xs text-muted">{format(t.requestedOn, { date: dateFmt.format(enrollment.requestedAt) })}</p>
                     {enrollment.decisionNote && <p className="mt-2 text-charcoal-800" dir="auto">{format(c.reason, { note: enrollment.decisionNote })}</p>}
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${enrollment.status === "REQUESTED" ? "bg-sun-100 text-charcoal-900" : "bg-charcoal-100 text-charcoal-800"}`}>
-                    {statusLabel[enrollment.status]}
-                  </span>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${enrollment.status === "REQUESTED" ? "bg-sun-100 text-charcoal-900" : "bg-charcoal-100 text-charcoal-800"}`}>
+                      {payments.has(course.id) && enrollment.status !== "REVOKED"
+                        ? { PENDING: dict.payments.statusPending, CONFIRMED: dict.payments.statusConfirmed, REJECTED: dict.payments.statusRejected }[payments.get(course.id)!.status as "PENDING" | "CONFIRMED" | "REJECTED"]
+                        : statusLabel[enrollment.status]}
+                    </span>
+                    {payments.get(course.id)?.status === "REJECTED" && enrollment.status === "REJECTED" && (
+                      <Link href={localizePath(`/courses/${course.slug}/pay`, locale)} className="text-xs font-semibold text-charcoal-900 underline underline-offset-4">{dict.payments.payAgain}</Link>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

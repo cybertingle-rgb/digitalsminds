@@ -12,6 +12,7 @@ import {
   deleteCourseAction,
   saveDetailsAction,
   setInstructorsAction,
+  setPriceAction,
   setStatusAction,
   type CourseState,
 } from "./actions";
@@ -253,6 +254,30 @@ export function InstructorsForm(props: { courseId: string; assigned: string[]; o
         ))}
       </ul>
       <Button type="submit" variant="secondary" className="py-2" disabled={pending}>{pending ? "Saving…" : "Save instructors"}</Button>
+      <Result state={state} />
+    </form>
+  );
+}
+
+// --- Price (Super Admin) -----------------------------------------------------------
+
+export function PriceForm(props: { courseId: string; paid: boolean; pricePkr: number | null }) {
+  const [state, onSubmit, pending] = useFormAction(setPriceAction.bind(null, props.courseId), idle);
+  const [paid, setPaid] = useState(props.paid);
+  const err = state.errors?.pricePkr;
+  return (
+    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+      <fieldset className="space-y-2 text-sm">
+        <legend className="sr-only">Access</legend>
+        <label className="flex items-center gap-3"><input type="radio" name="access" value="FREE" checked={!paid} onChange={() => setPaid(false)} className="h-4 w-4 accent-charcoal-900" /> Free (students request access)</label>
+        <label className="flex items-center gap-3"><input type="radio" name="access" value="PAID" checked={paid} onChange={() => setPaid(true)} className="h-4 w-4 accent-charcoal-900" /> Paid (students pay, you confirm in Payments)</label>
+      </fieldset>
+      {paid && (
+        <Field label="Fee in rupees (PKR)" name="pricePkr" error={err} hint="Whole rupees, e.g. 15000.">
+          <input id="pricePkr" name="pricePkr" inputMode="numeric" dir="ltr" defaultValue={props.pricePkr ?? ""} className={inputClass} aria-invalid={err ? true : undefined} aria-describedby={describedBy("pricePkr", err, "Whole rupees, e.g. 15000.")} />
+        </Field>
+      )}
+      <Button type="submit" variant="secondary" className="py-2" disabled={pending}>{pending ? "Saving…" : "Save price"}</Button>
       <Result state={state} />
     </form>
   );

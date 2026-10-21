@@ -6,6 +6,8 @@ import { idsContaining } from "@/lib/text-search";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
 import type { CurrentUser } from "@/modules/auth/session";
+import { deleteFile } from "@/lib/storage/local";
+import { receiptKeysOf } from "@/modules/payments/service";
 
 export class StudentError extends Error {
   constructor(message: string, public readonly status = 400) {
@@ -211,11 +213,13 @@ export async function deleteStudent(id: string, confirmEmail: string, actor: Act
   if (!can(actor.role, "students.delete")) throw new StudentError("Only Super Admins can delete accounts.", 403);
   const user = await requireStudent(id);
   if (confirmEmail.trim().toLowerCase() !== user.email.toLowerCase()) throw new StudentError("Type the student's email address exactly to confirm.");
-  const [enrollments, certificates] = await Promise.all([db().enrollment.count({ where: { userId: id } }), db().certificate.count({ where: { userId: id } })]);
+  const [enrollments, certificates, receipts] = await Promise.all([db().enrollment.count({ where: { userId: id } }), db().certificate.count({ where: { userId: id } }), receiptKeysOf(id)]);
   await db().$transaction([
     db().newsletterSubscriber.deleteMany({ where: { email: user.email } }),
     db().user.delete({ where: { id } }),
   ]);
+  // Payment receipts are files, not rows: remove them too (payments themselves cascade).
+  await Promise.all(receipts.map((key) => deleteFile(key).catch(() => {})));
   // No personal details in the log, only what was removed.
   await audit({ actorId: actor.id, action: "student.deleted", entityType: "User", entityId: id, metadata: { enrollments, certificates } });
 }

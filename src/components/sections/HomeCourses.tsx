@@ -7,6 +7,7 @@ import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { listingText, publishedCourses } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
+import { priceLabel } from "@/modules/payments/service";
 
 /** Up to three published courses; the section is left out until one is published. */
 export async function HomeCourses({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -30,7 +31,7 @@ export async function HomeCourses({ locale, dict }: { locale: Locale; dict: Dict
                 summary={text.summary}
                 thumbnailUrl={c.thumbnail ? mediaUrl(c.thumbnail) : null}
                 courseLang={c.language}
-                meta={[t.free, t.levels[c.level], t.languages[c.language], lessonCount(c.lessonCount, dict), formatDuration(c.minutes, dict)]}
+                meta={[priceLabel(c, t.free), t.levels[c.level], t.languages[c.language], lessonCount(c.lessonCount, dict), formatDuration(c.minutes, dict)]}
               />
             </li>
           );

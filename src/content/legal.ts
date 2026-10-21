@@ -7,7 +7,7 @@
  * services are used). Update them whenever that changes.
  */
 
-export const LEGAL_EFFECTIVE_DATE = "2026-10-20";
+export const LEGAL_EFFECTIVE_DATE = "2026-10-21";
 
 const contact = `Digitals Minds
 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan
@@ -37,6 +37,8 @@ When you learn with us:
 - certificates issued to you
 - your support requests and messages, and the notifications we send you
 
+When you pay for a course: the payment method you used (bank transfer, JazzCash or EasyPaisa), the transaction ID, the amount and date, the name on the paying account if you give it, and the receipt you upload. We do not receive or store your card, bank login or wallet PIN.
+
 When you subscribe to our newsletter: your email address, language, the page you signed up on, and when you confirmed your subscription.
 
 Technical information: when you sign in, we record your IP address and browser type with your login session, and we keep short-lived records of attempts to sign in or submit forms so we can stop abuse.
@@ -45,6 +47,7 @@ Technical information: when you sign in, we record your IP address and browser t
 - to reply to your inquiry and discuss your project
 - to run your account and give you access to courses, including sharing course videos on Google Drive with the Google email you provide
 - to track your progress and issue certificates of completion
+- to check your payment for a paid course and open the course once it is confirmed
 - to answer your support requests
 - to send you service emails, such as email verification, password resets, course access decisions, support replies and certificates
 - to send you our newsletter, only if you have confirmed your subscription
@@ -70,6 +73,7 @@ Certificates: anyone who has a certificate ID can open its verification page, wh
 ## How long we keep information
 - Inquiries: for as long as needed to respond and follow up, or until you ask us to delete them.
 - Accounts and learning records: while your account is active, or until you ask us to delete them.
+- Payment records and receipts: as long as we need them for our accounts and the law, or until you ask us to delete your account.
 - Newsletter: until you unsubscribe. We keep a record that you unsubscribed so we don't email you again.
 - Login sessions and abuse-prevention records expire automatically.
 
@@ -108,7 +112,8 @@ Digitals Minds offers business growth services through five divisions: Digital M
 - We may suspend or close an account that breaks these Terms or is used to misuse the website.
 
 ## Courses
-- Most of our courses are free of charge. Some courses, such as our eBay course, are paid: the fee and conditions are confirmed with you in writing before you pay, and that agreement applies to the paid course.
+- Most of our courses are free of charge. Some courses, such as our eBay course, are paid: the fee is shown in Pakistani rupees on the course page before you pay.
+- For paid courses, you pay the fee shown on the course page by bank transfer, JazzCash or EasyPaisa and send us the transaction details and receipt. Access opens once our team confirms the payment has arrived. If we cannot confirm a payment, we will tell you why. Questions about a payment or refund are handled by email at info@digitalsminds.com.
 - Access to a course is given after our team approves your request. We may decline or end access, for example if these Terms are broken.
 - Course videos are shared from Google Drive with the Google account you give us. Do not share your access, download, record, copy or redistribute course materials. They are for your personal learning only.
 - We may update, replace or withdraw course content.

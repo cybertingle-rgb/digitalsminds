@@ -40,8 +40,10 @@ export function enrollmentFor(userId: string, courseId: string) {
  * Errors are message keys from dict.courses so the page can translate them.
  */
 export async function requestEnrollment(user: Pick<CurrentUser, "id">, courseId: string, input: z.infer<typeof requestInput>) {
-  const course = await db().course.findUnique({ where: { id: courseId }, select: { id: true, status: true, title: true } });
+  const course = await db().course.findUnique({ where: { id: courseId }, select: { id: true, status: true, title: true, accessType: true } });
   if (!course || course.status !== "PUBLISHED") throw new EnrollmentError("notAvailable", 404);
+  // Paid courses are joined through the payment page (src/modules/payments).
+  if (course.accessType === "PAID") throw new EnrollmentError("paymentRequired", 402);
   const existing = await enrollmentFor(user.id, courseId);
   if (existing?.status === "REQUESTED") throw new EnrollmentError("alreadyRequested", 409);
   if (existing?.status === "APPROVED") throw new EnrollmentError("alreadyEnrolled", 409);
@@ -66,10 +68,18 @@ const TRANSITIONS: Record<EnrollmentStatus, EnrollmentStatus[]> = {
   REVOKED: ["APPROVED"],
 };
 
-export async function decideEnrollment(id: string, decision: "APPROVED" | "REJECTED" | "REVOKED", note: string | null, actor: Actor) {
+/** A paid course is opened only by a confirmed payment, or by someone who manages payments (e.g. paid in cash). */
+function assertCanOpenPaid(course: { accessType: string }, actor: Actor, paymentConfirmed: boolean) {
+  if (course.accessType === "PAID" && !paymentConfirmed && !can(actor.role, "payments.manage")) {
+    throw new EnrollmentError("This is a paid course: access opens when a Super Admin confirms the payment in Payments.", 403);
+  }
+}
+
+export async function decideEnrollment(id: string, decision: "APPROVED" | "REJECTED" | "REVOKED", note: string | null, actor: Actor, opts: { paymentConfirmed?: boolean } = {}) {
   if (!can(actor.role, "enrollments.decide")) throw new EnrollmentError("You don't have permission to do that.", 403);
-  const enrollment = await db().enrollment.findUnique({ where: { id }, include: { course: { select: { title: true } } } });
+  const enrollment = await db().enrollment.findUnique({ where: { id }, include: { course: { select: { title: true, accessType: true } } } });
   if (!enrollment) throw new EnrollmentError("Request not found.", 404);
+  if (decision === "APPROVED") assertCanOpenPaid(enrollment.course, actor, opts.paymentConfirmed === true);
   if (!TRANSITIONS[enrollment.status].includes(decision)) {
     throw new EnrollmentError("This request was already handled. Refresh the page to see its current status.", 409);
   }
@@ -116,6 +126,7 @@ export async function listEnrollments(filter: QueueFilter, page: number, pageSiz
             id: true,
             title: true,
             status: true,
+            accessType: true,
             modules: { orderBy: { position: "asc" }, select: { lessons: { orderBy: { position: "asc" }, select: { title: true, videoUrl: true } } } },
           },
         },
@@ -237,11 +248,12 @@ export async function manualEnroll(userId: string, courseId: string, actor: Acto
   if (!can(actor.role, "enrollments.decide")) throw new EnrollmentError("You don't have permission to do that.", 403);
   const [student, course] = await Promise.all([
     db().user.findUnique({ where: { id: userId }, select: { role: true, status: true } }),
-    db().course.findUnique({ where: { id: courseId }, select: { status: true, title: true } }),
+    db().course.findUnique({ where: { id: courseId }, select: { status: true, title: true, accessType: true } }),
   ]);
   if (!student || student.role !== "STUDENT") throw new EnrollmentError("Student not found.", 404);
   if (student.status !== "ACTIVE") throw new EnrollmentError("Reactivate this account before enrolling it in a course.");
   if (!course || course.status === "DRAFT") throw new EnrollmentError("Choose a published or archived course.");
+  assertCanOpenPaid(course, actor, false);
   const existing = await enrollmentFor(userId, courseId);
   if (existing?.status === "APPROVED") throw new EnrollmentError("This student is already enrolled in that course.", 409);
   const data = { status: "APPROVED" as const, decidedAt: new Date(), decidedById: actor.id, decisionNote: null };

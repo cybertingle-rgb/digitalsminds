@@ -6,6 +6,7 @@ import { can } from "@/modules/auth/permissions";
 import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/auth/session";
 import { courseDetailsInput, lessonInput, moduleInput, newCourseInput, resourceInput } from "@/modules/courses/schema";
 import * as courses from "@/modules/courses/service";
+import { PaymentError, priceInput, setCoursePrice } from "@/modules/payments/service";
 
 export type CourseState = {
   status: "idle" | "success" | "error";
@@ -29,7 +30,7 @@ async function run(fn: (actor: CurrentUser) => Promise<Omit<CourseState, "status
     revalidatePath("/admin/courses", "layout");
     return { status: "success", ...(typeof result === "string" ? { message: result } : result) };
   } catch (e) {
-    if (e instanceof courses.CourseError) return { status: "error", message: e.message };
+    if (e instanceof courses.CourseError || e instanceof PaymentError) return { status: "error", message: e.message };
     if (e instanceof z.ZodError) {
       const errors: Record<string, string> = {};
       for (const issue of e.issues) {
@@ -88,6 +89,15 @@ export async function setInstructorsAction(courseId: string, _prev: CourseState,
     const ids = z.array(id).max(50).parse(fd.getAll("instructorIds").map(String));
     await courses.setInstructors(id.parse(courseId), ids, actor);
     return "Instructors updated.";
+  });
+}
+
+export async function setPriceAction(courseId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
+  return run(async (actor) => {
+    const input = priceInput.parse({ paid: fd.get("access") === "PAID", pricePkr: str(fd, "pricePkr") });
+    await setCoursePrice(id.parse(courseId), input, actor);
+    revalidatePath("/[lang]", "layout");
+    return input.paid ? "Price saved. Students now pay to join." : "This course is free again.";
   });
 }
 

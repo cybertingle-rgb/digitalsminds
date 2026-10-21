@@ -10,7 +10,8 @@ import { availableInstructors, getCourseForEdit, pickableMedia, publishChecklist
 import { serviceLabel } from "@/modules/inquiries/labels";
 import { courseStudents } from "@/modules/learning/enrollment";
 import { mediaUrl } from "@/modules/media/service";
-import { DetailsForm, InstructorsForm, PublishPanel } from "../CourseForms";
+import { formatPkr } from "@/modules/payments/service";
+import { DetailsForm, InstructorsForm, PriceForm, PublishPanel } from "../CourseForms";
 import { Curriculum } from "../Curriculum";
 import { resourceItems } from "../resource-items";
 import { Resources } from "../Resources";
@@ -125,6 +126,18 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
               deletable={course.status === "DRAFT" && course._count.enrollments === 0 && course._count.certificates === 0}
               enrollments={course._count.enrollments}
             />
+          </section>
+
+          <section aria-labelledby="price" className="glass rounded-2xl p-6">
+            <h2 id="price" className="mb-4 text-lg font-semibold text-charcoal-900">Price</h2>
+            {can(user.role, "payments.manage") ? (
+              <PriceForm courseId={course.id} paid={course.accessType === "PAID"} pricePkr={course.priceAmount ? course.priceAmount / 100 : null} />
+            ) : (
+              <p className="text-sm text-charcoal-800">
+                {course.accessType === "PAID" && course.priceAmount ? `Paid: ${formatPkr(course.priceAmount)}` : "Free"}
+                <span className="block text-muted">Only a Super Admin can change the price.</span>
+              </p>
+            )}
           </section>
 
           <section aria-labelledby="instructors" className="glass rounded-2xl p-6">

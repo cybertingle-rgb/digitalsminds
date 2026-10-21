@@ -10,6 +10,7 @@ import { dashboardStats } from "@/modules/dashboard/stats";
 import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
 import { getStorageStatus } from "@/modules/media/storage-check";
 import { getGoogleStatus, getSmtpStatus } from "@/modules/settings/integrations";
+import { pendingPaymentCount } from "@/modules/payments/service";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -45,6 +46,7 @@ function Panel({ title, children, action }: { title: string; children: ReactNode
 export default async function AdminOverview() {
   const user = await requirePagePermission("admin.access", "/admin");
   const { leads, people, media, learning, support, certificatesReady, activity } = await dashboardStats(user);
+  const paymentsWaiting = can(user.role, "payments.view") ? await pendingPaymentCount() : null;
   const setup = can(user.role, "integrations.manage") ? await Promise.all([getSmtpStatus(), getGoogleStatus(), getStorageStatus()]) : null;
   const todo = setup
     ? [
@@ -73,6 +75,7 @@ export default async function AdminOverview() {
       )}
 
       <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        {paymentsWaiting !== null && <Stat label="Payments to check" value={paymentsWaiting} hint="Paid course enrollments" href="/admin/payments" />}
         {support !== null && <Stat label="Support requests needing a reply" value={support} href="/admin/support?status=OPEN" />}
         {certificatesReady !== null && <Stat label="Certificates ready to issue" value={certificatesReady} href="/admin/certificates" />}
         {learning && <Stat label="Access requests waiting" value={learning.waiting} hint={`${learning.enrolled} enrolled · ${learning.published} published courses`} href="/admin/enrollments" />}

@@ -87,6 +87,8 @@ model User {
   inquiryNotes        InquiryNote[]
   auditLogs           AuditLog[]
   settingsUpdated     SiteSetting[]
+  payments            Payment[]          @relation("PaymentStudent")
+  paymentDecisions    Payment[]          @relation("PaymentDecidedBy")
 
   @@index([role, status])
   @@index([createdAt])
@@ -276,6 +278,7 @@ model Course {
   certificates   Certificate[]
   announcements  Announcement[]
   supportTickets SupportTicket[]
+  payments       Payment[]
 
   @@index([status, featured, sortOrder])
   @@index([language, status])
@@ -710,4 +713,59 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([actorId, createdAt])
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Payments for paid courses (manual: bank transfer, JazzCash, EasyPaisa)
+// ---------------------------------------------------------------------------
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  JAZZCASH
+  EASYPAISA
+}
+
+enum PaymentStatus {
+  /// Submitted by the student; waiting for a Super Admin to check it.
+  PENDING
+  /// Money received; course access opened.
+  CONFIRMED
+  /// Not received or details wrong; the student can submit again.
+  REJECTED
+}
+
+/// A student's payment for a paid course, confirmed by a Super Admin.
+model Payment {
+  id            String        @id @default(cuid())
+  userId        String        @db.VarChar(64)
+  user          User          @relation("PaymentStudent", fields: [userId], references: [id], onDelete: Cascade)
+  courseId      String
+  /// Courses with payments cannot be deleted (archive them instead).
+  course        Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  /// Fee in paisa (PKR minor units) when the student paid; the course price may change later.
+  amount        Int
+  currency      String        @default("PKR") @db.Char(3)
+  method        PaymentMethod
+  /// Transaction ID / reference the student copied from their bank or wallet.
+  reference     String        @db.VarChar(100)
+  payerName     String?       @db.VarChar(120)
+  paidOn        DateTime?     @db.Date
+  note          String?       @db.VarChar(1000)
+  /// Receipt screenshot or PDF, stored privately (never in the Media library).
+  receiptKey    String?       @db.VarChar(500)
+  receiptMime   String?       @db.VarChar(127)
+  receiptSize   Int?
+  receiptName   String?       @db.VarChar(255)
+  status        PaymentStatus @default(PENDING)
+  decidedAt     DateTime?
+  decidedById   String?       @db.VarChar(64)
+  decidedBy     User?         @relation("PaymentDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  /// Reason shown to the student when a payment is rejected.
+  decisionNote  String?       @db.VarChar(1000)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status, createdAt])
+  @@index([userId, courseId])
+  @@index([courseId])
 }

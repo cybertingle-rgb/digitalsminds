@@ -96,7 +96,7 @@ export function DeleteStudent({ id, email, inquiries }: { id: string; email: str
   }
   return (
     <div role="alertdialog" aria-label="Delete account permanently" className="space-y-3 rounded-xl border border-red-300 bg-red-50 p-4 text-sm">
-      <p className="font-semibold text-red-900">This permanently deletes the account, enrollments, progress, certificates, support requests, notifications and newsletter subscription. It can&apos;t be undone.</p>
+      <p className="font-semibold text-red-900">This permanently deletes the account, enrollments, progress, certificates, support requests, notifications, payment records and receipts, and newsletter subscription. Keep any payment records you need for your accounts before deleting. It can&apos;t be undone.</p>
       {inquiries > 0 && <p className="text-red-900">{inquiries} inquiry/inquiries from this email stay in Inquiries; delete them there if the request covers them too.</p>}
       <label htmlFor="confirm-email" className="block font-medium text-charcoal-900">Type <span dir="ltr" className="font-mono">{email}</span> to confirm</label>
       <input id="confirm-email" value={typed} onChange={(e) => setTyped(e.target.value)} dir="ltr" autoComplete="off" className={inputClass} />

@@ -35,6 +35,10 @@ export const permissions = [
   "newsletter.export",
   "newsletter.delete",
   "backups.download",
+  /** See payments waiting and their status. */
+  "payments.view",
+  /** Confirm or reject payments, set course prices and payment account details. */
+  "payments.manage",
 ] as const;
 export type Permission = (typeof permissions)[number];
 
@@ -53,6 +57,7 @@ const grants: Record<Role, readonly Permission[]> = {
     "certificates.issue",
     "announcements.site",
     "newsletter.view",
+    "payments.view",
   ],
   // Instructors are further limited to their own courses (CourseInstructor) in later phases.
   INSTRUCTOR: ["admin.access", "courses.manage.own", "media.manage.own", "support.manage.own"],

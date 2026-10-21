@@ -167,7 +167,12 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Production env checklist, launch, uptime monitoring on `/api/health`, and a maintenance runbook.
 - **Acceptance:** restore tested from backup; all launch features verified on the live domain.
 
-## Phase 14: Later options (not scheduled)
+## Phase 14: Paid courses, student dashboard, live classes (in progress, owner-selected)
+- 14a ✅ Paid courses with manual payments (bank transfer / JazzCash / EasyPaisa, receipt upload, Super Admin confirmation).
+- 14b Student dashboard upgrade (stats, progress, next lesson, activity, certificates, profile tab, sidebar).
+- 14c Live classes (Zoom / Google Meet links per course, student calendar, email reminders 1 day and 1 hour before).
+
+## Phase 15: Later options (not scheduled)
 Each will be scoped with cost and dependencies when you prioritise it:
 - **Payments:** paid courses and a payment gateway (local or international), coupons and memberships.
 - **Teaching:** quizzes and assignments, live classes and webinars, instructor payouts.

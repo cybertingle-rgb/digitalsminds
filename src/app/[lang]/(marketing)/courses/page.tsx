@@ -10,6 +10,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { editablePageMetadata } from "@/modules/content/metadata";
 import { listingText, publishedCourses } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
+import { priceLabel } from "@/modules/payments/service";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
                   summary={text.summary}
                   thumbnailUrl={c.thumbnail ? mediaUrl(c.thumbnail) : null}
                   courseLang={c.language}
-                  meta={[t.free, t.levels[c.level], t.languages[c.language], lessonCount(c.lessonCount, dict), formatDuration(c.minutes, dict)]}
+                  meta={[priceLabel(c, t.free), t.levels[c.level], t.languages[c.language], lessonCount(c.lessonCount, dict), formatDuration(c.minutes, dict)]}
                 />
               </li>
             );

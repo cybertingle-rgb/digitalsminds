@@ -73,6 +73,18 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Paid courses (Phase 14a)
+
+- `Payment` table (additive migration `phase14_payments`); amounts in paisa, PKR. `src/modules/payments/service.ts`:
+  prices (`payments.manage`), account details (`site.payments`, shown only on `/courses/[slug]/pay` to signed-in
+  students), `submitPayment` (validates receipt by content; images re-encoded; stored under `receipts/` in the upload
+  folder, not in MediaAsset), `confirmPayment` / `rejectPayment` (Super Admin) which drive the enrollment via
+  `decideEnrollment(..., { paymentConfirmed: true })`.
+- Guards: free-request flow refuses paid courses; approving or manually enrolling into a paid course needs a confirmed
+  payment or `payments.manage`. Receipts: `/api/payments/[id]/receipt` for the payer and `payments.view` only.
+- Admin: `/admin/payments` (list, detail with receipt, confirm/reject), `/admin/payments/settings`. Student: payment
+  status on My learning. Account deletion also removes receipt files.
+
 ## Backups and hardening (Phase 13)
 
 - `src/modules/backup`: `sqlDump()` streams a mysqldump-style file (DROP/CREATE + batched INSERTs ordered by primary

@@ -17,6 +17,7 @@ import { RichText } from "@/modules/courses/richtext";
 import { courseBySlug, lessonsOf, listingText, objectivesOf, totalMinutes } from "@/modules/learning/catalogue";
 import { learnerContext } from "@/modules/learning/progress";
 import { mediaUrl } from "@/modules/media/service";
+import { coursePrice, formatPkr } from "@/modules/payments/service";
 import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
 
 export const dynamic = "force-dynamic";
@@ -58,6 +59,7 @@ export default async function CoursePage({ params }: Props) {
   const learnHref = (lessonId?: string) => localizePath(`/learn/${course.slug}${lessonId ? `/${lessonId}` : ""}`, lang);
   const canOpenAll = mode === "student" || mode === "staff";
   const news = canOpenAll ? await courseAnnouncements(course.id) : [];
+  const price = coursePrice(course);
   const structured =
     course.status === "PUBLISHED"
       ? [
@@ -69,7 +71,7 @@ export default async function CoursePage({ params }: Props) {
             url: absolute(localizePath(`/courses/${course.slug}`, lang)),
             inLanguage: localeMeta[course.language].htmlLang,
             provider: await orgRef(dict),
-            ...(course.accessType === "FREE" && { isAccessibleForFree: true }),
+            ...(price ? { offers: { "@type": "Offer", price: (price / 100).toFixed(0), priceCurrency: "PKR", category: "Paid" } } : { isAccessibleForFree: true }),
             ...(course.thumbnail?.visibility === "PUBLIC" && { image: absolute(mediaUrl(course.thumbnail)) }),
             ...(course.instructors.length && { instructor: course.instructors.map((i) => ({ "@type": "Person", name: i.user.name })) }),
           },
@@ -94,7 +96,7 @@ export default async function CoursePage({ params }: Props) {
             <h1 className="text-3xl font-bold tracking-tight text-balance text-charcoal-900 sm:text-4xl" dir="auto">{text.title}</h1>
             <p className="mt-4 text-lg text-muted" dir="auto">{text.summary}</p>
             <ul className="mt-6 flex flex-wrap gap-2 text-sm">
-              {[t.free, t.levels[course.level], t.languages[course.language], lessonCount(lessons.length, dict), formatDuration(totalMinutes(course), dict), course.certificateEnabled ? t.certificate : null]
+              {[price ? formatPkr(price) : t.free, t.levels[course.level], t.languages[course.language], lessonCount(lessons.length, dict), formatDuration(totalMinutes(course), dict), course.certificateEnabled ? t.certificate : null]
                 .filter(Boolean)
                 .map((m) => <li key={m} className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800">{m}</li>)}
             </ul>
@@ -179,6 +181,8 @@ export default async function CoursePage({ params }: Props) {
                 status={enrollment?.status ?? null}
                 decisionNote={enrollment?.decisionNote ?? null}
                 courseId={course.id}
+                price={price}
+                payHref={localizePath(`/courses/${course.slug}/pay`, lang)}
                 loggedIn={!!user}
                 googleEmail={user?.googleEmail ?? user?.email ?? ""}
                 here={localizePath(`/courses/${course.slug}`, lang)}
@@ -211,6 +215,9 @@ function AccessPanel(p: {
   status: "REQUESTED" | "APPROVED" | "REJECTED" | "REVOKED" | null;
   decisionNote: string | null;
   courseId: string;
+  /** Fee in paisa for paid courses. */
+  price: number | null;
+  payHref: string;
   loggedIn: boolean;
   googleEmail: string;
   here: string;
@@ -235,6 +242,7 @@ function AccessPanel(p: {
     );
   }
   if (!p.published) return <p className="text-sm text-muted">{t.notAvailable}</p>;
+  if (p.price) return <PaidAccess {...p} price={p.price} />;
   if (!p.loggedIn) {
     return (
       <>
@@ -260,6 +268,37 @@ function AccessPanel(p: {
         googleEmail={p.googleEmail}
         labels={{ googleEmail: t.requestGoogleEmail, googleHint: t.requestGoogleHint, note: t.requestNote, submit: p.status ? t.requestAgain : t.requestButton }}
       />
+    </>
+  );
+}
+
+/** Paid courses: pay, send the details, and wait for confirmation. */
+function PaidAccess(p: Parameters<typeof AccessPanel>[0] & { price: number }) {
+  const t = p.dict.payments;
+  const amount = formatPkr(p.price);
+  return (
+    <>
+      <p className="text-2xl font-bold text-charcoal-900" dir="ltr">{amount}</p>
+      {!p.loggedIn ? (
+        <>
+          <p className="text-sm text-muted">{t.accessIntroPaid}</p>
+          <LinkButton href={`${localizePath("/login", p.lang)}?next=${encodeURIComponent(p.payHref)}`} className="w-full">{t.loginToEnroll}</LinkButton>
+          <LinkButton href={localizePath("/register", p.lang)} variant="secondary" className="w-full">{t.registerToEnroll}</LinkButton>
+        </>
+      ) : p.status === "REQUESTED" ? (
+        <FormAlert tone="info">{t.pending}</FormAlert>
+      ) : (
+        <>
+          {(p.status === "REJECTED" || p.status === "REVOKED") && (
+            <div className="space-y-1 glass-subtle rounded-xl p-4 text-sm text-charcoal-900">
+              <p className="font-semibold">{p.status === "REJECTED" ? t.rejectedTitle : p.dict.courses.revoked}</p>
+              {p.decisionNote && <p dir="auto">{p.decisionNote}</p>}
+            </div>
+          )}
+          <p className="text-sm text-muted">{t.accessIntroPaid}</p>
+          <LinkButton href={p.payHref} className="w-full">{format(t.enrollButton, { amount })}</LinkButton>
+        </>
+      )}
     </>
   );
 }

@@ -67,6 +67,7 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 58 | Backups | Super Admin downloads (Admin → Backups): database as .sql.gz (restorable with phpMyAdmin), uploaded files as .tar.gz; plus Hostinger automatic backups; restore drill tested (docs/BACKUP.md) |
 | 59 | Security review | Findings fixed (open redirect, per-account auth limits, email greeting, profile validation, newsletter, delete permissions); accepted risks in docs/SECURITY_REVIEW.md |
 | 60 | eBay course focus | Owner request: the homepage opens with the paid eBay course (editable "Featured course" in Admin → Website → Homepage, can be switched off). "Enroll" opens the contact form with "eBay course enrollment" selected; leads arrive in Inquiries. Official eBay logo used at the owner's request via Media upload, with a "not affiliated with or endorsed by eBay" note. Courses wording, FAQ and Terms updated for paid courses |
+| 61 | Paid courses | PKR only. Students pay by bank transfer, JazzCash or EasyPaisa and send the transaction ID + receipt (image or PDF, stored privately outside the Media library); only Super Admins set prices, enter account details and confirm/reject payments; Content Managers can view. Confirming opens the course (usual access email); rejecting emails the reason and the student can resend. Card gateway is a later option |
 
 ## Open items (waiting on owner)
 
@@ -79,6 +80,8 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 - [x] Privacy Policy and Terms & Conditions written and published (owner delegated); have them reviewed by a lawyer when convenient
 - [ ] Urdu translations (provided when the bilingual structure is ready)
 - [ ] eBay logo: download it from the Wikimedia link, upload in Admin → Media (public), choose it in Admin → Website → Homepage → Featured course
+- [ ] Payments: enter your bank / JazzCash / EasyPaisa details in Admin → Payments → Payment details
+- [ ] eBay course: create it in Admin → Courses, set its price (Price box), publish, then set the homepage button link to /courses/<its address> (Admin → Website → Homepage → Featured course)
 - [ ] eBay course details: name, what it covers (points), length, language, fee and how payment works; then create the course in Admin → Courses
 - [ ] Launch checklist: docs/LAUNCH.md (production settings, tests on the live site, uptime monitor on `/api/health`)
 - [ ] Weekly backups from Admin → Backups, stored privately (docs/BACKUP.md)
