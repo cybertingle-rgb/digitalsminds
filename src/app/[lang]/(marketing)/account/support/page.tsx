@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AccountNav } from "@/components/learning/AccountNav";
 import { NewTicketForm } from "@/components/learning/SupportForms";
-import { Section } from "@/components/ui/Section";
 import { localeMeta, localizePath } from "@/i18n/config";
 import { format } from "@/i18n/merge";
 import { authPage, noindex } from "@/modules/auth/pages";
 import { getCurrentUser } from "@/modules/auth/session";
-import { accountNavItems } from "@/modules/learning/account-nav";
 import { studentTickets, ticketCourses } from "@/modules/support/service";
 
 export const dynamic = "force-dynamic";
@@ -22,15 +19,14 @@ export default async function SupportPage({ params }: PageProps<"/[lang]/account
   const here = localizePath("/account/support", locale);
   if (!user) redirect(`${localizePath("/login", locale)}?next=${encodeURIComponent(here)}`);
   const t = dict.support;
-  const [tickets, courses, nav] = await Promise.all([studentTickets(user.id), ticketCourses(user.id), accountNavItems(user.id, locale, dict)]);
+  const [tickets, courses] = await Promise.all([studentTickets(user.id), ticketCourses(user.id)]);
   const fmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
   const title = (c: { title: string; titleUr: string | null }) => (locale === "ur" ? c.titleUr || c.title : c.title);
 
   return (
-    <Section>
+    <>
       <div className="max-w-5xl space-y-6">
         <h1 className="text-3xl font-bold text-charcoal-900">{t.title}</h1>
-        <AccountNav items={nav} label={dict.account.title} />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <section aria-labelledby="new-ticket" className="glass min-w-0 rounded-3xl p-6 lg:col-span-2">
             <h2 id="new-ticket" className="text-lg font-bold text-charcoal-900">{t.newTicket}</h2>
@@ -65,6 +61,6 @@ export default async function SupportPage({ params }: PageProps<"/[lang]/account
           </section>
         </div>
       </div>
-    </Section>
+    </>
   );
 }

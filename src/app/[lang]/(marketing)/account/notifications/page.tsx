@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AccountNav } from "@/components/learning/AccountNav";
-import { Section } from "@/components/ui/Section";
 import { localeMeta, localizePath } from "@/i18n/config";
 import { authPage, noindex } from "@/modules/auth/pages";
 import { getCurrentUser } from "@/modules/auth/session";
-import { accountNavItems } from "@/modules/learning/account-nav";
 import { listNotifications, markAllRead } from "@/modules/notifications/service";
 
 export const dynamic = "force-dynamic";
@@ -17,17 +14,16 @@ export default async function NotificationsPage({ params }: PageProps<"/[lang]/a
   const user = await getCurrentUser();
   const here = localizePath("/account/notifications", locale);
   if (!user) redirect(`${localizePath("/login", locale)}?next=${encodeURIComponent(here)}`);
-  const [items, nav] = await Promise.all([listNotifications(user.id), accountNavItems(user.id, locale, dict)]);
+  const items = await listNotifications(user.id);
   // Opening the page counts as reading them; the list above still highlights what was new.
   await markAllRead(user.id);
   const t = dict.notifications;
   const fmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Karachi" });
 
   return (
-    <Section>
+    <>
       <div className="max-w-3xl space-y-6">
         <h1 className="text-3xl font-bold text-charcoal-900">{t.title}</h1>
-        <AccountNav items={nav} label={dict.account.title} />
         {items.length === 0 ? (
           <p className="glass-subtle rounded-2xl p-6 text-muted">{t.empty}</p>
         ) : (
@@ -50,6 +46,6 @@ export default async function NotificationsPage({ params }: PageProps<"/[lang]/a
           </ul>
         )}
       </div>
-    </Section>
+    </>
   );
 }

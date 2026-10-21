@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { FormAlert } from "@/components/forms/Field";
 import { StudentReplyForm } from "@/components/learning/SupportForms";
-import { Section } from "@/components/ui/Section";
 import { localeMeta, localizePath } from "@/i18n/config";
 import { authPage, noindex } from "@/modules/auth/pages";
 import { getCurrentUser } from "@/modules/auth/session";
@@ -24,7 +23,7 @@ export default async function TicketPage({ params }: PageProps<"/[lang]/account/
   const fmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Karachi" });
 
   return (
-    <Section>
+    <>
       <div className="max-w-3xl space-y-6">
         <Link href={localizePath("/account/support", locale)} className="text-sm text-muted hover:text-charcoal-900">← {t.back}</Link>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -52,6 +51,6 @@ export default async function TicketPage({ params }: PageProps<"/[lang]/account/
           </div>
         )}
       </div>
-    </Section>
+    </>
   );
 }

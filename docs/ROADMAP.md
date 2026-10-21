@@ -169,7 +169,7 @@ Repository and hosting audit, build failure fixed and verified live, requirement
 
 ## Phase 14: Paid courses, student dashboard, live classes (in progress, owner-selected)
 - 14a ✅ Paid courses with manual payments (bank transfer / JazzCash / EasyPaisa, receipt upload, Super Admin confirmation).
-- 14b Student dashboard upgrade (stats, progress, next lesson, activity, certificates, profile tab, sidebar).
+- 14b ✅ Student dashboard upgrade (stats, progress, next lesson, activity, certificates, profile tab, sidebar).
 - 14c Live classes (Zoom / Google Meet links per course, student calendar, email reminders 1 day and 1 hour before).
 
 ## Phase 15: Later options (not scheduled)

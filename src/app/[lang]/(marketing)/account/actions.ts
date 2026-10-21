@@ -25,6 +25,6 @@ export async function saveProfileAction(lang: string, _prev: ProfileState, fd: F
     return { status: "error", errors };
   }
   await updateProfile(user.id, parsed.data);
-  revalidatePath(localizePath("/account", locale));
+  revalidatePath(localizePath("/account", locale), "layout");
   return { status: "success", message: dict.account.profileSaved };
 }

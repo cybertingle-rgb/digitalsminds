@@ -8,8 +8,11 @@ import { unreadCount } from "@/modules/notifications/service";
 export async function accountNavItems(userId: string, locale: Locale, dict: Dictionary) {
   const unread = await unreadCount(userId);
   return [
-    { label: dict.nav.myLearning, href: localizePath("/account", locale) },
-    { label: dict.notifications.title, href: localizePath("/account/notifications", locale), badge: unread ? format(dict.notifications.newCount, { count: String(unread) }) : undefined },
-    { label: dict.support.title, href: localizePath("/account/support", locale) },
+    { label: dict.account.navDashboard, href: localizePath("/account", locale), icon: "dashboard" as const },
+    { label: dict.account.navCourses, href: localizePath("/account/courses", locale), icon: "courses" as const },
+    { label: dict.account.navCertificates, href: localizePath("/account/certificates", locale), icon: "certificates" as const },
+    { label: dict.notifications.title, href: localizePath("/account/notifications", locale), icon: "bell" as const, badge: unread ? format(dict.notifications.newCount, { count: String(unread) }) : undefined },
+    { label: dict.support.title, href: localizePath("/account/support", locale), icon: "support" as const },
+    { label: dict.account.navProfile, href: localizePath("/account/profile", locale), icon: "profile" as const },
   ];
 }

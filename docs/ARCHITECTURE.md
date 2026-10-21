@@ -73,6 +73,14 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Student portal (Phase 14b)
+
+- `src/app/[lang]/(marketing)/account/layout.tsx`: portal shell (sidebar on large screens, scrolling tabs on phones)
+  around every `/account` page; signed-out visitors get the page alone, which redirects to login with the right `next`.
+- Pages: Dashboard (`/account`: stats, continue card, progress, recent activity, requests/payments, announcements),
+  My courses, Certificates, Notifications, Support, Profile. Data: `src/modules/learning/dashboard.ts` (only the
+  student's own records; learning time = sum of lengths of completed lessons).
+
 ## Paid courses (Phase 14a)
 
 - `Payment` table (additive migration `phase14_payments`); amounts in paisa, PKR. `src/modules/payments/service.ts`:
