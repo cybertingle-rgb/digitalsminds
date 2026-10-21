@@ -96,9 +96,9 @@ export function GoogleCard({ status, origin, redirectUri, flash }: Props) {
           label="Client secret"
           name="clientSecret"
           error={f.clientSecret}
-          hint={status.configured ? "Saved (hidden). Leave empty to keep it, or paste a new one to replace it." : "Stored encrypted. It is never shown again."}
+          hint={status.secretReadable ? "Saved (hidden). Leave empty to keep it, or paste a new one to replace it." : "Stored encrypted. It is never shown again."}
         >
-          <input id="clientSecret" name="clientSecret" type="password" dir="ltr" autoComplete="off" required={!status.configured} className={inputClass} placeholder={status.configured ? "••••••••••••" : ""} />
+          <input id="clientSecret" name="clientSecret" type="password" dir="ltr" autoComplete="off" required={!status.secretReadable} className={inputClass} placeholder={status.secretReadable ? "••••••••••••" : ""} />
         </Field>
         <div className="flex flex-wrap gap-3">
           <Button type="submit" variant="dark" disabled={saving}>

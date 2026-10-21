@@ -21,7 +21,9 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
           <h2 id="email-title" className="text-lg font-semibold text-charcoal-900">Email (SMTP)</h2>
           <p className="mt-1 text-sm text-muted">Sends account verification, password reset and notification emails, e.g. from noreply@digitalsminds.com.</p>
         </div>
-        {status.verifiedAt ? (
+        {status.configured && !status.secretReadable ? (
+          <StatusBadge tone="warn">Password needed</StatusBadge>
+        ) : status.verifiedAt ? (
           <StatusBadge tone="ok">Working</StatusBadge>
         ) : status.configured ? (
           <StatusBadge tone="warn">Saved · send a test email</StatusBadge>
@@ -67,9 +69,9 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
           label="Mailbox password"
           name="password"
           error={f.password}
-          hint={status.configured ? "Saved (hidden). Leave empty to keep it." : "Stored encrypted. It is never shown again."}
+          hint={status.secretReadable ? "Saved (hidden). Leave empty to keep it." : "Stored encrypted. It is never shown again."}
         >
-          <input id="password" name="password" type="password" autoComplete="new-password" required={!status.configured} className={inputClass} placeholder={status.configured ? "••••••••••••" : ""} />
+          <input id="password" name="password" type="password" autoComplete="new-password" required={!status.secretReadable} className={inputClass} placeholder={status.secretReadable ? "••••••••••••" : ""} aria-invalid={!!f.password} />
         </Field>
         <Field label="Sender name" name="fromName" error={f.fromName}>
           <input id="fromName" name="fromName" required defaultValue={status.fromName ?? "Digitals Minds"} className={inputClass} aria-invalid={!!f.fromName} />

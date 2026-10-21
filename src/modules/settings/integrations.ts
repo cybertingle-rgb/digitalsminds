@@ -49,6 +49,9 @@ async function write(key: string, value: object, actorId: string | null) {
   });
 }
 
+export const UNREADABLE_SMTP = "The saved mailbox password can no longer be read. Type the mailbox password again, then save.";
+export const UNREADABLE_GOOGLE = "The saved Client Secret can no longer be read. Paste the Client Secret again, then save.";
+
 function readable(token: string): boolean {
   try {
     decryptSecret(token);
@@ -109,6 +112,7 @@ export async function getGoogleCredentials(): Promise<{ clientId: string; client
 export async function saveGoogleCredentials(input: z.infer<typeof googleCredentialsInput>, actorId: string) {
   const existing = await read(KEYS.google, googleStored);
   if (!input.clientSecret && !existing) throw new Error("Client Secret is required");
+  if (!input.clientSecret && !readable(existing!.clientSecretEnc)) throw new Error(UNREADABLE_GOOGLE);
   const changed = !existing || existing.clientId !== input.clientId || !!input.clientSecret;
   const value: GoogleStored = {
     clientId: input.clientId,
@@ -198,6 +202,7 @@ export async function getSmtpConfig(): Promise<SmtpConfig | null> {
 export async function saveSmtp(input: z.infer<typeof smtpInput>, actorId: string) {
   const existing = await read(KEYS.smtp, smtpStored);
   if (!input.password && !existing) throw new Error("Password is required");
+  if (!input.password && !readable(existing!.passwordEnc)) throw new Error(UNREADABLE_SMTP);
   const value: SmtpStored = {
     host: input.host,
     port: input.port,

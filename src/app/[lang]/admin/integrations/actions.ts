@@ -7,6 +7,8 @@ import { audit } from "@/modules/audit/log";
 import { assertPermission, ForbiddenError } from "@/modules/auth/session";
 import {
   getSmtpConfig,
+  getSmtpStatus,
+  UNREADABLE_SMTP,
   googleCredentialsInput,
   markSmtpVerified,
   removeGoogle,
@@ -127,8 +129,9 @@ export async function saveSmtpAction(_prev: ActionState, formData: FormData): Pr
 
   // Check the login straight away so problems show up now, not when a student registers.
   const cfg = await getSmtpConfig();
+  if (!cfg) return { status: "error", message: UNREADABLE_SMTP };
   try {
-    if (cfg) await verifySmtp(cfg);
+    await verifySmtp(cfg);
   } catch (e) {
     return { status: "error", message: `Saved, but the connection test failed: ${smtpErrorMessage(e)}` };
   }
@@ -139,7 +142,7 @@ export async function sendTestEmailAction(): Promise<ActionState> {
   const user = await guard();
   if (denied(user)) return user;
   const cfg = await getSmtpConfig();
-  if (!cfg) return { status: "error", message: "Save the email settings first." };
+  if (!cfg) return { status: "error", message: (await getSmtpStatus()).configured ? UNREADABLE_SMTP : "Save the email settings first." };
   try {
     await sendMail(
       {
