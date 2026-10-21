@@ -8,8 +8,7 @@ import { can } from "@/modules/auth/permissions";
 import { canManageCourse, manageableCoursesWhere } from "@/modules/auth/scoping";
 import type { CurrentUser } from "@/modules/auth/session";
 import { mediaScope } from "@/modules/media/service";
-import { driveFileId, driveViewUrl } from "./drive";
-import { courseDetailsInput, lessonInput, moduleInput, newCourseInput, resourceInput, slugify } from "./schema";
+import { courseDetailsInput, newCourseInput, slugify } from "./schema";
 
 export class CourseError extends Error {
   constructor(message: string, public readonly status = 400) {
@@ -27,23 +26,6 @@ async function requireCourse(courseId: string, actor: Actor) {
   return course;
 }
 
-async function moduleWithCourse(moduleId: string, actor: Actor) {
-  const mod = await db().courseModule.findUnique({ where: { id: moduleId } });
-  if (!mod) throw new CourseError("Module not found.", 404);
-  await requireCourse(mod.courseId, actor);
-  return mod;
-}
-
-async function lessonWithCourse(lessonId: string, actor: Actor) {
-  const lesson = await db().lesson.findUnique({ where: { id: lessonId }, include: { module: true } });
-  if (!lesson) throw new CourseError("Lesson not found.", 404);
-  await requireCourse(lesson.module.courseId, actor);
-  return lesson;
-}
-
-const changed = (actor: Actor, courseId: string, what: string) =>
-  audit({ actorId: actor.id, action: "course.curriculum_changed", entityType: "Course", entityId: courseId, metadata: { what } });
-
 // ---------------------------------------------------------------------------
 // Courses
 // ---------------------------------------------------------------------------
@@ -54,7 +36,6 @@ export function listCourses(actor: Actor, status?: "DRAFT" | "PUBLISHED" | "ARCH
     orderBy: [{ status: "asc" }, { updatedAt: "desc" }],
     include: {
       thumbnail: { select: { storageKey: true, visibility: true, id: true } },
-      instructors: { include: { user: { select: { name: true } } } },
       _count: { select: { batches: true, enrollments: true } },
     },
   });
@@ -79,8 +60,6 @@ export async function createCourse(input: z.infer<typeof newCourseInput>, actor:
       summary: input.summary,
       slug: await uniqueSlug(slugify(input.title)),
       createdById: actor.id,
-      // Instructors own the courses they create.
-      ...(can(actor.role, "courses.manage.all") ? {} : { instructors: { create: { userId: actor.id } } }),
     },
   });
   await audit({ actorId: actor.id, action: "course.created", entityType: "Course", entityId: course.id, metadata: { title: course.title } });
@@ -93,17 +72,6 @@ export async function getCourseForEdit(courseId: string, actor: Actor) {
     where: { id: courseId },
     include: {
       thumbnail: true,
-      instructors: { include: { user: { select: { id: true, name: true, email: true } } } },
-      modules: {
-        orderBy: { position: "asc" },
-        include: {
-          lessons: {
-            orderBy: { position: "asc" },
-            include: { resources: { orderBy: { position: "asc" }, include: { mediaAsset: true } }, _count: { select: { progress: true } } },
-          },
-        },
-      },
-      resources: { where: { lessonId: null }, orderBy: { position: "asc" }, include: { mediaAsset: true } },
       _count: { select: { enrollments: true, certificates: true, batches: true, applications: true } },
     },
   });
@@ -127,22 +95,6 @@ export async function updateCourseDetails(courseId: string, input: z.infer<typeo
     throw e;
   }
   await audit({ actorId: actor.id, action: "course.updated", entityType: "Course", entityId: courseId });
-}
-
-export async function setInstructors(courseId: string, userIds: string[], actor: Actor) {
-  if (!can(actor.role, "courses.manage.all")) throw new CourseError("Only Content Managers and Super Admins assign instructors.", 403);
-  await requireCourse(courseId, actor);
-  const valid = await db().user.findMany({ where: { id: { in: userIds }, role: "INSTRUCTOR", status: "ACTIVE" }, select: { id: true } });
-  if (valid.length !== new Set(userIds).size) throw new CourseError("Only active instructors can be assigned.");
-  await db().$transaction([
-    db().courseInstructor.deleteMany({ where: { courseId } }),
-    db().courseInstructor.createMany({ data: valid.map((u) => ({ courseId, userId: u.id })) }),
-  ]);
-  await audit({ actorId: actor.id, action: "course.instructors_changed", entityType: "Course", entityId: courseId, metadata: { count: valid.length } });
-}
-
-export function availableInstructors() {
-  return db().user.findMany({ where: { role: "INSTRUCTOR", status: "ACTIVE" }, select: { id: true, name: true, email: true }, orderBy: { name: "asc" } });
 }
 
 // ---------------------------------------------------------------------------
@@ -193,149 +145,9 @@ export async function deleteCourse(courseId: string, actor: Actor) {
 }
 
 // ---------------------------------------------------------------------------
-// Curriculum
+// Media
 // ---------------------------------------------------------------------------
 
-export async function addModule(courseId: string, input: z.infer<typeof moduleInput>, actor: Actor) {
-  await requireCourse(courseId, actor);
-  const last = await db().courseModule.findFirst({ where: { courseId }, orderBy: { position: "desc" } });
-  const mod = await db().courseModule.create({ data: { courseId, title: input.title, position: (last?.position ?? -1) + 1 } });
-  await changed(actor, courseId, "module added");
-  return mod;
-}
-
-export async function renameModule(moduleId: string, input: z.infer<typeof moduleInput>, actor: Actor) {
-  const mod = await moduleWithCourse(moduleId, actor);
-  await db().courseModule.update({ where: { id: moduleId }, data: { title: input.title } });
-  await changed(actor, mod.courseId, "module renamed");
-}
-
-async function assertNoProgress(lessonIds: string[]) {
-  if (lessonIds.length === 0) return;
-  const used = await db().lessonProgress.count({ where: { lessonId: { in: lessonIds } } });
-  if (used > 0) throw new CourseError("Students have progress on this content, so it can't be deleted. Edit it instead, or archive the course.");
-}
-
-export async function deleteModule(moduleId: string, actor: Actor) {
-  const mod = await moduleWithCourse(moduleId, actor);
-  const lessons = await db().lesson.findMany({ where: { moduleId }, select: { id: true } });
-  await assertNoProgress(lessons.map((l) => l.id));
-  await db().courseModule.delete({ where: { id: moduleId } });
-  await changed(actor, mod.courseId, "module deleted");
-}
-
-/** Swap with the neighbour above or below. */
-export async function moveModule(moduleId: string, direction: "up" | "down", actor: Actor) {
-  const mod = await moduleWithCourse(moduleId, actor);
-  const neighbour = await db().courseModule.findFirst({
-    where: { courseId: mod.courseId, position: direction === "up" ? { lt: mod.position } : { gt: mod.position } },
-    orderBy: { position: direction === "up" ? "desc" : "asc" },
-  });
-  if (!neighbour) return;
-  await db().$transaction([
-    db().courseModule.update({ where: { id: mod.id }, data: { position: neighbour.position } }),
-    db().courseModule.update({ where: { id: neighbour.id }, data: { position: mod.position } }),
-  ]);
-}
-
-export async function addLesson(moduleId: string, title: string, actor: Actor) {
-  const mod = await moduleWithCourse(moduleId, actor);
-  const last = await db().lesson.findFirst({ where: { moduleId }, orderBy: { position: "desc" } });
-  const lesson = await db().lesson.create({ data: { moduleId, title, position: (last?.position ?? -1) + 1 } });
-  await changed(actor, mod.courseId, "lesson added");
-  return lesson;
-}
-
-export async function updateLesson(lessonId: string, input: z.infer<typeof lessonInput>, actor: Actor) {
-  const lesson = await lessonWithCourse(lessonId, actor);
-  let videoUrl: string | null = null;
-  if (input.videoUrl) {
-    const id = driveFileId(input.videoUrl);
-    if (!id) throw new CourseError("That isn't a Google Drive video link. In Drive, open the video → Share → Copy link, and paste it here.");
-    videoUrl = driveViewUrl(id);
-  }
-  await db().lesson.update({
-    where: { id: lessonId },
-    data: {
-      title: input.title,
-      content: input.content,
-      durationMinutes: input.durationMinutes,
-      isPreview: input.isPreview,
-      videoUrl,
-      videoProvider: videoUrl ? "GOOGLE_DRIVE" : "NONE",
-    },
-  });
-  await changed(actor, lesson.module.courseId, "lesson updated");
-}
-
-export async function moveLesson(lessonId: string, direction: "up" | "down", actor: Actor) {
-  const lesson = await lessonWithCourse(lessonId, actor);
-  const neighbour = await db().lesson.findFirst({
-    where: { moduleId: lesson.moduleId, position: direction === "up" ? { lt: lesson.position } : { gt: lesson.position } },
-    orderBy: { position: direction === "up" ? "desc" : "asc" },
-  });
-  if (!neighbour) return;
-  await db().$transaction([
-    db().lesson.update({ where: { id: lesson.id }, data: { position: neighbour.position } }),
-    db().lesson.update({ where: { id: neighbour.id }, data: { position: lesson.position } }),
-  ]);
-}
-
-export async function moveLessonToModule(lessonId: string, targetModuleId: string, actor: Actor) {
-  const lesson = await lessonWithCourse(lessonId, actor);
-  const target = await db().courseModule.findUnique({ where: { id: targetModuleId } });
-  if (!target || target.courseId !== lesson.module.courseId) throw new CourseError("Choose a module in the same course.");
-  if (target.id === lesson.moduleId) return;
-  const last = await db().lesson.findFirst({ where: { moduleId: target.id }, orderBy: { position: "desc" } });
-  await db().lesson.update({ where: { id: lessonId }, data: { moduleId: target.id, position: (last?.position ?? -1) + 1 } });
-  await changed(actor, lesson.module.courseId, "lesson moved");
-}
-
-export async function deleteLesson(lessonId: string, actor: Actor) {
-  const lesson = await lessonWithCourse(lessonId, actor);
-  await assertNoProgress([lessonId]);
-  await db().lesson.delete({ where: { id: lessonId } });
-  await changed(actor, lesson.module.courseId, "lesson deleted");
-}
-
-// ---------------------------------------------------------------------------
-// Resources
-// ---------------------------------------------------------------------------
-
-export async function addResource(courseId: string, lessonId: string | null, input: z.infer<typeof resourceInput>, actor: Actor) {
-  await requireCourse(courseId, actor);
-  if (lessonId) {
-    const lesson = await db().lesson.findUnique({ where: { id: lessonId }, include: { module: true } });
-    if (!lesson || lesson.module.courseId !== courseId) throw new CourseError("Lesson not found.", 404);
-  }
-  if (input.kind === "FILE") {
-    const file = await db().mediaAsset.findFirst({ where: { id: input.mediaAssetId, ...mediaScope(actor) } });
-    if (!file) throw new CourseError("Choose a file from your Media library.");
-  }
-  const last = await db().courseResource.findFirst({ where: { courseId, lessonId }, orderBy: { position: "desc" } });
-  await db().courseResource.create({
-    data: {
-      courseId,
-      lessonId,
-      title: input.title,
-      kind: input.kind,
-      mediaAssetId: input.kind === "FILE" ? input.mediaAssetId : null,
-      url: input.kind === "LINK" ? input.url : null,
-      position: (last?.position ?? -1) + 1,
-    },
-  });
-  await changed(actor, courseId, "resource added");
-}
-
-export async function deleteResource(resourceId: string, actor: Actor) {
-  const res = await db().courseResource.findUnique({ where: { id: resourceId } });
-  if (!res) throw new CourseError("Resource not found.", 404);
-  await requireCourse(res.courseId, actor);
-  await db().courseResource.delete({ where: { id: resourceId } });
-  await changed(actor, res.courseId, "resource removed");
-}
-
-/** Media the user can attach to a course (thumbnail images and resource files). */
 export function pickableMedia(actor: Actor) {
   return db().mediaAsset.findMany({
     where: mediaScope(actor),

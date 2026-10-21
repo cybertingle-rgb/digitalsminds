@@ -1,40 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { driveEmbedUrl, driveFileId } from "./drive";
 import { parseRichText, RichText } from "./richtext";
-import { courseDetailsInput, resourceInput, slugify } from "./schema";
+import { courseDetailsInput, slugify } from "./schema";
 
-const ID = "1AbCdEfGhIjKlMnOpQrStUvWxYz012345";
-
-describe("driveFileId", () => {
-  it.each([
-    `https://drive.google.com/file/d/${ID}/view?usp=sharing`,
-    `https://drive.google.com/file/d/${ID}/view`,
-    `https://drive.google.com/file/d/${ID}/preview`,
-    `https://drive.google.com/file/d/${ID}`,
-    `https://drive.google.com/open?id=${ID}`,
-    `https://drive.google.com/uc?export=download&id=${ID}`,
-    `  https://drive.google.com/file/d/${ID}/view?usp=drive_link  `,
-  ])("reads the file id from %s", (url) => {
-    expect(driveFileId(url)).toBe(ID);
-  });
-
-  it.each([
-    "https://evil.example/file/d/" + ID,
-    `http://drive.google.com/file/d/${ID}/view`,
-    `https://drive.google.com.evil.example/file/d/${ID}`,
-    "https://drive.google.com/drive/folders/abc",
-    "javascript:alert(1)",
-    `https://drive.google.com/file/d/short/view`,
-    "",
-  ])("rejects %s", (url) => {
-    expect(driveFileId(url)).toBeNull();
-  });
-
-  it("builds the official embed URL", () => {
-    expect(driveEmbedUrl(ID)).toBe(`https://drive.google.com/file/d/${ID}/preview`);
-  });
-});
 
 describe("rich text", () => {
   it("parses headings, lists and paragraphs", () => {
@@ -82,11 +50,8 @@ describe("course input", () => {
     expect(r.thumbnailId).toBeNull();
   });
 
-  it("rejects bad slugs and non-https resource links", () => {
+  it("rejects bad slugs", () => {
     expect(courseDetailsInput.safeParse({ title: "Course", slug: "Bad Slug!", language: "en", summary: "Summary text", level: "BEGINNER", format: "ONLINE_LIVE", certificateEnabled: true }).success).toBe(false);
-    expect(resourceInput.safeParse({ kind: "LINK", title: "Doc", url: "http://example.com" }).success).toBe(false);
-    expect(resourceInput.safeParse({ kind: "LINK", title: "Doc", url: "javascript:alert(1)" }).success).toBe(false);
-    expect(resourceInput.safeParse({ kind: "LINK", title: "Doc", url: "https://example.com/a.pdf" }).success).toBe(true);
   });
 });
 

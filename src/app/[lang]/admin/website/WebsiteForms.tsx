@@ -150,7 +150,7 @@ export function HomeForm({ value, defaults }: { value: Home; defaults: HomeDefau
 
 // --- Contact ------------------------------------------------------------------------
 
-export function ContactForm({ value }: { value: { email: string; address: string[]; addressUr: string[] } }) {
+export function ContactForm({ value }: { value: { email: string; address: string[]; addressUr: string[]; whatsapp?: string } }) {
   const [state, onSubmit, pending] = useFormAction(saveContactAction, idle);
   const e = (k: string) => state.errors?.[k];
   return (
@@ -164,7 +164,9 @@ export function ContactForm({ value }: { value: { email: string; address: string
         </Field>
         <input type="hidden" name="addressUr" value={value.addressUr.join("\n")} />
       </div>
-      <p className="text-xs text-muted">Phone and WhatsApp numbers are intentionally not shown on the website.</p>
+      <Field label="WhatsApp support number (optional)" name="whatsapp" error={e("whatsapp")} hint="With country code, e.g. +92 300 1234567. When set, a WhatsApp button appears on every public page and in the contact details. Leave empty to show no number.">
+        <input id="whatsapp" name="whatsapp" type="tel" dir="ltr" defaultValue={value.whatsapp ?? ""} maxLength={24} className={inputClass} aria-invalid={e("whatsapp") ? true : undefined} aria-describedby={describedBy("whatsapp", e("whatsapp"), "hint")} />
+      </Field>
       <Footer state={state} pending={pending} label="Save contact details" />
     </form>
   );
@@ -272,7 +274,7 @@ export function AnalyticsForm({ value }: { value: { gaId: string; googleVerifica
 
 // --- Legal pages --------------------------------------------------------------------------
 
-export function LegalForm({ page, value, url }: { page: "privacy" | "terms"; value: { title: string; titleUr?: string; body: string; bodyUr?: string; published: boolean }; url: string }) {
+export function LegalForm({ page, value, url }: { page: "privacy" | "terms" | "refund"; value: { title: string; titleUr?: string; body: string; bodyUr?: string; published: boolean }; url: string }) {
   const [state, onSubmit, pending] = useFormAction(saveLegalAction.bind(null, page), idle);
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>

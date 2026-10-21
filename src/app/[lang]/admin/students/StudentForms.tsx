@@ -6,7 +6,7 @@ import { Notice } from "@/components/admin/ui";
 import { describedBy, Field, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
-import { deleteStudentAction, manualEnrollAction, suspendStudentAction, updateStudentAction, type StudentState } from "./actions";
+import { deleteStudentAction, suspendLegacyAction, suspendStudentAction, updateStudentAction, type StudentState } from "./actions";
 
 const idle: StudentState = { status: "idle" };
 const Result = ({ state }: { state: StudentState | null }) =>
@@ -20,7 +20,7 @@ export function EditStudentForm(props: { id: string; name: string; googleEmail: 
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name" name="name" error={e("name")}><input {...a("name")} defaultValue={props.name} maxLength={120} dir="auto" className={inputClass} /></Field>
-        <Field label="Google email (for Drive sharing)" name="googleEmail" error={e("googleEmail")}><input {...a("googleEmail")} type="email" dir="ltr" defaultValue={props.googleEmail} maxLength={254} className={inputClass} /></Field>
+        <input type="hidden" name="googleEmail" value={props.googleEmail} />
         <Field label="Phone / WhatsApp" name="phone" error={e("phone")}><input {...a("phone")} type="tel" dir="ltr" defaultValue={props.phone} maxLength={40} className={inputClass} /></Field>
         <Field label="City" name="city" error={e("city")}><input {...a("city")} defaultValue={props.city} maxLength={80} dir="auto" className={inputClass} /></Field>
       </div>
@@ -66,25 +66,6 @@ export function SuspendControl({ id, suspended }: { id: string; suspended: boole
   );
 }
 
-export function ManualEnrollForm({ id, courses }: { id: string; courses: { id: string; title: string; status: string }[] }) {
-  const [state, onSubmit, pending] = useFormAction(manualEnrollAction.bind(null, id), idle);
-  if (courses.length === 0) return <p className="text-sm text-muted">Enrolled in every available course.</p>;
-  return (
-    <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-3">
-      <div className="min-w-0 flex-1">
-        <label htmlFor="courseId" className="block text-sm font-medium text-charcoal-900">Enroll in a course</label>
-        <select id="courseId" name="courseId" className={inputClass} defaultValue="">
-          <option value="" disabled>Choose a course…</option>
-          {courses.map((c) => <option key={c.id} value={c.id}>{c.title}{c.status === "ARCHIVED" ? " (archived)" : ""}</option>)}
-        </select>
-      </div>
-      <Button type="submit" variant="dark" className="py-2.5" disabled={pending}>Enroll</Button>
-      <div className="w-full"><Result state={state} /></div>
-    </form>
-  );
-}
-
-/** Permanent deletion for privacy requests (Super Admin). */
 export function DeleteStudent({ id, email, inquiries }: { id: string; email: string; inquiries: number }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -119,6 +100,30 @@ export function DeleteStudent({ id, email, inquiries }: { id: string; email: str
         <Button type="button" variant="secondary" className="py-2" onClick={() => setOpen(false)}>Cancel</Button>
       </div>
       <Result state={result} />
+    </div>
+  );
+}
+
+/** One-off clean-up: suspend accounts made through the old free sign-up (shows the count first). */
+export function SuspendLegacy({ count }: { count: number }) {
+  const [pending, start] = useTransition();
+  const [confirm, setConfirm] = useState(false);
+  const [result, setResult] = useState<StudentState | null>(null);
+  if (result?.status === "success") return <Notice tone="success">{result.message}</Notice>;
+  return (
+    <div className="space-y-2">
+      {!confirm ? (
+        <Button type="button" variant="dark" disabled={count === 0} onClick={() => setConfirm(true)}>Suspend {count} {count === 1 ? "account" : "accounts"}…</Button>
+      ) : (
+        <div role="alertdialog" aria-label="Suspend old accounts" className="space-y-3 rounded-xl border border-sun-400 bg-sun-50 p-4 text-sm">
+          <p className="font-semibold text-charcoal-900">Suspend these {count} accounts? They are signed out and can&apos;t log in. Nothing is deleted, and you can reactivate anyone from their student page.</p>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="dark" disabled={pending} onClick={() => start(async () => setResult(await suspendLegacyAction(count)))}>{pending ? "Suspending…" : `Yes, suspend ${count}`}</Button>
+            <Button type="button" variant="secondary" onClick={() => setConfirm(false)}>Cancel</Button>
+          </div>
+        </div>
+      )}
+      {result?.status === "error" && <Notice tone="error">{result.message}</Notice>}
     </div>
   );
 }

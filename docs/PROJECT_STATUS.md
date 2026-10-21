@@ -1,7 +1,7 @@
 # Project Status: Decisions, Open Items, Progress
 
 Living record for the Digitals Minds platform. Updated at every phase.
-Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
+Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administration platform; see docs/ENROLLMENT.md).
 
 ## Confirmed decisions
 
@@ -13,14 +13,14 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 4 | Brand | Official logos supplied by owner (transparent PNG, dark JPG, light JPG). Colours from logo: yellow `#FDCF31`, charcoal `#2B323C`, logo text `#373643`. Logo used unaltered. |
 | 5 | Visual direction | White and light-yellow glassmorphism (owner choice, Oct 2026): frosted glass panels with a light-yellow tint over slowly drifting brand glows (still on phones and for reduced motion); glowing yellow hover on cards, nav and buttons; floating glass header (full menu from 1280px), glass footer and admin sidebar; yellow-glass call-to-action panels; content up to 1680px with slim side margins |
 | 6 | Contact | info@digitalsminds.com · 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan. **No phone or WhatsApp number anywhere on the site or in docs until the owner says otherwise.** |
-| 7 | Course pricing | All free at launch; schema ready for paid courses later |
-| 8 | Enrollment | Student requests access; an admin approves |
-| 9 | Video | Owner's Google Drive links, **restricted to specific Google accounts**. Stored as provider + link so a lesson can switch to another host later. Embedded player + "Open in Google Drive" fallback. |
+| 7 | Course pricing | ~~All free at launch~~ superseded by #65 |
+| 8 | Enrollment | ~~Student requests access; an admin approves~~ superseded by #66 |
+| 9 | Video | ~~Retired with online lessons (#65).~~ Was: Owner's Google Drive links, **restricted to specific Google accounts**. Stored as provider + link so a lesson can switch to another host later. Embedded player + "Open in Google Drive" fallback. |
 | 10 | Roles | Super Admin, Content Manager, Instructor (own courses only), Student |
 | 11 | Editable content (launch) | Core: courses, blog, FAQs, testimonials, case studies, homepage hero + featured items, contact details, social links, logo, SEO metadata. Layouts stay developer-managed. |
 | 12 | File storage | Verify Hostinger persistent storage first, then decide (see Open items) |
 | 13 | Email | Hostinger mailbox via SMTP |
-| 14 | Registration fields | Name, email, password, Google account email, phone/WhatsApp, city |
+| 14 | Registration fields | Superseded by #67 (application fields) |
 | 15 | Languages | English + Urdu for public site and student portal; admin UI English with Urdu content fields |
 | 16 | Urdu text | Supplied by owner; English shown until a translation exists |
 | 17 | Urdu font | Naskh (Noto Naskh Arabic), self-hosted |
@@ -71,6 +71,18 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 62 | Student portal | Sidebar portal: Dashboard (stats, continue learning, progress, activity), My courses, Certificates, Notifications, Support, Profile; account deletion stays by email request |
 | 63 | Live classes | Course staff schedule Zoom / Google Meet / Teams sessions per course (Pakistan time); approved students see them, join from 15 minutes before, add them to their calendar, and get email + in-app reminders 1 day and 1 hour before; new class = in-app notice, time change or cancellation = email |
 | 64 | Urdu removed; phone + city required | Owner request (2026-10-21): no Urdu interface anywhere (no right-to-left layout, /ur pages redirect to English, Urdu boxes hidden in admin with saved text kept, emails English). A course's "Taught in" language stays as information only. Phone/WhatsApp and city are required at email sign-up (server-checked) and in the profile; students missing them see a reminder |
+| 65 | Product direction (2026-10-21) | Digitals Minds is a **paid enrollment, batch management, onboarding and student administration** platform, not an online learning platform: no lessons, videos, progress tracking, quizzes or assignments. Lesson editor, player, previews and free access requests retired (old links redirect); their tables are kept, unused |
+| 66 | Accounts | Self sign-up closed (email and Google). Student accounts are created only when a Super Admin verifies the enrollment payment; staff by invitation; owner via /setup |
+| 67 | Application | Name, email, phone/WhatsApp, city, CNIC (13 digits), CV (PDF/DOCX), message; Terms + Refund Policy acceptance. Private emailed status link (token hashed in the database, kept in an httpOnly cookie). CNIC and CV visible to Super Admins only |
+| 68 | Payments | Manual bank transfer / JazzCash / EasyPaisa, verified by **Super Admins only** against the statement (amount received recorded, full fee required). Fixed fee per program, paid in full, PKR |
+| 69 | Batches | Student picks an open batch; seats counted on verification; a full batch closes (no waitlist). Batch: dates, class times, seats, deadline, meeting link, joining instructions, coordinator |
+| 70 | Format | Online live classes (Zoom / Google Meet); joining links only for the batch's current students |
+| 71 | Stages | Application received → Payment pending → Payment submitted → Payment verified → Enrollment confirmed → Onboarding → Active → Completed; plus Withdrawn / Rejected / Cancelled. Onboarding starts on the first portal visit; Active once required checklist steps are done |
+| 72 | Optional features | Certificates kept (issued by staff after "Completed"); **no attendance tracking** |
+| 73 | Refund policy | Fees are non-refundable once paid (built-in Refund Policy page, drafted for the owner's review) |
+| 74 | Old accounts | Free-sign-up student accounts (no payment, application or batch) are suspended by the Super Admin from Admin → Students after reviewing the list (reversible) |
+| 75 | WhatsApp | WhatsApp support button and contact link appear once the owner enters the number in Admin → Website → Contact (supersedes the "no numbers" rule for that one number) |
+| 76 | Roles | Instructor becomes **Batch Coordinator** (own batches: roster, schedule, notices, staff-confirmed onboarding steps, support). Content Managers manage programs, batches, onboarding and documents and can view applications without CNIC/CV |
 
 ## Open items (waiting on owner)
 
@@ -84,8 +96,13 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 - [x] Urdu translations: not needed (Urdu interface removed at the owner's request)
 - [ ] eBay logo: download it from the Wikimedia link, upload in Admin → Media (public), choose it in Admin → Website → Homepage → Featured course
 - [ ] Payments: enter your bank / JazzCash / EasyPaisa details in Admin → Payments → Payment details
-- [ ] eBay course: create it in Admin → Courses, set its price (Price box), publish, then set the homepage button link to /courses/<its address> (Admin → Website → Homepage → Featured course)
-- [ ] eBay course details: name, what it covers (points), length, language, fee and how payment works; then create the course in Admin → Courses
+- [ ] eBay program: in Admin → Programs fill in description, objectives, eligibility, duration; set the fee; publish; then Admin → Batches → New batch (dates, class times, seats, meeting link) and set it to Open. Point the homepage button to /courses/<its address>
+- [ ] Review the drafted Refund Policy, Privacy Policy and Terms (built-in text); if edited copies were saved earlier in Admin → Website → Legal pages, update those
+- [ ] Review the homepage FAQs in Admin → Website → FAQs if they were imported before (the old ones say courses are free)
+- [ ] Send the WhatsApp support number, or enter it yourself in Admin → Website → Contact
+- [ ] Admin → Students: review the "old free sign-up" list and suspend those accounts
+- [ ] Add onboarding steps (Admin → Onboarding) and documents (Admin → Documents) for the first batch
+- [ ] Optional, later: approve deleting the unused lesson/progress tables (after a backup)
 - [ ] Launch checklist: docs/LAUNCH.md (production settings, tests on the live site, uptime monitor on `/api/health`)
 - [ ] Weekly backups from Admin → Backups, stored privately (docs/BACKUP.md)
 - [ ] Ask Hostinger support whether requests pass through more than one proxy (only if yes: set `TRUSTED_PROXY_HOPS`)
@@ -106,7 +123,7 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 
 - English is the default language; Urdu pages live under `/ur/...`.
 - Only Super Admin can manage staff accounts, site settings and student data exports.
-- Students can view course listings without logging in; lessons require an approved enrollment.
+- Visitors can view programs, batches, fees and requirements without logging in; the student portal requires a verified enrollment.
 - Hostinger daily email limits are sufficient for launch volume.
 
 ## Completed work
@@ -134,3 +151,4 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 2026-10-20 | Published Privacy Policy and Terms, final Why-us/FAQ text, privacy account deletion; Hostinger build fix (2 build workers) | `2421be9` |
 | 2026-10-20 | Phase 12: structured data, GA4 behind a consent banner with events, Search Console verification, robots rules, WCAG 2.1 AA audit (no violations), login/password-form fixes, 28-check e2e run | `08eec38` |
 | 2026-10-20 | Phase 13: Admin → Backups (database .sql.gz + files .tar.gz) with a tested restore drill, security review and fixes, dependency audit, launch checklist and maintenance runbook | `1ffc2f4` |
+| 2026-10-21 | Phases 15-19: paid enrollment platform: programs and batches, apply → pay → Super Admin verification → account, private status links, student portal (stage timeline, schedule, onboarding, documents, notices), admin applications/rosters/transfers/withdrawals/onboarding/documents/exports, Refund Policy, WhatsApp button, old-account clean-up; 59 DB tests, 37-check end-to-end run | see `git log` |

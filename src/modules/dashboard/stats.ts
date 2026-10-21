@@ -6,6 +6,7 @@ import type { CurrentUser } from "@/modules/auth/session";
 import { mediaScope } from "@/modules/media/service";
 import { supportScope } from "@/modules/support/service";
 import { readyToIssue } from "@/modules/certificates/service";
+import { listBatches } from "@/modules/batches/service";
 
 const DAY = 24 * 60 * 60 * 1000;
 const OPEN = ["NEW", "CONTACTED", "QUALIFIED"] as const;
@@ -53,13 +54,21 @@ export async function dashboardStats(user: Pick<CurrentUser, "id" | "role">) {
           .then((r) => ({ files: r._count._all, bytes: r._sum.sizeBytes ?? 0 }))
       : null;
 
-  const learning = can(user.role, "enrollments.decide")
+  const admissions = can(user.role, "applications.view")
     ? await Promise.all([
-        db().enrollment.count({ where: { status: "REQUESTED" } }),
-        db().enrollment.count({ where: { status: "APPROVED" } }),
-        db().course.count({ where: { status: "PUBLISHED" } }),
-      ]).then(([waiting, enrolled, published]) => ({ waiting, enrolled, published }))
+        db().enrollmentApplication.count({ where: { stage: "PAYMENT_SUBMITTED" } }),
+        db().enrollmentApplication.count({ where: { stage: "PAYMENT_PENDING" } }),
+        db().enrollmentApplication.count({ where: { createdAt: { gte: weekAgo } } }),
+        db().enrollment.count({ where: { stage: { in: ["ENROLLMENT_CONFIRMED", "ONBOARDING", "ACTIVE"] } } }),
+        db().enrollment.count({ where: { stage: { in: ["ENROLLMENT_CONFIRMED", "ONBOARDING"] } } }),
+      ]).then(([toVerify, awaitingPayment, lastWeek, current, onboarding]) => ({ toVerify, awaitingPayment, lastWeek, current, onboarding }))
     : null;
+
+  // Seats in batches that are taking applications or running.
+  const seats =
+    can(user.role, "batches.manage") || can(user.role, "batches.coordinate")
+      ? await listBatches(user).then((all) => all.filter((b) => b.status === "OPEN" || b.status === "IN_PROGRESS").slice(0, 8))
+      : null;
 
   const support =
     can(user.role, "support.manage.all") || can(user.role, "support.manage.own")
@@ -72,5 +81,5 @@ export async function dashboardStats(user: Pick<CurrentUser, "id" | "role">) {
     ? await db().auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 5, include: { actor: { select: { name: true } } } })
     : null;
 
-  return { leads, people, media, learning, support, certificatesReady, activity };
+  return { leads, people, media, admissions, seats, support, certificatesReady, activity };
 }

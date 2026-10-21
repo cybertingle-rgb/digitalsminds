@@ -1,13 +1,12 @@
 import { db } from "@/lib/db";
 import { manageableCoursesWhere } from "@/modules/auth/scoping";
 import { getCurrentUser } from "@/modules/auth/session";
-import { studentCanDownload } from "@/modules/learning/progress";
 import { canUseMediaLibrary, mediaScope } from "@/modules/media/service";
 import { fileResponse } from "@/modules/media/serve";
 
 /**
- * Private files (course resources): staff who can manage the file or a course
- * that uses it, and students with an approved enrollment in such a course.
+ * Private Media library files: staff who can manage the file or a program
+ * that uses it. (Students get their files through Documents instead.)
  */
 export async function GET(_req: Request, { params }: RouteContext<"/api/files/[id]">) {
   const { id } = await params;
@@ -21,7 +20,5 @@ export async function GET(_req: Request, { params }: RouteContext<"/api/files/[i
     });
     if (asset) return fileResponse(asset, { cacheControl: "private, no-store" });
   }
-  if (!(await studentCanDownload(user.id, id))) return notFound();
-  const asset = await db().mediaAsset.findUnique({ where: { id } });
-  return asset ? fileResponse(asset, { cacheControl: "private, no-store" }) : notFound();
+  return notFound();
 }

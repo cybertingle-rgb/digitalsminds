@@ -17,7 +17,7 @@ const linkClass = "rounded-md text-charcoal-700 transition-colors hover:text-cha
 
 export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const year = new Date().getFullYear();
-  const [privacy, terms, caseStudies] = await Promise.all([getLegalPage("privacy"), getLegalPage("terms"), publishedCaseStudies()]);
+  const [privacy, terms, refund, caseStudies] = await Promise.all([getLegalPage("privacy"), getLegalPage("terms"), getLegalPage("refund"), publishedCaseStudies()]);
   return (
     <footer className="pb-4 pt-8 sm:pt-12 print:hidden">
       <Container>
@@ -88,6 +88,7 @@ export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dicti
               <p>{format(dict.footer.copyright, { year: String(year) })}</p>
               {privacy?.published && <Link href={localizePath("/privacy", locale)} className="hover:text-charcoal-900 hover:underline">{dict.legal.privacy}</Link>}
               {terms?.published && <Link href={localizePath("/terms", locale)} className="hover:text-charcoal-900 hover:underline">{dict.legal.terms}</Link>}
+              {refund?.published && <Link href={localizePath("/refund-policy", locale)} className="hover:text-charcoal-900 hover:underline">{dict.legal.refund}</Link>}
               <CookieSettingsButton label={dict.legal.cookieSettings} className="hover:text-charcoal-900 hover:underline" />
             </div>
             <a href="#main" className="font-medium hover:text-charcoal-900">{dict.footer.backToTop} ↑</a>

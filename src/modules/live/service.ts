@@ -1,24 +1,27 @@
 import "server-only";
 import { z } from "zod";
 import { siteConfig } from "@/config/site";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, SessionKind } from "@/generated/prisma/client";
 import { localeMeta, localizePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { db } from "@/lib/db";
 import { sendMail } from "@/lib/mailer";
+import { meetingUrlSchema } from "@/lib/meeting-url";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
-import { canManageCourse, manageableCoursesWhere } from "@/modules/auth/scoping";
 import type { CurrentUser } from "@/modules/auth/session";
+import { canCoordinate } from "@/modules/batches/service";
 import { actionEmail } from "@/modules/email/templates";
 import { notify } from "@/modules/notifications/service";
+import { ACTIVE_STAGES, studentScope } from "@/modules/portal/service";
 
 /**
- * Live classes: Zoom / Google Meet / Teams sessions for a course. Course staff
- * schedule them; approved students see them in their portal and get reminders
- * 1 day and 1 hour before. Times are entered and shown in Pakistan time (UTC+5,
- * no daylight saving) and stored in UTC.
+ * Batch schedules: live classes (Zoom / Google Meet / Teams), holidays and
+ * other events for one batch. Super Admins, Content Managers and the batch's
+ * coordinator manage them; the batch's enrolled students see them in their
+ * portal and get reminders 1 day and 1 hour before a class. Times are entered
+ * and shown in Pakistan time (UTC+5, no daylight saving) and stored in UTC.
  */
 
 export class LiveClassError extends Error {
@@ -30,32 +33,39 @@ export class LiveClassError extends Error {
 
 type Actor = Pick<CurrentUser, "id" | "role">;
 const PK_OFFSET = "+05:00";
-const LEARNABLE = ["PUBLISHED", "ARCHIVED"] as const;
-
-const MEETING_HOSTS = /^(([a-z0-9-]+\.)*zoom\.us|meet\.google\.com|teams\.microsoft\.com|teams\.live\.com)$/;
+export const SESSION_KINDS = ["CLASS", "HOLIDAY", "EVENT"] as const satisfies readonly SessionKind[];
 
 export const liveClassInput = z
   .object({
-    courseId: z.string().min(1, "Choose a course").max(64),
+    batchId: z.string().min(1, "Choose a batch").max(64),
+    kind: z.enum(SESSION_KINDS),
     title: z.string().trim().min(3, "Enter a title").max(200),
     description: z.string().trim().max(5000).optional().transform((v) => v || null),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a date"),
-    time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Choose a time"),
-    durationMinutes: z.coerce.number().int("Whole minutes").min(15, "At least 15 minutes").max(600, "At most 10 hours"),
-    meetingUrl: z
-      .string()
-      .trim()
-      .max(500)
-      .refine((v) => {
-        try {
-          const u = new URL(v);
-          return u.protocol === "https:" && MEETING_HOSTS.test(u.hostname.toLowerCase());
-        } catch {
-          return false;
-        }
-      }, "Paste the full https:// Zoom, Google Meet or Teams link"),
+    time: z.string().optional(),
+    durationMinutes: z.string().optional(),
+    meetingUrl: z.preprocess((v) => (v === "" || v == null ? undefined : v), meetingUrlSchema.optional()),
   })
-  .transform((v) => ({ ...v, startsAt: new Date(`${v.date}T${v.time}:00${PK_OFFSET}`) }));
+  .superRefine((v, ctx) => {
+    if (v.kind === "HOLIDAY") return;
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(v.time ?? "")) ctx.addIssue({ code: "custom", path: ["time"], message: "Choose a time" });
+    const d = Number(v.durationMinutes);
+    if (!Number.isInteger(d) || d < 15 || d > 600) ctx.addIssue({ code: "custom", path: ["durationMinutes"], message: "15 to 600 minutes" });
+  })
+  .transform((v) => {
+    // A holiday covers the whole day; it has no time, length or link.
+    const holiday = v.kind === "HOLIDAY";
+    return {
+      batchId: v.batchId,
+      kind: v.kind,
+      title: v.title,
+      description: v.description,
+      date: v.date,
+      startsAt: new Date(`${v.date}T${holiday ? "00:00" : v.time}:00${PK_OFFSET}`),
+      durationMinutes: holiday ? 24 * 60 : Number(v.durationMinutes),
+      meetingUrl: holiday ? null : (v.meetingUrl ?? null),
+    };
+  });
 export type LiveClassInput = z.infer<typeof liveClassInput>;
 
 /** Date and time parts in Pakistan time, for edit forms. */
@@ -66,15 +76,20 @@ export function pkParts(d: Date) {
 
 export const endsAt = (c: { startsAt: Date; durationMinutes: number }) => new Date(c.startsAt.getTime() + c.durationMinutes * 60_000);
 
-async function assertCanManage(actor: Actor, courseId: string) {
-  if (!(await canManageCourse(actor, courseId))) throw new LiveClassError("You can only schedule classes for courses you manage.", 403);
+/** The link students join with: the session's own, else the batch's default (never for holidays). */
+export function joinUrl(c: { kind: SessionKind; meetingUrl: string | null; batch?: { meetingUrl: string | null } | null }) {
+  return c.kind === "HOLIDAY" ? null : (c.meetingUrl ?? c.batch?.meetingUrl ?? null);
 }
 
-async function approvedStudents(courseId: string) {
-  return db().user.findMany({
-    where: { status: "ACTIVE", enrollments: { some: { courseId, status: "APPROVED" } } },
-    select: { id: true, email: true, name: true, preferredLocale: true },
-  });
+async function assertCanSchedule(actor: Actor, batchId: string) {
+  if (!(await canCoordinate(actor, batchId))) throw new LiveClassError("You can only schedule sessions for batches you manage or coordinate.", 403);
+}
+
+/** Students who get a session's messages: the batch's current students (or, for older course-wide classes, the course's). */
+function recipientsWhere(live: { batchId: string | null; courseId: string }): Prisma.UserWhereInput {
+  return live.batchId
+    ? { status: "ACTIVE", enrollments: { some: { batchId: live.batchId, stage: { in: [...ACTIVE_STAGES] } } } }
+    : { status: "ACTIVE", enrollments: { some: { courseId: live.courseId, status: "APPROVED" } } };
 }
 
 // ---------------------------------------------------------------------------
@@ -82,36 +97,54 @@ async function approvedStudents(courseId: string) {
 // ---------------------------------------------------------------------------
 
 export async function createLiveClass(input: LiveClassInput, actor: Actor) {
-  await assertCanManage(actor, input.courseId);
-  if (input.startsAt.getTime() <= Date.now()) throw new z.ZodError([{ code: "custom", path: ["date"], message: "Choose a time in the future", input: input.date }]);
-  const course = await db().course.findUnique({ where: { id: input.courseId }, select: { status: true, title: true } });
-  if (!course || course.status === "DRAFT") throw new LiveClassError("Publish the course before scheduling live classes.");
+  await assertCanSchedule(actor, input.batchId);
+  const batch = await db().batch.findUnique({ where: { id: input.batchId }, select: { courseId: true, status: true, name: true } });
+  if (!batch) throw new LiveClassError("Batch not found.", 404);
+  if (batch.status === "CANCELLED" || batch.status === "COMPLETED") throw new LiveClassError("This batch is completed or cancelled.");
+  const earliest = input.kind === "HOLIDAY" ? Date.now() - 24 * 3600_000 : Date.now();
+  if (input.startsAt.getTime() <= earliest) throw new z.ZodError([{ code: "custom", path: ["date"], message: "Choose a date in the future", input: input.date }]);
   const live = await db().liveClass.create({
-    data: { courseId: input.courseId, title: input.title, description: input.description, startsAt: input.startsAt, durationMinutes: input.durationMinutes, meetingUrl: input.meetingUrl, createdById: actor.id },
-  });
-  await audit({ actorId: actor.id, action: "live.created", entityType: "LiveClass", entityId: live.id, metadata: { course: course.title, title: live.title, startsAt: live.startsAt.toISOString() } });
-  await tellStudents(live.id, "scheduled");
-  return live;
-}
-
-export async function updateLiveClass(id: string, input: LiveClassInput, actor: Actor) {
-  const before = await db().liveClass.findUnique({ where: { id } });
-  if (!before) throw new LiveClassError("Class not found.", 404);
-  await assertCanManage(actor, before.courseId);
-  if (input.courseId !== before.courseId) throw new LiveClassError("A class can't be moved to another course; cancel it and schedule a new one.");
-  if (before.status === "CANCELLED") throw new LiveClassError("This class was cancelled.");
-  const moved = before.startsAt.getTime() !== input.startsAt.getTime();
-  if (moved && input.startsAt.getTime() <= Date.now()) throw new z.ZodError([{ code: "custom", path: ["date"], message: "Choose a time in the future", input: input.date }]);
-  await db().liveClass.update({
-    where: { id },
     data: {
+      courseId: batch.courseId,
+      batchId: input.batchId,
+      kind: input.kind,
       title: input.title,
       description: input.description,
       startsAt: input.startsAt,
       durationMinutes: input.durationMinutes,
       meetingUrl: input.meetingUrl,
-      // A new time means fresh reminders.
-      ...(moved && { reminderDaySentAt: null, reminderHourSentAt: null }),
+      createdById: actor.id,
+      // Holidays get no reminders.
+      ...(input.kind === "HOLIDAY" && { reminderDaySentAt: new Date(), reminderHourSentAt: new Date() }),
+    },
+  });
+  await audit({ actorId: actor.id, action: "live.created", entityType: "LiveClass", entityId: live.id, metadata: { batch: batch.name, title: live.title, kind: live.kind, startsAt: live.startsAt.toISOString() } });
+  await tellStudents(live.id, input.kind === "HOLIDAY" ? "holiday" : "scheduled");
+  return live;
+}
+
+export async function updateLiveClass(id: string, input: LiveClassInput, actor: Actor) {
+  const before = await db().liveClass.findUnique({ where: { id } });
+  if (!before) throw new LiveClassError("Session not found.", 404);
+  if (!before.batchId) throw new LiveClassError("This older class isn't linked to a batch; cancel it and schedule a new one.");
+  await assertCanSchedule(actor, before.batchId);
+  if (input.batchId !== before.batchId) throw new LiveClassError("A session can't be moved to another batch; cancel it and schedule a new one.");
+  if (before.status === "CANCELLED") throw new LiveClassError("This session was cancelled.");
+  const moved = before.startsAt.getTime() !== input.startsAt.getTime();
+  if (moved && input.startsAt.getTime() <= Date.now() && input.kind !== "HOLIDAY") {
+    throw new z.ZodError([{ code: "custom", path: ["date"], message: "Choose a time in the future", input: input.date }]);
+  }
+  await db().liveClass.update({
+    where: { id },
+    data: {
+      kind: input.kind,
+      title: input.title,
+      description: input.description,
+      startsAt: input.startsAt,
+      durationMinutes: input.durationMinutes,
+      meetingUrl: input.meetingUrl,
+      // A new time means fresh reminders (holidays never get any).
+      ...(moved && input.kind !== "HOLIDAY" && { reminderDaySentAt: null, reminderHourSentAt: null }),
     },
   });
   await audit({ actorId: actor.id, action: "live.updated", entityType: "LiveClass", entityId: id, metadata: { title: input.title, moved } });
@@ -120,34 +153,45 @@ export async function updateLiveClass(id: string, input: LiveClassInput, actor: 
 
 export async function cancelLiveClass(id: string, actor: Actor) {
   const live = await db().liveClass.findUnique({ where: { id } });
-  if (!live) throw new LiveClassError("Class not found.", 404);
-  await assertCanManage(actor, live.courseId);
+  if (!live) throw new LiveClassError("Session not found.", 404);
+  if (live.batchId) await assertCanSchedule(actor, live.batchId);
+  else if (!can(actor.role, "batches.manage")) throw new LiveClassError("You can't change this session.", 403);
   if (live.status === "CANCELLED") return;
   await db().liveClass.update({ where: { id }, data: { status: "CANCELLED" } });
   await audit({ actorId: actor.id, action: "live.cancelled", entityType: "LiveClass", entityId: id, metadata: { title: live.title } });
   if (live.startsAt.getTime() > Date.now()) await tellStudents(id, "cancelled");
 }
 
-export async function staffLiveClasses(actor: Actor, when: "upcoming" | "past") {
+/** Batches whose sessions this staff member manages. */
+function batchScope(actor: Actor): Prisma.BatchWhereInput {
+  return can(actor.role, "batches.manage") ? {} : { coordinatorId: actor.id };
+}
+
+export async function staffLiveClasses(actor: Actor, when: "upcoming" | "past", batchId?: string) {
   const now = new Date();
-  // Classes stay under "upcoming" for 6 hours after they start, so a running class is easy to find.
+  // Sessions stay under "upcoming" for 6 hours after they start, so a running class is easy to find.
   const where: Prisma.LiveClassWhereInput = {
-    course: can(actor.role, "courses.manage.all") ? {} : manageableCoursesWhere(actor),
+    ...(can(actor.role, "batches.manage") ? {} : { batch: batchScope(actor) }),
+    ...(batchId ? { batchId } : {}),
     ...(when === "upcoming" ? { startsAt: { gte: new Date(now.getTime() - 6 * 3600_000) } } : { startsAt: { lt: new Date(now.getTime() - 6 * 3600_000) } }),
   };
   return db().liveClass.findMany({
     where,
     orderBy: { startsAt: when === "upcoming" ? "asc" : "desc" },
     take: when === "upcoming" ? 200 : 50,
-    include: { course: { select: { id: true, title: true, _count: { select: { enrollments: { where: { status: "APPROVED" } } } } } } },
+    include: {
+      course: { select: { id: true, title: true } },
+      batch: { select: { id: true, name: true, code: true, meetingUrl: true, _count: { select: { enrollments: { where: { stage: { in: [...ACTIVE_STAGES] } } } } } } },
+    },
   });
 }
 
-export function schedulableCourses(actor: Actor) {
-  return db().course.findMany({
-    where: { ...(can(actor.role, "courses.manage.all") ? {} : manageableCoursesWhere(actor)), status: { in: [...LEARNABLE] } },
-    orderBy: { title: "asc" },
-    select: { id: true, title: true },
+/** Batches a staff member can add sessions to. */
+export function schedulableBatches(actor: Actor) {
+  return db().batch.findMany({
+    where: { ...batchScope(actor), status: { notIn: ["CANCELLED", "COMPLETED", "DRAFT"] } },
+    orderBy: { startDate: "asc" },
+    select: { id: true, name: true, code: true, meetingUrl: true, course: { select: { title: true } } },
   });
 }
 
@@ -155,19 +199,22 @@ export function schedulableCourses(actor: Actor) {
 // Students
 // ---------------------------------------------------------------------------
 
-/** Classes for the student's approved, open courses: upcoming (incl. live now) and the last week's. */
+/** The student's schedule: their batches' sessions (and older course-wide classes), upcoming and the last week's. */
 export async function studentLiveClasses(userId: string) {
+  const scope = await studentScope(userId);
+  if (!scope.activeCourseIds.length) return { upcoming: [], past: [] };
   const now = Date.now();
   const rows = await db().liveClass.findMany({
     where: {
       startsAt: { gte: new Date(now - 7 * 24 * 3600_000) },
-      course: { status: { in: [...LEARNABLE] }, enrollments: { some: { userId, status: "APPROVED" } } },
+      OR: [...(scope.activeBatchIds.length ? [{ batchId: { in: scope.activeBatchIds } }] : []), { batchId: null, courseId: { in: scope.activeCourseIds } }],
     },
     orderBy: { startsAt: "asc" },
-    include: { course: { select: { title: true, titleUr: true, slug: true } } },
+    include: { course: { select: { title: true, titleUr: true, slug: true } }, batch: { select: { name: true, meetingUrl: true } } },
   });
-  const upcoming = rows.filter((r) => endsAt(r).getTime() > now);
-  const past = rows.filter((r) => endsAt(r).getTime() <= now && r.status === "SCHEDULED").reverse();
+  const withLink = rows.map((r) => ({ ...r, meetingUrl: joinUrl(r) }));
+  const upcoming = withLink.filter((r) => endsAt(r).getTime() > now);
+  const past = withLink.filter((r) => endsAt(r).getTime() <= now && r.status === "SCHEDULED" && r.kind !== "HOLIDAY").reverse();
   return { upcoming, past };
 }
 
@@ -179,13 +226,15 @@ export function liveState(c: { startsAt: Date; durationMinutes: number; status: 
   return "upcoming" as const;
 }
 
-/** A class the viewer may see (approved student of the course, or staff who manage it). */
+/** A session the viewer may see: its batch's staff, or a current student of the batch. */
 export async function liveClassForViewer(id: string, viewer: Actor) {
-  const live = await db().liveClass.findUnique({ where: { id }, include: { course: { select: { title: true, slug: true, status: true } } } });
+  const live = await db().liveClass.findUnique({ where: { id }, include: { course: { select: { title: true, slug: true, status: true } }, batch: { select: { meetingUrl: true } } } });
   if (!live) return null;
-  if (await canManageCourse(viewer, live.courseId)) return live;
-  const ok = await db().enrollment.findFirst({ where: { userId: viewer.id, courseId: live.courseId, status: "APPROVED" }, select: { id: true } });
-  return ok && (LEARNABLE as readonly string[]).includes(live.course.status) ? live : null;
+  const withLink = { ...live, meetingUrl: joinUrl(live) };
+  if (live.batchId ? await canCoordinate(viewer, live.batchId) : can(viewer.role, "batches.manage")) return withLink;
+  const scope = await studentScope(viewer.id);
+  const allowed = live.batchId ? scope.activeBatchIds.includes(live.batchId) : scope.activeCourseIds.includes(live.courseId);
+  return allowed ? withLink : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -201,7 +250,7 @@ export function liveClassIcs(c: { id: string; title: string; description: string
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Digitals Minds//Live classes//EN",
+    "PRODID:-//Digitals Minds//Class schedule//EN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${c.id}@digitalsminds.com`,
@@ -209,7 +258,7 @@ export function liveClassIcs(c: { id: string; title: string; description: string
     `DTSTART:${icsDate(c.startsAt)}`,
     `DTEND:${icsDate(endsAt(c))}`,
     `SUMMARY:${icsText(`${c.title} (${c.course.title})`)}`,
-    `DESCRIPTION:${icsText([c.description, `Join: ${c.meetingUrl}`].filter(Boolean).join("\n\n"))}`,
+    `DESCRIPTION:${icsText([c.description, c.meetingUrl && `Join: ${c.meetingUrl}`].filter(Boolean).join("\n\n"))}`,
     ...(c.meetingUrl ? [`LOCATION:${icsText(c.meetingUrl)}`, `URL:${c.meetingUrl}`] : []),
     `STATUS:${c.status === "CANCELLED" ? "CANCELLED" : "CONFIRMED"}`,
     "BEGIN:VALARM",
@@ -227,24 +276,27 @@ export function liveClassIcs(c: { id: string; title: string; description: string
 // Messages to students (best effort)
 // ---------------------------------------------------------------------------
 
-function whenText(startsAt: Date, locale: Locale) {
-  return new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Karachi" }).format(startsAt) + " (PKT)";
+function whenText(startsAt: Date, locale: Locale, dateOnly = false) {
+  return dateOnly
+    ? new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeZone: "Asia/Karachi" }).format(startsAt)
+    : new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Karachi" }).format(startsAt) + " (PKT)";
 }
 
-type Kind = "scheduled" | "moved" | "cancelled" | "remindDay" | "remindHour";
+type Kind = "scheduled" | "holiday" | "moved" | "cancelled" | "remindDay" | "remindHour";
 
 async function tellStudents(liveId: string, kind: Kind) {
   try {
-    const live = await db().liveClass.findUniqueOrThrow({ where: { id: liveId }, include: { course: { select: { title: true, titleUr: true, slug: true } } } });
-    const students = await approvedStudents(live.courseId);
+    const live = await db().liveClass.findUniqueOrThrow({ where: { id: liveId }, include: { course: { select: { title: true, titleUr: true } } } });
+    const students = await db().user.findMany({ where: recipientsWhere(live), select: { id: true, email: true, name: true, preferredLocale: true } });
+    // New classes are announced in the portal only; changes, holidays and reminders also go by email.
     const email = kind !== "scheduled";
     for (const s of students) {
       const locale: Locale = s.preferredLocale === "ur" ? "ur" : "en";
       const dict = getDictionary(locale);
       const t = dict.live;
-      const values = { title: live.title, course: (locale === "ur" && live.course.titleUr) || live.course.title, when: whenText(live.startsAt, locale) };
-      const subject = format({ scheduled: t.msgScheduled, moved: t.msgMoved, cancelled: t.msgCancelled, remindDay: t.msgRemindDay, remindHour: t.msgRemindHour }[kind], values);
-      await notify(s.id, { type: "SYSTEM", title: subject, body: kind === "cancelled" ? null : values.when, link: "/account/live" });
+      const values = { title: live.title, course: live.course.title, when: whenText(live.startsAt, locale, live.kind === "HOLIDAY") };
+      const subject = format({ scheduled: t.msgScheduled, holiday: t.msgHoliday, moved: t.msgMoved, cancelled: t.msgCancelled, remindDay: t.msgRemindDay, remindHour: t.msgRemindHour }[kind], values);
+      await notify(s.id, { type: "SCHEDULE", title: subject, body: kind === "cancelled" ? null : values.when, link: "/account/schedule" });
       if (!email) continue;
       await sendMail(
         actionEmail({
@@ -253,9 +305,9 @@ async function tellStudents(liveId: string, kind: Kind) {
           to: s.email,
           name: s.name,
           subject,
-          intro: format(kind === "cancelled" ? t.emailCancelledIntro : t.emailIntro, values),
-          buttonLabel: kind === "cancelled" ? t.emailOpenPortal : t.emailJoinButton,
-          url: `${siteConfig.url}${localizePath("/account/live", locale)}`,
+          intro: format(kind === "cancelled" ? t.emailCancelledIntro : kind === "holiday" ? t.emailHolidayIntro : t.emailIntro, values),
+          buttonLabel: t.emailJoinButton,
+          url: `${siteConfig.url}${localizePath("/account/schedule", locale)}`,
           ignoreNote: false,
         }),
       ).catch((err) => console.warn("[live] email not sent:", err instanceof Error ? err.message : err));
@@ -274,7 +326,7 @@ export async function sendDueReminders(now = new Date()) {
   const t = now.getTime();
   const sent: { id: string; kind: "day" | "hour" }[] = [];
   const hourDue = await db().liveClass.findMany({
-    where: { status: "SCHEDULED", reminderHourSentAt: null, startsAt: { gt: now, lte: new Date(t + 60 * 60_000) } },
+    where: { status: "SCHEDULED", kind: { not: "HOLIDAY" }, reminderHourSentAt: null, startsAt: { gt: now, lte: new Date(t + 60 * 60_000) } },
     select: { id: true },
   });
   for (const { id } of hourDue) {
@@ -285,7 +337,7 @@ export async function sendDueReminders(now = new Date()) {
     }
   }
   const dayDue = await db().liveClass.findMany({
-    where: { status: "SCHEDULED", reminderDaySentAt: null, startsAt: { gt: new Date(t + 60 * 60_000), lte: new Date(t + 24 * 3600_000) } },
+    where: { status: "SCHEDULED", kind: { not: "HOLIDAY" }, reminderDaySentAt: null, startsAt: { gt: new Date(t + 60 * 60_000), lte: new Date(t + 24 * 3600_000) } },
     select: { id: true },
   });
   for (const { id } of dayDue) {

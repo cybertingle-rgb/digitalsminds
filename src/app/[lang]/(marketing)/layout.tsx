@@ -3,6 +3,7 @@ import { CookieConsent } from "@/components/analytics/CookieConsent";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SocialRail } from "@/components/effects/SocialLinks";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { getAnalyticsSetting } from "@/modules/content/settings";
@@ -27,6 +28,7 @@ export default async function MarketingLayout({ children, params }: LayoutProps<
       </main>
       <SiteFooter locale={lang} dict={dict} />
       <SocialRail label={dict.a11y.social} />
+      <WhatsAppButton dict={dict} locale={lang} />
       <CookieConsent gaId={gaId} labels={dict.consent} privacyHref={localizePath("/privacy", lang)} />
     </>
   );

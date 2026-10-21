@@ -11,7 +11,6 @@ import {
   createCourseAction,
   deleteCourseAction,
   saveDetailsAction,
-  setInstructorsAction,
   setPriceAction,
   setStatusAction,
   type CourseState,
@@ -229,34 +228,6 @@ export function DetailsForm({ course, images, services }: { course: CourseDetail
         <Button type="submit" variant="dark" disabled={pending}>{pending ? "Saving…" : "Save details"}</Button>
         <Result state={state} />
       </div>
-    </form>
-  );
-}
-
-// --- Instructors -------------------------------------------------------------
-
-export function InstructorsForm(props: { courseId: string; assigned: string[]; options: { id: string; name: string; email: string }[] }) {
-  const [state, onSubmit, pending] = useFormAction(setInstructorsAction.bind(null, props.courseId), idle);
-  if (props.options.length === 0) {
-    return <p className="text-sm text-muted">No instructors on the team yet. Invite one in Team with the Instructor role, then assign them here.</p>;
-  }
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <ul className="space-y-2">
-        {props.options.map((o) => (
-          <li key={o.id}>
-            <label className="flex items-start gap-3 text-sm">
-              <input type="checkbox" name="instructorIds" value={o.id} defaultChecked={props.assigned.includes(o.id)} className="mt-0.5 h-5 w-5 accent-charcoal-900" />
-              <span>
-                <span className="font-medium text-charcoal-900">{o.name}</span>
-                <span className="block text-muted" dir="ltr">{o.email}</span>
-              </span>
-            </label>
-          </li>
-        ))}
-      </ul>
-      <Button type="submit" variant="secondary" className="py-2" disabled={pending}>{pending ? "Saving…" : "Save instructors"}</Button>
-      <Result state={state} />
     </form>
   );
 }

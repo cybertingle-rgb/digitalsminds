@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { can } from "@/modules/auth/permissions";
 import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/auth/session";
-import { courseDetailsInput, lessonInput, moduleInput, newCourseInput, resourceInput } from "@/modules/courses/schema";
+import { courseDetailsInput, newCourseInput } from "@/modules/courses/schema";
 import * as courses from "@/modules/courses/service";
 import { PaymentError, priceInput, setCoursePrice } from "@/modules/payments/service";
 
@@ -85,14 +85,6 @@ export async function saveDetailsAction(courseId: string, _prev: CourseState, fd
   });
 }
 
-export async function setInstructorsAction(courseId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
-  return run(async (actor) => {
-    const ids = z.array(id).max(50).parse(fd.getAll("instructorIds").map(String));
-    await courses.setInstructors(id.parse(courseId), ids, actor);
-    return "Instructors updated.";
-  });
-}
-
 export async function setPriceAction(courseId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
   return run(async (actor) => {
     const input = priceInput.parse({ paid: fd.get("access") === "PAID", pricePkr: str(fd, "pricePkr") });
@@ -114,101 +106,5 @@ export async function deleteCourseAction(courseId: string): Promise<CourseState>
   return run(async (actor) => {
     await courses.deleteCourse(id.parse(courseId), actor);
     return { message: "Course deleted.", redirectTo: "/admin/courses" };
-  });
-}
-
-// --- Modules ---------------------------------------------------------------
-
-export async function addModuleAction(courseId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.addModule(id.parse(courseId), moduleInput.parse({ title: str(fd, "title") }), actor);
-    return "Module added.";
-  });
-}
-
-export async function renameModuleAction(moduleId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.renameModule(id.parse(moduleId), moduleInput.parse({ title: str(fd, "title") }), actor);
-    return "Module renamed.";
-  });
-}
-
-export async function deleteModuleAction(moduleId: string): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.deleteModule(id.parse(moduleId), actor);
-    return "Module deleted.";
-  });
-}
-
-export async function moveModuleAction(moduleId: string, direction: "up" | "down"): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.moveModule(id.parse(moduleId), z.enum(["up", "down"]).parse(direction), actor);
-    return "Moved.";
-  });
-}
-
-// --- Lessons ---------------------------------------------------------------
-
-export async function addLessonAction(moduleId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
-  return run(async (actor) => {
-    const title = z.object({ title: z.string().trim().min(2, "Enter a lesson title").max(200) }).parse({ title: str(fd, "title") }).title;
-    await courses.addLesson(id.parse(moduleId), title, actor);
-    return "Lesson added.";
-  });
-}
-
-export async function saveLessonAction(lessonId: string, _prev: CourseState, fd: FormData): Promise<CourseState> {
-  return run(async (actor) => {
-    const input = lessonInput.parse({
-      title: str(fd, "title"),
-      content: str(fd, "content"),
-      videoUrl: str(fd, "videoUrl"),
-      durationMinutes: str(fd, "durationMinutes"),
-      isPreview: fd.get("isPreview") === "on",
-    });
-    await courses.updateLesson(id.parse(lessonId), input, actor);
-    return "Lesson saved.";
-  });
-}
-
-export async function moveLessonAction(lessonId: string, direction: "up" | "down"): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.moveLesson(id.parse(lessonId), z.enum(["up", "down"]).parse(direction), actor);
-    return "Moved.";
-  });
-}
-
-export async function moveLessonToModuleAction(lessonId: string, moduleId: string): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.moveLessonToModule(id.parse(lessonId), id.parse(moduleId), actor);
-    return "Lesson moved.";
-  });
-}
-
-export async function deleteLessonAction(lessonId: string): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.deleteLesson(id.parse(lessonId), actor);
-    return "Lesson deleted.";
-  });
-}
-
-// --- Resources -------------------------------------------------------------
-
-export async function addResourceAction(courseId: string, lessonId: string | null, _prev: CourseState, fd: FormData): Promise<CourseState> {
-  return run(async (actor) => {
-    const input = resourceInput.parse({
-      kind: str(fd, "kind"),
-      title: str(fd, "title"),
-      ...(str(fd, "kind") === "FILE" ? { mediaAssetId: str(fd, "mediaAssetId") } : { url: str(fd, "url").trim() }),
-    });
-    await courses.addResource(id.parse(courseId), lessonId ? id.parse(lessonId) : null, input, actor);
-    return "Resource added.";
-  });
-}
-
-export async function deleteResourceAction(resourceId: string): Promise<CourseState> {
-  return run(async (actor) => {
-    await courses.deleteResource(id.parse(resourceId), actor);
-    return "Resource removed.";
   });
 }

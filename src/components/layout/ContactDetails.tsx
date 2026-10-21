@@ -2,7 +2,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { contactDetails } from "@/modules/content/settings";
 
-/** Email and office address. No phone numbers are shown (owner decision). */
+/** Email, WhatsApp (only once the owner adds a number) and office address. */
 export async function ContactDetails({ dict, locale, inverse = false, className = "" }: { dict: Dictionary; locale: Locale; inverse?: boolean; className?: string }) {
   const contact = await contactDetails(locale, dict);
   const label = inverse ? "text-white" : "text-charcoal-900";
@@ -17,6 +17,16 @@ export async function ContactDetails({ dict, locale, inverse = false, className 
           </a>
         </dd>
       </div>
+      {contact.whatsapp && (
+        <div>
+          <dt className={`font-semibold ${label}`}>{dict.contact.whatsappLabel}</dt>
+          <dd className="mt-1">
+            <a className={link} href={`https://wa.me/${contact.whatsapp}`} target="_blank" rel="noopener noreferrer" dir="ltr">
+              +{contact.whatsapp}
+            </a>
+          </dd>
+        </div>
+      )}
       <div>
         <dt className={`font-semibold ${label}`}>{dict.contact.officeLabel}</dt>
         <dd className="mt-1">

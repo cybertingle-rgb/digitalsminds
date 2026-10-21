@@ -107,6 +107,9 @@ run("admissions (integration)", async () => {
     expect((await adm.applicationByToken(token))?.stage).toBe("PAYMENT_PENDING");
     await pay(token, `TX-${tag}-1`);
     await expect(pay(token, `TX-${tag}-2`)).rejects.toThrow("alreadySubmitted");
+    // Another applicant can't claim the same (still unverified) transaction, however it's typed.
+    await adm.confirmApplicationEmail(bilal.token);
+    await expect(pay(bilal.token, ` tx ${tag} 1 `)).rejects.toThrow("referenceUsed");
     const view = await adm.applicationByToken(token);
     expect([view?.stage, view?.payments.length]).toEqual(["PAYMENT_SUBMITTED", 1]);
     // Still no account: a receipt alone unlocks nothing.

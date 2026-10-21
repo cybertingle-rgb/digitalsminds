@@ -4,6 +4,7 @@ import { StatusBadge } from "@/components/admin/ui";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { db } from "@/lib/db";
 import { listApplications, parseApplicationFilter, type ApplicationTab } from "@/modules/admissions/service";
+import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
 import { formatPkr } from "@/modules/payments/service";
 
@@ -45,12 +46,19 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/[la
 
   return (
     <div className="max-w-6xl space-y-6">
-      <div>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
         <h1 className="text-2xl font-bold text-charcoal-900">Applications</h1>
         <p className="mt-1 text-muted">
           Visitors apply for a batch, confirm their email and send their payment details. A Super Admin verifies the payment against the account statement, which
           reserves the seat and creates the student account.
         </p>
+        </div>
+        {can(user.role, "students.export") && (
+          <a href={`/api/admin/applications/export?${new URLSearchParams({ tab: filter.tab, ...(filter.batchId && { batch: filter.batchId }), ...(filter.q && { q: filter.q }) })}`} className="rounded-xl border border-white/80 bg-white/60 px-4 py-2 text-sm font-semibold text-charcoal-900 shadow-sm hover:bg-white/90">
+            Export CSV
+          </a>
+        )}
       </div>
 
       <nav aria-label="Stage" className="flex flex-wrap gap-2 text-sm">

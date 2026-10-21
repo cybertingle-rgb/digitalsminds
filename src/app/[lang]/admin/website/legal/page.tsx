@@ -8,6 +8,7 @@ export const metadata: Metadata = { title: "Legal pages" };
 const pages = [
   { key: "privacy" as const, label: "Privacy Policy", url: "/privacy" },
   { key: "terms" as const, label: "Terms & Conditions", url: "/terms" },
+  { key: "refund" as const, label: "Refund Policy", url: "/refund-policy" },
 ];
 
 export default async function LegalSettingsPage() {

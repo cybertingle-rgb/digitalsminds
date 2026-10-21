@@ -10,7 +10,7 @@ import { dashboardStats } from "@/modules/dashboard/stats";
 import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
 import { getStorageStatus } from "@/modules/media/storage-check";
 import { getGoogleStatus, getSmtpStatus } from "@/modules/settings/integrations";
-import { pendingPaymentCount } from "@/modules/payments/service";
+import { formatDay } from "@/modules/batches/rules";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -45,8 +45,7 @@ function Panel({ title, children, action }: { title: string; children: ReactNode
 
 export default async function AdminOverview() {
   const user = await requirePagePermission("admin.access", "/admin");
-  const { leads, people, media, learning, support, certificatesReady, activity } = await dashboardStats(user);
-  const paymentsWaiting = can(user.role, "payments.view") ? await pendingPaymentCount() : null;
+  const { leads, people, media, admissions, seats, support, certificatesReady, activity } = await dashboardStats(user);
   const setup = can(user.role, "integrations.manage") ? await Promise.all([getSmtpStatus(), getGoogleStatus(), getStorageStatus()]) : null;
   const todo = setup
     ? [
@@ -75,10 +74,11 @@ export default async function AdminOverview() {
       )}
 
       <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        {paymentsWaiting !== null && <Stat label="Payments to verify" value={paymentsWaiting} hint="Applications waiting for a Super Admin" href="/admin/applications" />}
+        {admissions && <Stat label="Payments to verify" value={admissions.toVerify} hint="Check the statement, then verify" href="/admin/applications" />}
+        {admissions && <Stat label="Waiting for payment" value={admissions.awaitingPayment} hint={`${admissions.lastWeek} applications in the last 7 days`} href="/admin/applications?tab=PAYMENT_PENDING" />}
+        {admissions && <Stat label="Current students" value={admissions.current} hint={`${admissions.onboarding} still onboarding`} href="/admin/students?enrollment=current" />}
         {support !== null && <Stat label="Support requests needing a reply" value={support} href="/admin/support?status=OPEN" />}
         {certificatesReady !== null && <Stat label="Certificates ready to issue" value={certificatesReady} href="/admin/certificates" />}
-        {learning && <Stat label="Access requests waiting" value={learning.waiting} hint={`${learning.enrolled} enrolled · ${learning.published} published courses`} href="/admin/enrollments" />}
         {leads && <Stat label="New inquiries (last 7 days)" value={leads.lastWeek} href="/admin/inquiries" />}
         {leads && <Stat label="Not yet answered" value={leads.unanswered} hint="Status: New" href="/admin/inquiries?status=NEW" />}
         {leads && (
@@ -102,6 +102,28 @@ export default async function AdminOverview() {
       </ul>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        {seats && (
+          <Panel title="Seats in open and running batches" action={<Link href="/admin/batches" className="text-sm underline underline-offset-4">All batches</Link>}>
+            {seats.length === 0 ? (
+              <p className="text-sm text-muted">No batch is open or running.</p>
+            ) : (
+              <ul className="space-y-3 text-sm">
+                {seats.map((b) => (
+                  <li key={b.id}>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <Link href={`/admin/batches/${b.id}`} className="font-medium text-charcoal-900 underline-offset-4 hover:underline">{b.name}</Link>
+                      <span className="tabular-nums text-muted">{b.taken} / {b.capacity}</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-charcoal-100" role="progressbar" aria-valuemin={0} aria-valuemax={b.capacity} aria-valuenow={b.taken} aria-label={`${b.name} seats taken`}>
+                      <div className="h-full rounded-full bg-sun-400" style={{ width: `${Math.min(100, Math.round((b.taken / Math.max(1, b.capacity)) * 100))}%` }} />
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted">{b.course.title} · starts {formatDay(b.startDate)} · {b._count.applications} applications waiting</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        )}
         {leads && (
           <Panel title="Inquiries by service (last 30 days)">
             {leads.byService.length === 0 ? (

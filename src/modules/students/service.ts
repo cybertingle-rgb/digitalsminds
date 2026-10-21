@@ -26,8 +26,15 @@ export type StudentFilters = {
   q?: string;
   status?: "ACTIVE" | "SUSPENDED";
   courseId?: string;
-  enrollment?: "enrolled" | "waiting" | "none";
+  batchId?: string;
+  /** current = confirmed/onboarding/active; none = no current or completed enrollment. */
+  enrollment?: "current" | "completed" | "withdrawn" | "none";
 };
+
+const CURRENT = ["ENROLLMENT_CONFIRMED", "ONBOARDING", "ACTIVE"] as const;
+/** Current students, including enrollments approved before stages existed. */
+const currentWhere: Prisma.EnrollmentWhereInput = { OR: [{ stage: { in: [...CURRENT] } }, { stage: null, status: "APPROVED", completedAt: null }] };
+const completedWhere: Prisma.EnrollmentWhereInput = { OR: [{ stage: "COMPLETED" }, { stage: null, status: "APPROVED", completedAt: { not: null } }] };
 
 export function parseStudentFilters(sp: Record<string, string | string[] | undefined>): StudentFilters {
   const one = (v: unknown) => (typeof v === "string" ? v.trim() : "");
@@ -35,7 +42,8 @@ export function parseStudentFilters(sp: Record<string, string | string[] | undef
     q: one(sp.q).slice(0, 100) || undefined,
     status: (["ACTIVE", "SUSPENDED"] as const).find((s) => s === sp.status),
     courseId: one(sp.course).slice(0, 64) || undefined,
-    enrollment: (["enrolled", "waiting", "none"] as const).find((s) => s === sp.enrollment),
+    batchId: one(sp.batch).slice(0, 64) || undefined,
+    enrollment: (["current", "completed", "withdrawn", "none"] as const).find((s) => s === sp.enrollment),
   };
 }
 
@@ -45,15 +53,17 @@ export async function buildStudentWhere(f: StudentFilters): Promise<Prisma.UserW
     and.push({ id: { in: await idsContaining("User", ["name", "email", "googleEmail", "phone", "city"], f.q) } });
   }
   if (f.status) and.push({ status: f.status });
-  if (f.courseId) and.push({ enrollments: { some: { courseId: f.courseId, status: "APPROVED" } } });
-  if (f.enrollment === "enrolled") and.push({ enrollments: { some: { status: "APPROVED" } } });
-  if (f.enrollment === "waiting") and.push({ enrollments: { some: { status: "REQUESTED" } } });
-  if (f.enrollment === "none") and.push({ enrollments: { none: { status: { in: ["APPROVED", "REQUESTED"] } } } });
+  if (f.courseId) and.push({ enrollments: { some: { courseId: f.courseId } } });
+  if (f.batchId) and.push({ enrollments: { some: { batchId: f.batchId } } });
+  if (f.enrollment === "current") and.push({ enrollments: { some: currentWhere } });
+  if (f.enrollment === "completed") and.push({ enrollments: { some: completedWhere } });
+  if (f.enrollment === "withdrawn") and.push({ enrollments: { some: { stage: "WITHDRAWN" } } });
+  if (f.enrollment === "none") and.push({ enrollments: { none: { OR: [currentWhere, completedWhere] } } });
   return { AND: and };
 }
 
 const listInclude = {
-  enrollments: { select: { status: true, completedAt: true, course: { select: { title: true } } } },
+  enrollments: { select: { status: true, stage: true, completedAt: true, course: { select: { title: true } }, batch: { select: { code: true } } } },
   sessions: { orderBy: { updatedAt: "desc" }, take: 1, select: { updatedAt: true } },
 } satisfies Prisma.UserInclude;
 
@@ -70,9 +80,11 @@ function summarise(u: Prisma.UserGetPayload<{ include: typeof listInclude }>) {
   const { enrollments, sessions, ...user } = u;
   return {
     ...user,
-    enrolled: enrollments.filter((e) => e.status === "APPROVED").map((e) => e.course.title),
-    waiting: enrollments.filter((e) => e.status === "REQUESTED").map((e) => e.course.title),
-    completed: enrollments.filter((e) => e.completedAt).map((e) => e.course.title),
+    enrolled: enrollments
+      .filter((e) => (e.stage ? (CURRENT as readonly string[]).includes(e.stage) : e.status === "APPROVED" && !e.completedAt))
+      .map((e) => (e.batch ? `${e.course.title} (${e.batch.code})` : e.course.title)),
+    completed: enrollments.filter((e) => e.stage === "COMPLETED" || (!e.stage && e.status === "APPROVED" && e.completedAt)).map((e) => e.course.title),
+    withdrawn: enrollments.filter((e) => e.stage === "WITHDRAWN").map((e) => e.course.title),
     lastActive: sessions[0]?.updatedAt ?? null,
   };
 }
@@ -94,26 +106,23 @@ export async function getStudent(id: string) {
       accounts: { select: { providerId: true } },
       sessions: { orderBy: { updatedAt: "desc" }, take: 1, select: { updatedAt: true } },
       enrollments: {
-        orderBy: { requestedAt: "desc" },
+        orderBy: { createdAt: "desc" },
         include: {
           decidedBy: { select: { name: true } },
-          course: {
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              status: true,
-              modules: { orderBy: { position: "asc" }, select: { lessons: { orderBy: { position: "asc" }, select: { id: true, title: true } } } },
-            },
-          },
+          course: { select: { id: true, title: true, slug: true, status: true } },
+          batch: { select: { id: true, name: true, code: true, startDate: true } },
+          events: { orderBy: { createdAt: "desc" }, take: 10, include: { actor: { select: { name: true } } } },
         },
       },
     },
   });
   if (!user) return null;
-  const lessonIds = user.enrollments.flatMap((e) => e.course.modules.flatMap((m) => m.lessons.map((l) => l.id)));
-  const [progress, history] = await Promise.all([
-    lessonIds.length ? db().lessonProgress.findMany({ where: { userId: id, lessonId: { in: lessonIds } }, orderBy: { lastViewedAt: "desc" } }) : [],
+  const [applications, history] = await Promise.all([
+    db().enrollmentApplication.findMany({
+      where: { OR: [{ userId: id }, { email: user.email }] },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, reference: true, stage: true, createdAt: true, course: { select: { title: true } }, batch: { select: { name: true } }, payments: { select: { status: true, amount: true, amountReceived: true } } },
+    }),
     db().auditLog.findMany({
       where: { OR: [{ entityType: "User", entityId: id }, { entityType: "Enrollment", entityId: { in: user.enrollments.map((e) => e.id) } }] },
       orderBy: { createdAt: "desc" },
@@ -121,23 +130,12 @@ export async function getStudent(id: string) {
       include: { actor: { select: { name: true } } },
     }),
   ]);
-  const enrollments = user.enrollments.map((e) => {
-    const lessons = e.course.modules.flatMap((m) => m.lessons);
-    const ids = new Set(lessons.map((l) => l.id));
-    const mine = progress.filter((p) => ids.has(p.lessonId));
-    const last = mine[0];
-    return {
-      ...e,
-      total: lessons.length,
-      done: mine.filter((p) => p.completedAt).length,
-      lastViewed: last ? { at: last.lastViewedAt, title: lessons.find((l) => l.id === last.lessonId)?.title ?? "" } : null,
-    };
-  });
   return {
     user: { ...user, enrollments: undefined, sessions: undefined, accounts: undefined },
     signIn: [...new Set(user.accounts.map((a) => (a.providerId === "credential" ? "Email & password" : a.providerId === "google" ? "Google" : a.providerId)))],
     lastActive: user.sessions[0]?.updatedAt ?? null,
-    enrollments,
+    enrollments: user.enrollments,
+    applications,
     history,
   };
 }
@@ -194,34 +192,75 @@ export async function setStudentSuspended(id: string, suspended: boolean, reason
   await audit({ actorId: actor.id, action: suspended ? "user.suspend" : "user.reactivate", entityType: "User", entityId: id, metadata: reason ? { reason } : undefined });
 }
 
-/** Courses a student could be enrolled in by staff (not drafts, not already enrolled). */
-export async function enrollableCourses(studentId: string) {
-  return db().course.findMany({
-    where: { status: { not: "DRAFT" }, enrollments: { none: { userId: studentId, status: "APPROVED" } } },
-    orderBy: [{ status: "asc" }, { title: "asc" }],
-    select: { id: true, title: true, status: true },
-  });
-}
-
 /**
  * Permanently deletes a student account for a privacy request: profile,
- * sign-in methods, sessions, enrollments, progress, certificates, support
- * requests and notifications (all cascade), plus a newsletter record with the
- * same email. Super Admin only; the email must be typed to confirm.
+ * sign-in methods, sessions, enrollments, certificates, support requests and
+ * notifications (all cascade), their applications (with CNIC, CV and payment
+ * receipts), plus a newsletter record with the same email. Super Admin only;
+ * the email must be typed to confirm.
  */
 export async function deleteStudent(id: string, confirmEmail: string, actor: Actor) {
   if (!can(actor.role, "students.delete")) throw new StudentError("Only Super Admins can delete accounts.", 403);
   const user = await requireStudent(id);
   if (confirmEmail.trim().toLowerCase() !== user.email.toLowerCase()) throw new StudentError("Type the student's email address exactly to confirm.");
+  // Applications hold the CNIC and CV, so they go too (matched by account or email).
+  const applications = await db().enrollmentApplication.findMany({
+    where: { OR: [{ userId: id }, { email: user.email }] },
+    select: { id: true, cvKey: true, payments: { select: { receiptKey: true } } },
+  });
+  const appIds = applications.map((a) => a.id);
   const [enrollments, certificates, receipts] = await Promise.all([db().enrollment.count({ where: { userId: id } }), db().certificate.count({ where: { userId: id } }), receiptKeysOf(id)]);
   await db().$transaction([
+    db().payment.deleteMany({ where: { applicationId: { in: appIds } } }),
+    db().enrollmentApplication.deleteMany({ where: { id: { in: appIds } } }),
     db().newsletterSubscriber.deleteMany({ where: { email: user.email } }),
     db().user.delete({ where: { id } }),
   ]);
-  // Payment receipts are files, not rows: remove them too (payments themselves cascade).
-  await Promise.all(receipts.map((key) => deleteFile(key).catch(() => {})));
+  // Receipts and CVs are files, not rows: remove them too (payments themselves cascade).
+  const files = [...receipts, ...applications.flatMap((a) => [a.cvKey, ...a.payments.map((p) => p.receiptKey)]).filter((k): k is string => !!k)];
+  await Promise.all([...new Set(files)].map((key) => deleteFile(key).catch(() => {})));
   // No personal details in the log, only what was removed.
-  await audit({ actorId: actor.id, action: "student.deleted", entityType: "User", entityId: id, metadata: { enrollments, certificates } });
+  await audit({ actorId: actor.id, action: "student.deleted", entityType: "User", entityId: id, metadata: { enrollments, certificates, applications: appIds.length } });
+}
+
+/**
+ * Student accounts from the old free sign-up: active, never enrolled through
+ * a verified payment (no staged enrollment, no confirmed payment, no
+ * application). Under the paid-enrollment model they shouldn't have access.
+ */
+export const legacyAccountsWhere: Prisma.UserWhereInput = {
+  role: "STUDENT",
+  status: "ACTIVE",
+  enrollments: { none: { stage: { not: null } } },
+  payments: { none: { status: "CONFIRMED" } },
+  applications: { none: {} },
+};
+
+export async function legacyAccounts(take = 20) {
+  const [count, sample] = await Promise.all([
+    db().user.count({ where: legacyAccountsWhere }),
+    db().user.findMany({ where: legacyAccountsWhere, orderBy: { createdAt: "asc" }, take, select: { id: true, name: true, email: true, createdAt: true } }),
+  ]);
+  return { count, sample };
+}
+
+/**
+ * Suspends every legacy account (signs them out; reversible per student).
+ * `expected` must match the count the Super Admin was shown, so a different
+ * set is never suspended by mistake.
+ */
+export async function suspendLegacyAccounts(expected: number, actor: Actor) {
+  if (!can(actor.role, "students.manage")) throw new StudentError("Only Super Admins can do that.", 403);
+  const ids = (await db().user.findMany({ where: legacyAccountsWhere, select: { id: true } })).map((u) => u.id);
+  if (ids.length !== expected) throw new StudentError(`The number of accounts changed (now ${ids.length}). Refresh the page and check again.`, 409);
+  if (!ids.length) return 0;
+  const reason = "Free sign-up closed: accounts are now created after a verified enrollment payment.";
+  await db().$transaction([
+    db().user.updateMany({ where: { id: { in: ids }, ...legacyAccountsWhere }, data: { status: "SUSPENDED", suspendedAt: new Date(), suspendedReason: reason } }),
+    db().session.deleteMany({ where: { userId: { in: ids } } }),
+  ]);
+  await audit({ actorId: actor.id, action: "students.legacy_suspended", entityType: "User", metadata: { count: ids.length } });
+  return ids.length;
 }
 
 export function inquiriesFromEmail(email: string) {

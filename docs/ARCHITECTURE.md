@@ -51,6 +51,21 @@ src/
 4. Change the schema only through migrations: `npm run db:migrate -- --name <change>`.
 5. Add any new env var to `src/lib/env.ts` (validated) **and** `.env.example`.
 
+## Enrollment platform (Phases 15-19)
+
+Digitals Minds is a paid enrollment and student administration platform; online lessons were retired
+(docs/ENROLLMENT.md has the full workflow and permission table).
+
+- `src/modules/batches/`: batches, seat counting (`SEAT_STAGES`), availability rules (`rules.ts`, pure and unit-tested), coordinator scope (`canCoordinate`).
+- `src/modules/admissions/`: applications, private status-link tokens (random 32 bytes, SHA-256 stored, httpOnly `dm_app` cookie set by `/api/applications/open`), payment submission, **verification transaction** (marks the payment once, locks the batch row with `SELECT … FOR UPDATE`, checks seats, creates/reactivates the user, creates/updates the enrollment, closes the application; any failure rolls everything back). Duplicate transactions are blocked by a normalised SQL comparison and a unique `Payment.verifiedKey`.
+- `src/modules/portal/`: the student's own enrollments, onboarding (auto-advance Confirmed → Onboarding → Active), documents and notices, all scoped to their current batches.
+- `src/modules/enrollments/`: staff stage changes, transfers and withdrawals (seat checks under a row lock), staff-confirmed onboarding steps, rosters.
+- `src/modules/onboarding/`: checklist items and private student documents (`documents/` storage prefix).
+- `src/modules/live/`: batch schedule (CLASS / HOLIDAY / EVENT), reminders, calendar files.
+- Sign-up: Better Auth `disableSignUp` for email and Google, plus a `user.create.before` hook that refuses any account created through the auth API.
+- Public routes: `/courses/[slug]` (batches), `/courses/[slug]/apply`, `/application` (status page), `/refund-policy`; APIs: `/api/applications` (apply), `/open`, `/payment`, `/link`, `/api/applications/[id]/cv` (Super Admin), `/api/documents/[id]`.
+- Admin routes: Applications, Batches (roster), Schedule (`/admin/live-classes`), Announcements, Onboarding, Documents; CSV exports at `/api/admin/applications/export` and `/api/admin/batches/[id]/export`.
+
 ## Authentication & authorisation (Phase 3)
 
 ```
@@ -73,7 +88,7 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
-## Live classes (Phase 14c)
+## Live classes (Phase 14c, now per batch: see Enrollment platform)
 
 - `LiveClass` table (additive migration `phase14_live_classes`). `src/modules/live/service.ts`: course staff
   (`canManageCourse`) schedule/edit/cancel; times entered in PKT, stored UTC; meeting links limited to Zoom, Google
@@ -166,7 +181,7 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - Manual enrollment: `manualEnroll` in `src/modules/learning/enrollment.ts` (`enrollments.decide`; active students, non-draft courses).
 - Routes: `/admin/students`, `/admin/students/[id]`, `GET /api/admin/students/export` (`students.export`, CSV with formula guard).
 
-## Learning: catalogue, enrollment, progress (Phase 8)
+## Learning: catalogue, enrollment, progress (Phase 8, retired in Phase 15)
 
 - `src/modules/learning/catalogue.ts`: published-course listing (Urdu title/summary fall back to English), course loader.
 - `src/modules/learning/enrollment.ts`: request → approve/reject, approve → revoke, rejected/revoked → approve or re-request.
@@ -180,7 +195,7 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - Routes: `/courses`, `/courses/[slug]`, `/learn/[slug]` (continue), `/learn/[slug]/[lessonId]`, `/account` (My learning + profile),
   `/admin/enrollments`. The sitemap lists published courses (generated per request).
 
-## Courses (Phase 7)
+## Courses (Phase 7, now Programs; curriculum retired in Phase 15)
 
 - `src/modules/courses/service.ts`: course CRUD, curriculum (modules/lessons with up/down reordering and move-to-module),
   resources, instructors, publishing. Every function re-checks `canManageCourse` (Instructors: assigned courses only);

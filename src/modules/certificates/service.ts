@@ -41,13 +41,16 @@ function assertCanIssue(actor: Actor) {
   if (!can(actor.role, "certificates.issue")) throw new CertificateError("You don't have permission to do that.", 403);
 }
 
+/** Completed: marked "Completed" by staff (or, for older enrollments, finished before stages existed). */
+const COMPLETED = { OR: [{ stage: "COMPLETED" as const }, { stage: null, status: "APPROVED" as const, completedAt: { not: null } }] };
+
 /**
- * Students who finished every lesson of a course with certificates on, and
+ * Students marked as having completed a program with certificates on, who
  * don't hold a valid certificate for it yet (staff review queue).
  */
 export async function readyToIssue() {
   const done = await db().enrollment.findMany({
-    where: { status: "APPROVED", completedAt: { not: null }, course: { certificateEnabled: true }, user: { status: "ACTIVE" } },
+    where: { ...COMPLETED, course: { certificateEnabled: true }, user: { status: "ACTIVE" } },
     orderBy: { completedAt: "asc" },
     include: { user: { select: { id: true, name: true, email: true } }, course: { select: { id: true, title: true } } },
   });
@@ -63,8 +66,9 @@ export async function readyToIssue() {
 export async function issueCertificate(enrollmentId: string, actor: Actor) {
   assertCanIssue(actor);
   const e = await db().enrollment.findUnique({ where: { id: enrollmentId }, include: { user: true, course: true } });
-  if (!e || e.status !== "APPROVED" || !e.completedAt) throw new CertificateError("This student hasn't completed the course.");
-  if (!e.course.certificateEnabled) throw new CertificateError("Certificates are turned off for this course.");
+  const completed = e && (e.stage === "COMPLETED" || (e.stage === null && e.status === "APPROVED" && e.completedAt));
+  if (!e || !completed) throw new CertificateError("This student hasn't been marked as completed for this program.");
+  if (!e.course.certificateEnabled) throw new CertificateError("Certificates are turned off for this program.");
   const current = await db().certificate.findUnique({ where: { userId_courseId: { userId: e.userId, courseId: e.courseId } } });
   if (current && !current.revokedAt) throw new CertificateError("A certificate was already issued for this course.", 409);
 

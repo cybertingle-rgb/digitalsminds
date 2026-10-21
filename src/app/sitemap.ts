@@ -22,13 +22,14 @@ async function publishedCourseEntries() {
 }
 
 async function contentEntries() {
-  const [posts, cases, privacy, terms] = await Promise.all([publicPosts(), publishedCaseStudies(), getLegalPage("privacy"), getLegalPage("terms")]);
+  const [posts, cases, privacy, terms, refund] = await Promise.all([publicPosts(), publishedCaseStudies(), getLegalPage("privacy"), getLegalPage("terms"), getLegalPage("refund")]);
   return [
     ...posts.map((p) => ({ path: `/blog/${p.slug}`, lastModified: p.updatedAt ?? p.publishedAt })),
     ...(cases.length ? [{ path: "/case-studies" }] : []),
     ...cases.map((c) => ({ path: `/case-studies/${c.slug}`, lastModified: c.updatedAt.toISOString() })),
     ...(privacy?.published ? [{ path: "/privacy" }] : []),
     ...(terms?.published ? [{ path: "/terms" }] : []),
+    ...(refund?.published ? [{ path: "/refund-policy" }] : []),
   ];
 }
 

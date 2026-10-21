@@ -10,7 +10,6 @@ import { idsContaining } from "@/lib/text-search";
 import { sendMail } from "@/lib/mailer";
 import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
-import { manageableCoursesWhere } from "@/modules/auth/scoping";
 import type { CurrentUser } from "@/modules/auth/session";
 import { actionEmail } from "@/modules/email/templates";
 import { getLeadAlertSetting } from "@/modules/inquiries/alerts";
@@ -91,10 +90,11 @@ export async function studentReply(id: string, userId: string, body: string) {
 // Staff
 // ---------------------------------------------------------------------------
 
-/** Super Admin / Content Manager: every ticket. Instructors: tickets about their own courses. */
+/** Super Admin / Content Manager: every ticket. Batch coordinators: tickets from their batches' students. */
 export function supportScope(actor: Actor): Prisma.SupportTicketWhereInput {
   if (can(actor.role, "support.manage.all")) return {};
-  if (can(actor.role, "support.manage.own")) return { course: manageableCoursesWhere(actor) };
+  // Coordinators: tickets from students in the batches they coordinate.
+  if (can(actor.role, "support.manage.own")) return { user: { enrollments: { some: { batch: { coordinatorId: actor.id } } } } };
   return { id: "__none__" };
 }
 
@@ -177,19 +177,20 @@ export async function setTicketStatus(id: string, status: TicketStatus, actor: A
 // Emails and notifications (best effort)
 // ---------------------------------------------------------------------------
 
-/** New ticket or student reply: email the lead-alert address and the course's instructors. */
+/** New ticket or student reply: email the lead-alert address and the student's batch coordinators. */
 async function alertTeam(ticketId: string, kind: "new" | "reply") {
   try {
     const t = await db().supportTicket.findUniqueOrThrow({
       where: { id: ticketId },
       include: {
-        user: { select: { name: true, email: true } },
-        course: { select: { title: true, instructors: { where: { user: { status: "ACTIVE" } }, select: { user: { select: { email: true } } } } } },
+        user: { select: { name: true, email: true, enrollments: { where: { batch: { coordinator: { status: "ACTIVE" } } }, select: { batch: { select: { coordinator: { select: { email: true } } } } } } } },
+        course: { select: { title: true } },
         messages: { orderBy: { createdAt: "desc" }, take: 1, select: { body: true } },
       },
     });
     const setting = await getLeadAlertSetting();
-    const to = [...new Set([...(setting.enabled ? [setting.email] : []), ...(t.course?.instructors.map((i) => i.user.email) ?? [])])];
+    const coordinators = t.user.enrollments.flatMap((e) => (e.batch?.coordinator ? [e.batch.coordinator.email] : []));
+    const to = [...new Set([...(setting.enabled ? [setting.email] : []), ...coordinators])];
     if (to.length === 0) return;
     const dict = getDictionary("en");
     const about = t.course ? ` about “${t.course.title}”` : "";

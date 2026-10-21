@@ -11,7 +11,7 @@ export type LiveState = { status: "idle" | "success" | "error"; message?: string
 async function run(fn: (actor: CurrentUser) => Promise<string>, refresh = true): Promise<LiveState> {
   try {
     const actor = await assertPermission("admin.access");
-    if (!can(actor.role, "courses.manage.all") && !can(actor.role, "courses.manage.own")) throw new ForbiddenError();
+    if (!can(actor.role, "batches.manage") && !can(actor.role, "batches.coordinate")) throw new ForbiddenError();
     const message = await fn(actor);
     // Cancelling keeps its confirmation on screen (the page shows the change on the next visit).
     if (refresh) revalidatePath("/admin/live-classes");
@@ -30,7 +30,8 @@ async function run(fn: (actor: CurrentUser) => Promise<string>, refresh = true):
 
 const read = (fd: FormData) =>
   liveClassInput.parse({
-    courseId: String(fd.get("courseId") ?? ""),
+    batchId: String(fd.get("batchId") ?? ""),
+    kind: String(fd.get("kind") ?? "CLASS"),
     title: String(fd.get("title") ?? ""),
     description: String(fd.get("description") ?? ""),
     date: String(fd.get("date") ?? ""),
@@ -42,7 +43,7 @@ const read = (fd: FormData) =>
 export async function createLiveAction(_prev: LiveState, fd: FormData): Promise<LiveState> {
   return run(async (actor) => {
     await createLiveClass(read(fd), actor);
-    return "Class scheduled. Enrolled students can see it now and get reminders 1 day and 1 hour before.";
+    return "Added to the schedule. The batch's students can see it now; classes get reminders 1 day and 1 hour before.";
   });
 }
 
@@ -56,6 +57,6 @@ export async function updateLiveAction(id: string, _prev: LiveState, fd: FormDat
 export async function cancelLiveAction(id: string): Promise<LiveState> {
   return run(async (actor) => {
     await cancelLiveClass(z.string().min(1).max(64).parse(id), actor);
-    return "Class cancelled. Students have been told.";
+    return "Cancelled. Students have been told.";
   }, false);
 }

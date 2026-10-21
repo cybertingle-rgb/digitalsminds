@@ -15,20 +15,18 @@ export async function GET(request: NextRequest) {
   const filters = parseStudentFilters(Object.fromEntries(request.nextUrl.searchParams));
   const rows = await studentsForExport(filters);
   const csv = toCsv(
-    ["Joined (UTC)", "Name", "Email", "Email verified", "Google email", "Phone", "City", "Language", "Account", "Enrolled courses", "Completed courses", "Waiting for approval", "Last active (UTC)"],
+    ["Joined (UTC)", "Name", "Email", "Email verified", "Phone", "City", "Account", "Current programs (batch)", "Completed programs", "Withdrawn from", "Last active (UTC)"],
     rows.map((s) => [
       s.createdAt,
       s.name,
       s.email,
       s.emailVerified ? "Yes" : "No",
-      s.googleEmail,
       s.phone,
       s.city,
-      s.preferredLocale === "ur" ? "Urdu" : "English",
       s.status === "SUSPENDED" ? "Suspended" : "Active",
       s.enrolled.join("; "),
       s.completed.join("; "),
-      s.waiting.join("; "),
+      s.withdrawn.join("; "),
       s.lastActive ?? "",
     ]),
   );

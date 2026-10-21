@@ -55,22 +55,3 @@ export const courseDetailsInput = z.object({
   seoTitle: optional(200),
   seoDescription: optional(320),
 });
-
-export const moduleInput = z.object({ title: text(200).min(2, "Enter a module title") });
-
-export const lessonInput = z.object({
-  title: text(200).min(2, "Enter a lesson title"),
-  content: optional(50_000),
-  videoUrl: text(1000).optional().transform((v) => (v ? v : null)),
-  durationMinutes: z.preprocess((v) => (v === "" || v === null ? undefined : v), z.coerce.number().int().min(1).max(10_000).optional()).transform((v) => v ?? null),
-  isPreview: z.boolean(),
-});
-
-export const resourceInput = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("FILE"), title: text(200).min(2, "Enter a title"), mediaAssetId: z.string().min(1).max(64) }),
-  z.object({
-    kind: z.literal("LINK"),
-    title: text(200).min(2, "Enter a title"),
-    url: z.url({ protocol: /^https$/, error: "Enter a full https:// link" }).max(1000),
-  }),
-]);

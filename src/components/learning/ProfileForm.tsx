@@ -18,9 +18,8 @@ export function ProfileForm({ lang, profile, labels }: { lang: string; profile: 
         <Field label={labels.name} name="name" error={err("name")}>
           <input id="name" name="name" defaultValue={profile.name} required maxLength={120} autoComplete="name" dir="auto" className={inputClass} {...aria("name")} />
         </Field>
-        <Field label={labels.googleEmail} name="googleEmail" error={err("googleEmail")} hint={labels.googleHint}>
-          <input id="googleEmail" name="googleEmail" type="email" dir="ltr" defaultValue={profile.googleEmail} required className={inputClass} {...aria("googleEmail", labels.googleHint)} />
-        </Field>
+        {/* Google email was only used for sharing course videos; the saved value is kept. */}
+        <input type="hidden" name="googleEmail" value={profile.googleEmail} />
         <Field label={labels.phone} name="phone" error={err("phone")}>
           <input id="phone" name="phone" type="tel" required dir="ltr" defaultValue={profile.phone} maxLength={40} autoComplete="tel" className={inputClass} {...aria("phone")} />
         </Field>

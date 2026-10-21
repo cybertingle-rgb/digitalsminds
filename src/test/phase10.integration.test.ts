@@ -18,6 +18,7 @@ run("phase 10 (integration)", async () => {
   const support = await import("@/modules/support/service");
   const certs = await import("@/modules/certificates/service");
   const news = await import("@/modules/newsletter/service");
+  const portal = await import("@/modules/portal/service");
   const tag = randomUUID().slice(0, 8);
   const id = (n: string) => `t${tag}_${n}`;
   const cm = { id: id("cm"), role: "CONTENT_MANAGER" as const };
@@ -25,6 +26,8 @@ run("phase 10 (integration)", async () => {
   const other = { id: id("other"), role: "INSTRUCTOR" as const };
   let course = "";
   let otherCourse = "";
+  let batch = "";
+  let otherBatch = "";
 
   beforeAll(async () => {
     await db().user.createMany({
@@ -37,14 +40,16 @@ run("phase 10 (integration)", async () => {
         { id: id("s2"), name: "Student Two", email: `s2.${tag}@example.com`, role: "STUDENT" },
       ],
     });
-    course = (await db().course.create({
-      data: { slug: `t${tag}-c`, title: "Course", summary: "Summary text", language: "en", status: "PUBLISHED", createdById: id("sa"), instructors: { create: { userId: id("teach") } } },
-    })).id;
+    course = (await db().course.create({ data: { slug: `t${tag}-c`, title: "Course", summary: "Summary text", language: "en", status: "PUBLISHED", createdById: id("sa") } })).id;
     otherCourse = (await db().course.create({ data: { slug: `t${tag}-o`, title: "Other", summary: "Summary text", language: "en", status: "PUBLISHED", createdById: id("sa") } })).id;
+    const mk = (courseId: string, code: string, coordinatorId: string) =>
+      db().batch.create({ data: { courseId, name: `Batch ${code}`, code: `${code}${tag}`.toUpperCase(), status: "IN_PROGRESS", startDate: new Date(), scheduleText: "Mon", capacity: 10, coordinatorId } });
+    batch = (await mk(course, "A", id("teach"))).id;
+    otherBatch = (await mk(otherCourse, "B", id("other"))).id;
     await db().enrollment.createMany({
       data: [
-        { userId: id("s1"), courseId: course, status: "APPROVED", completedAt: new Date() },
-        { userId: id("s2"), courseId: otherCourse, status: "APPROVED" },
+        { userId: id("s1"), courseId: course, batchId: batch, status: "APPROVED", stage: "COMPLETED", completedAt: new Date() },
+        { userId: id("s2"), courseId: otherCourse, batchId: otherBatch, status: "APPROVED", stage: "ACTIVE" },
       ],
     });
   });
@@ -54,6 +59,8 @@ run("phase 10 (integration)", async () => {
     await db().certificate.deleteMany({ where: { userId: { startsWith: `t${tag}` } } });
     await db().enrollment.deleteMany({ where: { userId: { startsWith: `t${tag}` } } });
     await db().announcement.deleteMany({ where: { authorId: { startsWith: `t${tag}` } } });
+    await db().supportTicket.deleteMany({ where: { userId: { startsWith: `t${tag}` } } });
+    await db().batch.deleteMany({ where: { id: { in: [batch, otherBatch] } } });
     await db().course.deleteMany({ where: { slug: { startsWith: `t${tag}` } } });
     await db().newsletterSubscriber.deleteMany({ where: { email: { endsWith: `${tag}@news.test` } } });
     await db().verification.deleteMany({ where: { identifier: { endsWith: `${tag}@news.test` } } });
@@ -61,10 +68,13 @@ run("phase 10 (integration)", async () => {
     await db().$disconnect();
   });
 
-  it("announces to a course's students only, with permission checks and a one-time email", async () => {
-    await expect(ann.createAnnouncement({ courseId: null, title: "Everyone", body: "Hello all", sendEmail: false }, teach)).rejects.toThrow(/Only Super Admins/);
-    await expect(ann.createAnnouncement({ courseId: otherCourse, title: "Not mine", body: "Hello", sendEmail: false }, teach)).rejects.toThrow(/not found/);
-    const { announcement, recipients } = await ann.createAnnouncement({ courseId: course, title: "Live class", body: "Join us on Friday", sendEmail: true }, teach);
+  it("announces to everyone, a program or a batch, with permission checks and a one-time email", async () => {
+    await expect(ann.createAnnouncement({ audience: "all", title: "Everyone", body: "Hello all", sendEmail: false }, teach)).rejects.toThrow(/Only Super Admins/);
+    await expect(ann.createAnnouncement({ audience: `course:${course}`, title: "Program", body: "Hello", sendEmail: false }, teach)).rejects.toThrow(/whole program/);
+    await expect(ann.createAnnouncement({ audience: `batch:${otherBatch}`, title: "Not mine", body: "Hello", sendEmail: false }, teach)).rejects.toThrow(/not found/);
+    // s1 completed, so only s2 (active) is a current student of the other batch.
+    await db().enrollment.updateMany({ where: { userId: id("s1") }, data: { stage: "ACTIVE", completedAt: null } });
+    const { announcement, recipients } = await ann.createAnnouncement({ audience: `batch:${batch}`, title: "Class moved", body: "Friday instead of Thursday", sendEmail: true }, teach);
     expect(recipients).toBe(1);
     expect(await db().notification.count({ where: { userId: id("s1"), type: "ANNOUNCEMENT" } })).toBe(1);
     expect(await db().notification.count({ where: { userId: id("s2"), type: "ANNOUNCEMENT" } })).toBe(0);
@@ -72,22 +82,27 @@ run("phase 10 (integration)", async () => {
     expect(await ann.sendAnnouncementEmails(announcement.id)).toEqual({ sent: 1, failed: 0 });
     expect(await ann.sendAnnouncementEmails(announcement.id)).toEqual({ sent: 0, failed: 0 });
     expect(sent.map((m) => m.to)).toEqual([`s1.${tag}@example.com`]);
-    expect((await ann.studentAnnouncements(id("s1"))).map((a) => a.title)).toContain("Live class");
-    expect((await ann.studentAnnouncements(id("s2"))).map((a) => a.title)).not.toContain("Live class");
+    const all = await ann.createAnnouncement({ audience: "all", title: "Holiday", body: "Office closed Monday", sendEmail: false }, cm);
+    expect(all.recipients).toBeGreaterThanOrEqual(2);
+    expect((await portal.myNotices(id("s1"))).map((a) => a.title)).toEqual(expect.arrayContaining(["Class moved", "Holiday"]));
+    expect((await portal.myNotices(id("s2"))).map((a) => a.title)).not.toContain("Class moved");
+    expect((await ann.adminAnnouncements(teach)).map((a) => a.title)).toEqual(["Class moved"]);
+    await db().enrollment.updateMany({ where: { userId: id("s1") }, data: { stage: "COMPLETED", completedAt: new Date() } });
   });
 
-  it("scopes support tickets to course instructors and hides internal notes from students", async () => {
+  it("scopes support tickets to batch coordinators and hides internal notes from students", async () => {
     await expect(support.createTicket(id("s2"), { subject: "Help", courseId: course, message: "x" })).rejects.toThrow("course");
     const t = await support.createTicket(id("s1"), { subject: "Video won't play", courseId: course, message: "It says no access" });
     const general = await support.createTicket(id("s2"), { subject: "Account", courseId: null, message: "Change my email" });
     const ids = async (actor: Parameters<typeof support.listTickets>[0]) => (await support.listTickets(actor, { status: "ACTIVE" }, 1, 50)).items.map((i) => i.id);
     expect(await ids(teach)).toEqual([t.id]);
-    expect(await ids(other)).toEqual([]);
+    // Coordinators see tickets from their own batches' students only.
+    expect(await ids(other)).toEqual([general.id]);
     expect(await ids(cm)).toEqual(expect.arrayContaining([t.id, general.id]));
     expect(await support.staffTicket(general.id, teach)).toBeNull();
 
     sent.length = 0;
-    await support.staffReply(t.id, "Internal: check Drive sharing", true, teach);
+    await support.staffReply(t.id, "Internal: check the class link", true, teach);
     expect(sent).toHaveLength(0);
     await support.staffReply(t.id, "We've shared it again, please retry.", false, teach);
     expect(sent.map((m) => m.to)).toEqual([`s1.${tag}@example.com`]);
@@ -110,7 +125,7 @@ run("phase 10 (integration)", async () => {
     expect(mine.map((e) => e.userId)).toEqual([id("s1")]);
     await expect(certs.issueCertificate(mine[0]!.id, teach)).rejects.toThrow(/permission/);
     const notDone = await db().enrollment.findFirstOrThrow({ where: { userId: id("s2") } });
-    await expect(certs.issueCertificate(notDone.id, cm)).rejects.toThrow(/hasn't completed/);
+    await expect(certs.issueCertificate(notDone.id, cm)).rejects.toThrow(/hasn't been marked as completed/);
 
     const cert = await certs.issueCertificate(mine[0]!.id, cm);
     expect(cert.code).toMatch(/^DM-[2-9A-HJKMNP-Z]{4}-[2-9A-HJKMNP-Z]{4}$/);

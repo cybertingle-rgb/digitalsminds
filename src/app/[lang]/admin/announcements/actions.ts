@@ -11,7 +11,7 @@ export type AnnouncementState = { status: "idle" | "success" | "error"; message?
 
 async function staff() {
   const actor = await assertPermission("admin.access");
-  if (!can(actor.role, "announcements.site") && !can(actor.role, "courses.manage.all") && !can(actor.role, "courses.manage.own")) throw new ForbiddenError();
+  if (!can(actor.role, "announcements.site") && !can(actor.role, "batches.manage") && !can(actor.role, "batches.coordinate")) throw new ForbiddenError();
   return actor;
 }
 
@@ -30,7 +30,7 @@ export async function createAnnouncementAction(_prev: AnnouncementState, fd: For
   try {
     const actor = await staff();
     const input = announcementInput.parse({
-      courseId: String(fd.get("courseId") ?? ""),
+      audience: String(fd.get("audience") ?? ""),
       title: String(fd.get("title") ?? ""),
       body: String(fd.get("body") ?? ""),
       sendEmail: fd.get("sendEmail") === "on",

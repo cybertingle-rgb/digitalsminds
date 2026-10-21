@@ -5,7 +5,7 @@ import { hasLocale, localeMeta, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { pageMetadata } from "@/i18n/metadata";
-import { getLegalPage, type LegalPage } from "@/modules/content/settings";
+import { getLegalPage, legalPaths, type LegalPage } from "@/modules/content/settings";
 import { RichText } from "@/modules/courses/richtext";
 
 async function load(page: LegalPage, lang: string) {
@@ -18,10 +18,10 @@ export async function legalMetadata(page: LegalPage, lang: string): Promise<Meta
   const r = await load(page, lang);
   if (!r) return { robots: { index: false, follow: false } };
   const title = (r.locale === "ur" && r.page.titleUr) || r.page.title;
-  return pageMetadata(r.locale, `/${page}`, { title });
+  return pageMetadata(r.locale, legalPaths[page], { title });
 }
 
-/** Privacy Policy / Terms page, written in Admin → Website → Legal pages (404 until published). */
+/** Privacy Policy / Terms / Refund Policy page, editable in Admin → Website → Legal pages (404 until published). */
 export async function LegalPageView({ page, lang }: { page: LegalPage; lang: string }) {
   const r = await load(page, lang);
   if (!r) notFound();

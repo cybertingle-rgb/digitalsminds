@@ -7,7 +7,7 @@ import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
 import { createAnnouncementAction, deleteAnnouncementAction, type AnnouncementState } from "./actions";
 
-export function AnnouncementForm({ audiences, defaultCourse }: { audiences: { value: string; label: string }[]; defaultCourse?: string }) {
+export function AnnouncementForm({ audiences, defaultAudience }: { audiences: { value: string; label: string }[]; defaultAudience?: string }) {
   const [state, onSubmit, pending] = useFormAction<AnnouncementState>(createAnnouncementAction, { status: "idle" });
   const [seen, setSeen] = useState(state);
   const [key, setKey] = useState(0);
@@ -19,8 +19,8 @@ export function AnnouncementForm({ audiences, defaultCourse }: { audiences: { va
   const e = (k: string) => state.errors?.[k];
   return (
     <form key={key} onSubmit={onSubmit} className="space-y-4" noValidate>
-      <Field label="Send to" name="courseId">
-        <select id="courseId" name="courseId" defaultValue={defaultCourse ?? audiences[0]?.value} className={inputClass}>
+      <Field label="Send to" name="audience" error={e("audience")}>
+        <select id="audience" name="audience" defaultValue={defaultAudience ?? audiences[0]?.value} className={inputClass}>
           {audiences.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
         </select>
       </Field>

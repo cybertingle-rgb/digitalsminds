@@ -52,3 +52,13 @@ dependencies. Every finding was traced through the code to a realistic attack be
 - `better-auth` 1.7.7 already contains the fixes for the advisories published up to September 2026 (magic link and
   OAuth proxy issues; this site uses neither feature). Patch releases (1.7.8+) to be applied in routine maintenance
   with the full test suite.
+
+## Enrollment platform additions (2026-10-21)
+
+- No self sign-up: `disableSignUp` (email and Google) plus a create hook that refuses accounts created through the auth API; verified by an end-to-end check.
+- Accounts are created only inside the payment-verification transaction (Super Admin only); double clicks, a full batch or a reused transaction ID roll back with nothing changed (DB-tested, including a concurrent double verification).
+- Applicant status links: 256-bit random tokens, only SHA-256 hashes stored, kept in an httpOnly SameSite=Lax cookie after a redirect (token removed from the address bar, `Referrer-Policy: no-referrer`), replaced whenever a new link is emailed; "email me a new link" answers the same way whether or not an application exists; rate-limited.
+- Uploads (CV, receipt, documents) are validated by content (magic bytes), stored outside the Media library, served with `nosniff`, a sandboxing CSP and `private, no-store`; CVs and CNICs are visible to Super Admins only and never exported.
+- Batch content (meeting links, joining instructions, documents, schedule, notices) is filtered on the server by the student's current batches.
+- Privacy deletion also removes the student's applications (CNIC, CV) and receipt files.
+

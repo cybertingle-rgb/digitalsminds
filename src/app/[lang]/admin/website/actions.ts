@@ -87,7 +87,7 @@ export async function saveHomeAction(_prev: WebsiteState, fd: FormData): Promise
 
 export async function saveContactAction(_prev: WebsiteState, fd: FormData): Promise<WebsiteState> {
   return run("content.manage", async (actor) => {
-    const value = contactInput.parse({ email: str(fd, "email").trim().toLowerCase(), address: lines(str(fd, "address")), addressUr: lines(str(fd, "addressUr")) });
+    const value = contactInput.parse({ email: str(fd, "email").trim().toLowerCase(), address: lines(str(fd, "address")), addressUr: lines(str(fd, "addressUr")), whatsapp: str(fd, "whatsapp") });
     await saveSetting("site.contact", value, actor.id);
     await audit({ actorId: actor.id, action: "content.contact", entityType: "Setting", entityId: "site.contact" });
     return "Contact details saved.";

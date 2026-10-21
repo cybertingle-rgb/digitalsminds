@@ -8,7 +8,10 @@ import { requirePagePermission } from "@/modules/auth/session";
 import { availabilityLabels, batchStatusLabels } from "@/modules/batches/labels";
 import { formatDay, isoDay } from "@/modules/batches/rules";
 import { coordinatorOptions, getBatch } from "@/modules/batches/service";
+import { getDictionary } from "@/i18n/get-dictionary";
+import { allowedStages, roster } from "@/modules/enrollments/service";
 import { BatchForm } from "../BatchForm";
+import { StaffStep, StageControl, TransferControl } from "../RosterControls";
 
 export const metadata: Metadata = { title: "Batch" };
 
@@ -19,6 +22,14 @@ export default async function BatchPage({ params, searchParams }: PageProps<"/[l
   if (!batch) notFound();
   const sp = await searchParams;
   const manage = can(user.role, "batches.manage");
+  const stages = getDictionary("en").apply.stages;
+  const [students, transferTargets] = await Promise.all([
+    roster(batch.id, user),
+    can(user.role, "enrollments.admin")
+      ? db().batch.findMany({ where: { courseId: batch.courseId, id: { not: batch.id }, status: { notIn: ["COMPLETED", "CANCELLED"] } }, orderBy: { startDate: "asc" }, select: { id: true, name: true, code: true } })
+      : [],
+  ]);
+  const canWithdraw = can(user.role, "enrollments.admin");
   const [programs, coordinators] = manage
     ? await Promise.all([
         db().course.findMany({ where: { OR: [{ status: { in: ["PUBLISHED", "DRAFT"] } }, { id: batch.courseId }] }, orderBy: { title: "asc" }, select: { id: true, title: true, accessType: true, priceAmount: true } }),
@@ -39,6 +50,55 @@ export default async function BatchPage({ params, searchParams }: PageProps<"/[l
         </p>
       </div>
       {sp.created && <Notice tone="success">Batch created. Set the status to “Open for applications” when you&apos;re ready to show it on the program page.</Notice>}
+
+      <section aria-labelledby="students" className="glass rounded-2xl p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="students" className="text-lg font-semibold text-charcoal-900">Students ({students?.length ?? 0})</h2>
+          <div className="flex flex-wrap gap-4 text-sm font-semibold">
+            <Link href={`/admin/live-classes?batch=${batch.id}`} className="underline underline-offset-4">Schedule</Link>
+            <Link href={`/admin/announcements?batch=${batch.id}`} className="underline underline-offset-4">Send a notice</Link>
+            {can(user.role, "applications.view") && <Link href={`/admin/applications?tab=ALL&batch=${batch.id}`} className="underline underline-offset-4">Applications</Link>}
+            {can(user.role, "students.export") && <a href={`/api/admin/batches/${batch.id}/export`} className="underline underline-offset-4">Export CSV</a>}
+          </div>
+        </div>
+        {!students?.length ? (
+          <p className="mt-2 text-sm text-muted">No students yet. Students appear here when a Super Admin verifies their payment.</p>
+        ) : (
+          <ul className="mt-4 divide-y divide-charcoal-200/50">
+            {students.map((r) => {
+              const staffSteps = r.onboarding.items.filter((i) => !i.studentCompletes);
+              const options = allowedStages(r.stage).filter((s) => canWithdraw || (s !== "WITHDRAWN" && r.stage !== "WITHDRAWN")).map((s) => ({ value: s, label: stages[s] }));
+              return (
+                <li key={r.id} className="space-y-2 py-4" aria-label={r.user.name}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      {can(user.role, "students.view") ? (
+                        <Link href={`/admin/students/${r.user.id}`} className="font-semibold text-charcoal-900 underline-offset-4 hover:underline" dir="auto">{r.user.name}</Link>
+                      ) : (
+                        <span className="font-semibold text-charcoal-900" dir="auto">{r.user.name}</span>
+                      )}
+                      <p className="text-xs text-muted" dir="ltr">{r.user.email} · {r.user.phone ?? "-"} · {r.user.city ?? "-"}</p>
+                      {r.onboarding.requiredTotal > 0 && <p className="text-xs text-muted">Onboarding: {r.onboarding.requiredDone} of {r.onboarding.requiredTotal} required steps</p>}
+                    </div>
+                    <StatusBadge tone={r.stage === "ACTIVE" || r.stage === "COMPLETED" ? "ok" : r.stage === "WITHDRAWN" ? "off" : "warn"}>{r.stage ? stages[r.stage] : r.status}</StatusBadge>
+                  </div>
+                  {staffSteps.length > 0 && (
+                    <div className="flex flex-wrap gap-4">
+                      {staffSteps.map((i) => <StaffStep key={i.id} enrollmentId={r.id} itemId={i.id} title={i.title} done={!!i.completedAt} />)}
+                    </div>
+                  )}
+                  <div className="flex flex-wrap gap-4">
+                    <StageControl enrollmentId={r.id} options={options} />
+                    {r.stage !== "WITHDRAWN" && r.stage !== "COMPLETED" && (
+                      <TransferControl enrollmentId={r.id} batches={transferTargets.map((b) => ({ id: b.id, label: `${b.name} (${b.code})` }))} />
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
       {manage ? (
         <section aria-labelledby="details" className="glass rounded-2xl p-6">

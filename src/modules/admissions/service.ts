@@ -235,13 +235,8 @@ export async function submitApplicationPayment(token: string, input: z.infer<typ
   if (app.stage === "PAYMENT_SUBMITTED") throw new PaymentNotAllowed("alreadySubmitted", 409);
   if (app.stage !== "PAYMENT_PENDING") throw new PaymentNotAllowed("notAvailable", 409);
   if (!availableMethods(await getPaymentDetails()).includes(input.method)) throw new PaymentNotAllowed("methodUnavailable", 422);
-  // The same transaction can't be used for two applications (or twice for one).
-  const key = transactionKey(input.method, input.reference);
-  const sameTransaction = await db().payment.findFirst({
-    where: { method: input.method, status: { in: ["PENDING", "CONFIRMED"] }, OR: [{ verifiedKey: key }, { reference: { in: referenceVariants(input.reference) } }] },
-    select: { id: true },
-  });
-  if (sameTransaction) throw new PaymentNotAllowed("referenceUsed", 409);
+  // The same transaction can't be used for two applications (or twice for one), however it's typed.
+  if (await transactionInUse(input.method, input.reference)) throw new PaymentNotAllowed("referenceUsed", 409);
 
   const file = await prepareReceipt(receipt);
   const receiptKey = privateKey("receipts", file.ext);
@@ -298,11 +293,21 @@ export class PaymentNotAllowed extends Error {
   }
 }
 
-/** The reference as typed, plus spacing/dash/case variants, to catch the same transaction typed differently. */
-function referenceVariants(reference: string) {
-  const r = reference.trim();
-  const compact = r.replace(/[\s-]/g, "");
-  return [...new Set([r, r.toUpperCase(), r.toLowerCase(), compact, compact.toUpperCase(), compact.toLowerCase()])];
+/**
+ * Whether a waiting or verified payment already uses this transaction (same
+ * method, same reference ignoring case, spaces and dashes). The comparison is
+ * collated explicitly so it works on every MySQL/MariaDB setup.
+ */
+async function transactionInUse(method: string, reference: string) {
+  const key = transactionKey(method, reference);
+  const compact = key.slice(key.indexOf(":") + 1);
+  const rows = await db().$queryRaw<{ n: bigint | number }[]>`
+    SELECT COUNT(*) AS n FROM Payment
+    WHERE method = CONVERT(${method} USING utf8mb4) COLLATE utf8mb4_unicode_ci
+      AND status IN ('PENDING', 'CONFIRMED')
+      AND (verifiedKey = CONVERT(${key} USING utf8mb4) COLLATE utf8mb4_unicode_ci
+        OR REPLACE(REPLACE(REPLACE(UPPER(reference), ' ', ''), '-', ''), '\t', '') = CONVERT(${compact} USING utf8mb4) COLLATE utf8mb4_unicode_ci)`;
+  return Number(rows[0]?.n ?? 0) > 0;
 }
 
 // ---------------------------------------------------------------------------

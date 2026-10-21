@@ -100,7 +100,7 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - Sensitive admin actions are written to the `AuditLog` table and shown in **Admin → Activity**.
 - **Admin → Team** (Super Admin): invite staff by email (they set their own password via a 3-day link), change roles,
   suspend/reactivate (signs them out everywhere) and remove access. The owner account and the last active Super Admin are protected.
-- Instructors are limited to their assigned courses (`src/modules/auth/scoping.ts`).
+- Batch Coordinators (the former Instructor role) are limited to the batches assigned to them.
 
 ## Media uploads
 
@@ -108,38 +108,26 @@ No testimonials, client logos or statistics are included. Add them only from ver
 - Files are identified by content (magic bytes); SVG, legacy Office and macro files are rejected. Images are re-encoded
   (EXIF/GPS removed, max 2560 px).
 - Public files: `/media/<year>/<month>/<file>` (immutable cache). Private files: `/api/files/<id>` (access-checked, no cache).
-- Files in use (course thumbnails/resources, blog covers, testimonials, case studies) cannot be deleted; "Replace" keeps links.
+- Files in use (program images, blog covers, testimonials, case studies) cannot be deleted; "Replace" keeps links.
+- Applicant CVs, payment receipts and student documents are stored privately outside the Media library (see docs/ENROLLMENT.md).
 - Uploads stay **off** until Admin → Integrations → File storage confirms the folder survived a redeploy.
 
-## Courses
+## Programs, batches and enrollment
 
-- **Admin → Courses** (Super Admin, Content Manager, Instructor): create a course, then add modules and lessons, reorder them
-  with the arrows, and open a lesson to add its Google Drive video link (live preview), formatted text, length, free-preview flag
-  and resources (files from Media or https links). **Preview as student** shows the course exactly as learners will.
-- Instructors see and edit only the courses they're assigned to; a Content Manager or Super Admin assigns instructors and
-  publishes, unpublishes or archives courses. Publishing requires at least one lesson, no empty modules and valid video links.
-- Videos stay private in Google Drive: share each video with the enrolled student's Google email.
-- Once published, a course's web address is locked; courses with students can be archived but not deleted.
+Digitals Minds is a **paid enrollment and student administration platform** (no online lessons). Full guide:
+[docs/ENROLLMENT.md](docs/ENROLLMENT.md).
 
-## Students and enrollment
-
-- **Courses** (public): catalogue and course pages with objectives, contents and free-preview lessons.
-- Students create an account, then **Request access** with the Google email their videos should be shared with.
-  The team is emailed (lead-alert address) and the request appears in **Admin → Enrollments** with the Google email
-  ready to copy and links to the course's Drive videos. Approving or rejecting emails the student.
-- **My learning** (`/account`): enrolled courses with progress and "Continue", request status, profile editing.
-- Lessons: Drive player with "Open in Google Drive", formatted text, resources (private files only for enrolled
-  students), "Mark as complete", course progress. Lessons can be opened in any order.
-- Revoking access ends it immediately (also remove the student from the Drive sharing). Archived courses stay open to
-  students already enrolled.
-
-## Student management
-
-- **Admin → Students** (Super Admin, Content Manager): search by name, email, phone or city; filter by enrollment, course
-  and account status. Profiles show courses with progress and last viewed lesson, the Google email to copy, and a history.
-- Staff who approve enrollments can **enroll a student directly** (they get the approval email) and approve/revoke from the profile.
-- Super Admin only: edit a student's details (e.g. fix a mistyped Google email), suspend/reactivate (signs them out
-  everywhere; progress is kept), and **Export CSV** (honours filters, logged in Activity).
+- **Admin → Programs**: courses/training programs with description, objectives, eligibility, format, duration and the
+  enrollment fee (Super Admin). **Admin → Batches**: intakes with dates, class times, seats, deadline, meeting link,
+  joining instructions and a coordinator.
+- **Public**: `/courses` and program pages list open batches with seats left; visitors **apply** (CNIC + CV), confirm
+  their email through a private link, pay by bank transfer / JazzCash / EasyPaisa and send the receipt (`/application`).
+- **Admin → Applications**: Super Admins verify payments against the statement; verifying reserves the seat and creates
+  the student account (set-password email). No self sign-up.
+- **Student portal** (`/account`): enrollment stage timeline, program and batch details, schedule with joining links,
+  onboarding checklist, documents, notices, certificates, notifications, support, profile.
+- **Admin**: batch rosters (stages, transfers, withdrawals, staff-confirmed steps, CSV), Schedule (classes, holidays,
+  events), Announcements (all / program / batch), Onboarding, Documents, Students (records, exports, old-account clean-up).
 
 ## Communication, support and certificates
 

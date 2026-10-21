@@ -4,8 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { Permission } from "@/modules/auth/permissions";
 import { assertPermission, ForbiddenError, type CurrentUser } from "@/modules/auth/session";
-import { EnrollmentError, manualEnroll } from "@/modules/learning/enrollment";
-import { deleteStudent, setStudentSuspended, StudentError, studentEditInput, updateStudent } from "@/modules/students/service";
+import { deleteStudent, setStudentSuspended, studentEditInput, StudentError, suspendLegacyAccounts, updateStudent } from "@/modules/students/service";
 
 export type StudentState = { status: "idle" | "success" | "error"; message?: string; errors?: Record<string, string> };
 
@@ -16,7 +15,7 @@ async function run(permission: Permission, studentId: string, fn: (actor: Curren
     revalidatePath(`/admin/students/${studentId}`);
     return { status: "success", message };
   } catch (e) {
-    if (e instanceof ForbiddenError || e instanceof StudentError || e instanceof EnrollmentError) return { status: "error", message: e.message };
+    if (e instanceof ForbiddenError || e instanceof StudentError) return { status: "error", message: e.message };
     if (e instanceof z.ZodError) {
       const errors: Record<string, string> = {};
       for (const issue of e.issues) errors[String(issue.path[0] ?? "")] ??= issue.message;
@@ -42,14 +41,6 @@ export async function suspendStudentAction(id: string, suspended: boolean, reaso
   });
 }
 
-export async function manualEnrollAction(id: string, _prev: StudentState, fd: FormData): Promise<StudentState> {
-  return run("enrollments.decide", id, async (actor, studentId) => {
-    const courseId = z.string().min(1, "Choose a course").max(64).parse(String(fd.get("courseId") ?? ""));
-    await manualEnroll(studentId, courseId, actor);
-    return "Enrolled. The student has been emailed.";
-  });
-}
-
 export async function deleteStudentAction(id: string, confirmEmail: string): Promise<StudentState> {
   try {
     const actor = await assertPermission("students.delete");
@@ -59,6 +50,20 @@ export async function deleteStudentAction(id: string, confirmEmail: string): Pro
   } catch (e) {
     if (e instanceof ForbiddenError || e instanceof StudentError) return { status: "error", message: e.message };
     console.error("[students] delete failed", e);
+    return { status: "error", message: "Something went wrong. Please try again." };
+  }
+}
+
+/** Suspends the old free-sign-up accounts (the count shown must still match). */
+export async function suspendLegacyAction(expected: number): Promise<StudentState> {
+  try {
+    const actor = await assertPermission("students.manage");
+    const n = await suspendLegacyAccounts(z.number().int().min(0).max(1_000_000).parse(expected), actor);
+    // No revalidation: the panel (and this message) stays on screen; the list is fresh on the next visit.
+    return { status: "success", message: `${n} ${n === 1 ? "account" : "accounts"} suspended and signed out. You can reactivate anyone from their student page.` };
+  } catch (e) {
+    if (e instanceof ForbiddenError || e instanceof StudentError) return { status: "error", message: e.message };
+    console.error("[students] legacy suspend failed", e);
     return { status: "error", message: "Something went wrong. Please try again." };
   }
 }

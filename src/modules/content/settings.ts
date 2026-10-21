@@ -44,7 +44,23 @@ export const contactInput = z.object({
   email: z.email("Enter a valid email address").max(254),
   address: z.array(text(120)).max(5),
   addressUr: z.array(text(120)).max(5),
+  /** WhatsApp support number; empty = no WhatsApp button. */
+  whatsapp: z
+    .string()
+    .trim()
+    .max(24)
+    .regex(/^(\+?[\d\s-]{7,22})?$/, "Enter the number with country code, e.g. +92 300 1234567")
+    .optional()
+    .transform((v) => v || undefined),
 });
+
+/** "+92 300 1234567" / "0300 1234567" -> "923001234567" for wa.me links (Pakistan numbers default to +92). */
+export function whatsappDigits(v: string | undefined) {
+  if (!v) return null;
+  const d = v.replace(/\D/g, "");
+  const full = d.startsWith("0") ? `92${d.slice(1)}` : d;
+  return full.length >= 10 && full.length <= 15 ? full : null;
+}
 export type ContactContent = z.infer<typeof contactInput>;
 
 // --- SEO -----------------------------------------------------------------------
@@ -66,8 +82,10 @@ export type SeoContent = z.infer<typeof seoInput>;
 
 // --- Legal pages -----------------------------------------------------------------
 
-export const legalPages = ["privacy", "terms"] as const;
+export const legalPages = ["privacy", "terms", "refund"] as const;
 export type LegalPage = (typeof legalPages)[number];
+/** Where each legal page lives on the site. */
+export const legalPaths: Record<LegalPage, string> = { privacy: "/privacy", terms: "/terms", refund: "/refund-policy" };
 export const legalInput = z.object({
   title: text(200).min(3, "Enter a title"),
   titleUr: opt(200),
@@ -193,7 +211,7 @@ export async function homeText(locale: Locale, dict: Dictionary) {
 export async function contactDetails(locale: Locale, dict: Dictionary) {
   const c = await getContactSetting();
   const address = c ? (locale === "ur" && c.addressUr.some(Boolean) ? c.addressUr : c.address).filter(Boolean) : [];
-  return { email: c?.email ?? siteConfig.contact.email, address: address.length ? address : dict.contact.address };
+  return { email: c?.email ?? siteConfig.contact.email, address: address.length ? address : dict.contact.address, whatsapp: whatsappDigits(c?.whatsapp) };
 }
 
 /** Search title/description/share image overrides for a page. */

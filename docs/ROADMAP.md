@@ -167,18 +167,26 @@ Repository and hosting audit, build failure fixed and verified live, requirement
   - Production env checklist, launch, uptime monitoring on `/api/health`, and a maintenance runbook.
 - **Acceptance:** restore tested from backup; all launch features verified on the live domain.
 
-## Phase 14: Paid courses, student dashboard, live classes (in progress, owner-selected)
+## Phase 14: Paid courses, student dashboard, live classes ✅ (reworked in phases 15-19)
 - 14a ✅ Paid courses with manual payments (bank transfer / JazzCash / EasyPaisa, receipt upload, Super Admin confirmation).
 - 14b ✅ Student dashboard upgrade (stats, progress, next lesson, activity, certificates, profile tab, sidebar).
 - 14c ✅ Live classes (Zoom / Google Meet links per course, student calendar, email reminders 1 day and 1 hour before).
 
-## Phase 15: Later options (not scheduled)
+## Product direction change (2026-10-21): paid enrollment platform
+The platform no longer teaches online. Approved plan, built and tested:
+- **Phase 15 ✅ Foundation:** additive migration (batches, applications, stage history, onboarding, documents); self sign-up closed; courses become programs (fee required to publish); lesson editor/player retired; Batches admin.
+- **Phase 16 ✅ Apply and pay:** application with CNIC + CV, private status link, payment submission, Super Admin verification that reserves the seat and creates the account in one transaction; duplicate and overbooking safeguards.
+- **Phase 17 ✅ Student portal:** stage timeline, program and batch details, schedule (classes, holidays, events), onboarding checklist, documents, notices.
+- **Phase 18 ✅ Admin operations:** applications pipeline, rosters, stage changes, transfers, withdrawals, onboarding and documents managers, batch notices, operations overview, CSV exports, Batch Coordinator role.
+- **Phase 19 ✅ Policies and clean-up:** Refund Policy (draft for review), Privacy/Terms updated, WhatsApp button (number pending), old free-sign-up account suspension tool.
+- **Phase 20 (optional, needs approval):** delete the unused lesson/module/resource/progress tables after a backup.
+
+## Later options (not scheduled)
 Each will be scoped with cost and dependencies when you prioritise it:
-- **Payments:** paid courses and a payment gateway (local or international), coupons and memberships.
-- **Teaching:** quizzes and assignments, live classes and webinars, instructor payouts.
+- **Payments:** an online payment gateway with automatic verification, installments, discounts.
+- **Administration:** attendance tracking, waitlists, automatic batch status changes.
 - **Messaging:** email campaigns, the WhatsApp Business API.
-- **Automation:** automatic Google Drive sharing via the Drive API, CRM integration.
-- **Growth:** community, referral and affiliate programs, service booking, digital products, AI learning assistant, more languages.
+- **Growth:** referral programs, CRM integration.
 
 ---
 

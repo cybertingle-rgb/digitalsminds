@@ -28,7 +28,10 @@
 - [ ] Admin → Team: each staff member invited with the right role; no shared accounts
 - [ ] Admin → Website: contact email, social links, homepage text, FAQs, legal pages reviewed
 - [ ] Admin → Website → Analytics: GA4 Measurement ID and Search Console tag; verify in Search Console and submit `sitemap.xml`
-- [ ] At least one course published and tested end to end with a real student account (request access → approve → watch a lesson → complete → certificate)
+- [ ] Payment details entered (Admin → Payments → Payment details)
+- [ ] At least one program published with a fee and an **Open** batch, tested end to end with a test applicant: apply → confirm email link → pay a small real amount → verify in Admin → Applications → set-password email → portal shows the batch, onboarding and schedule
+- [ ] Refund Policy, Privacy Policy and Terms reviewed (Admin → Website → Legal pages)
+- [ ] Old free-sign-up accounts reviewed and suspended (Admin → Students)
 - [ ] Contact form tested from a phone: inquiry arrives in Admin → Inquiries and as an email alert
 - [ ] Newsletter sign-up tested (confirmation email → confirm → appears in Admin → Newsletter)
 - [ ] First backup downloaded from Admin → Backups (see BACKUP.md)
@@ -45,7 +48,7 @@ Create a free monitor (for example UptimeRobot or Better Stack):
 
 **Weekly**
 - Download both backups (Admin → Backups) and store them privately.
-- Look at Admin → Overview: waiting access requests, open support requests, new inquiries and follow-ups.
+- Look at Admin → Overview: payments to verify, applications waiting for payment, seats per batch, open support requests, new inquiries and follow-ups.
 
 **Monthly**
 - Check Hostinger automatic backups exist (hPanel → Files → Backups).
