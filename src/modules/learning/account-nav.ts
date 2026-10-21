@@ -10,6 +10,7 @@ export async function accountNavItems(userId: string, locale: Locale, dict: Dict
   return [
     { label: dict.account.navDashboard, href: localizePath("/account", locale), icon: "dashboard" as const },
     { label: dict.account.navCourses, href: localizePath("/account/courses", locale), icon: "courses" as const },
+    { label: dict.live.title, href: localizePath("/account/live", locale), icon: "live" as const },
     { label: dict.account.navCertificates, href: localizePath("/account/certificates", locale), icon: "certificates" as const },
     { label: dict.notifications.title, href: localizePath("/account/notifications", locale), icon: "bell" as const, badge: unread ? format(dict.notifications.newCount, { count: String(unread) }) : undefined },
     { label: dict.support.title, href: localizePath("/account/support", locale), icon: "support" as const },

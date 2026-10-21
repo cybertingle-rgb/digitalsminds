@@ -16,6 +16,8 @@ import { RichText } from "@/modules/courses/richtext";
 import { listingText } from "@/modules/learning/catalogue";
 import { studentDashboard, type Activity } from "@/modules/learning/dashboard";
 import { latestPaymentsFor } from "@/modules/payments/service";
+import { studentLiveClasses } from "@/modules/live/service";
+import { LiveClassCard } from "@/components/learning/LiveClassCard";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My learning", robots: noindex };
@@ -59,7 +61,8 @@ export default async function DashboardPage({ params, searchParams }: PageProps<
   if (!user) redirect(`${localizePath("/login", locale)}?next=${encodeURIComponent(here)}`);
   const t = dict.account;
   const sp = await searchParams;
-  const [{ learning, enrolled, stats, continueWith, activity }, news] = await Promise.all([studentDashboard(user.id), studentAnnouncements(user.id)]);
+  const [{ learning, enrolled, stats, continueWith, activity }, news, live] = await Promise.all([studentDashboard(user.id), studentAnnouncements(user.id), studentLiveClasses(user.id)]);
+  const nextLive = live.upcoming.find((c) => c.status === "SCHEDULED");
   const requests = learning.filter((l) => l.enrollment.status !== "APPROVED");
   const payments = requests.length ? await latestPaymentsFor(user.id) : new Map();
   const dateFmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
@@ -107,6 +110,16 @@ export default async function DashboardPage({ params, searchParams }: PageProps<
           <LinkButton href={localizePath("/courses", locale)} className="mt-4">{t.browseCourses}</LinkButton>
         </section>
       ) : null}
+
+      {nextLive && (
+        <section aria-labelledby="next-live" className="glass rounded-3xl p-5 sm:p-6">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 id="next-live" className="text-sm font-semibold uppercase tracking-wider text-gold-700">{dict.live.nextClass}</h2>
+            <Link href={localizePath("/account/live", locale)} className="text-sm font-semibold text-charcoal-900 underline underline-offset-4">{dict.live.allClasses}</Link>
+          </div>
+          <LiveClassCard c={nextLive} locale={locale} dict={dict} compact />
+        </section>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-5 lg:items-start">
         {enrolled.length > 0 && (

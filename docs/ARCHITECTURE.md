@@ -73,6 +73,17 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - **Rate limiting**: Better Auth database storage (`RateLimit` table), keyed by the proxy-reported client IP (`TRUSTED_PROXY_HOPS`).
 - **Email**: nodemailer over SMTP settings from the admin panel (`src/lib/mailer.ts`), branded bilingual templates in `src/modules/email`.
 
+## Live classes (Phase 14c)
+
+- `LiveClass` table (additive migration `phase14_live_classes`). `src/modules/live/service.ts`: course staff
+  (`canManageCourse`) schedule/edit/cancel; times entered in PKT, stored UTC; meeting links limited to Zoom, Google
+  Meet and Teams over https, shown only to approved students and course staff; `.ics` at `/api/live/[id]/ics`.
+- Reminders: `sendDueReminders()` claims each 1-day / 1-hour reminder in the database before emailing + notifying,
+  so it is sent once. It runs every 5 minutes inside the server (`src/instrumentation.ts` →
+  `src/modules/live/scheduler.ts`; `LIVE_REMINDER_INTERVAL_MS` to change, minimum 30 s). Moving a class re-arms them.
+- Admin: `/admin/live-classes`. Student: `/account/live` (Join from 15 minutes before; add to calendar) and a
+  "Next live class" card on the dashboard.
+
 ## Student portal (Phase 14b)
 
 - `src/app/[lang]/(marketing)/account/layout.tsx`: portal shell (sidebar on large screens, scrolling tabs on phones)

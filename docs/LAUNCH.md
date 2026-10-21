@@ -73,6 +73,7 @@ Create a free monitor (for example UptimeRobot or Better Stack):
 | Everyone signed out / Google and email passwords stop working | `BETTER_AUTH_SECRET` was changed: put the old value back |
 | Build fails with "OS can't spawn worker thread" | Keep `NEXT_BUILD_CPUS` at 2 (or 1) |
 | "Something went wrong" or "The website was just updated" right after a deploy | A page opened before the deploy runs the old version; it reloads itself (or press Reload page / Ctrl+F5) |
+| Live class reminders not arriving | They are sent by the running website every 5 minutes: check Email in Admin → Integrations and that the app is running (Hostinger Runtime logs show "[live]" lines on errors) |
 | Pages show old content | Saved changes appear within a minute; redeploy clears all caches |
 
 **Security incident (suspected break-in or leaked password)**

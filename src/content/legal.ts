@@ -48,6 +48,7 @@ Technical information: when you sign in, we record your IP address and browser t
 - to run your account and give you access to courses, including sharing course videos on Google Drive with the Google email you provide
 - to track your progress and issue certificates of completion
 - to check your payment for a paid course and open the course once it is confirmed
+- to show you live classes for your courses and remind you about them by email and notification
 - to answer your support requests
 - to send you service emails, such as email verification, password resets, course access decisions, support replies and certificates
 - to send you our newsletter, only if you have confirmed your subscription
@@ -130,7 +131,7 @@ You agree not to:
 The website, our courses, logos, text, images and videos belong to Digitals Minds or are used with permission. You may not copy, sell or reuse them without our written permission, except for viewing and personal learning as these Terms allow.
 
 ## Third-party services
-Some features rely on other services, such as Google Drive and Google sign-in. Their own terms and privacy policies also apply, and we are not responsible for their availability.
+Some features rely on other services, such as Google Drive, Google sign-in, and Zoom, Google Meet or Microsoft Teams for live classes. Their own terms and privacy policies also apply, and we are not responsible for their availability.
 
 ## No guarantee of results
 Our content and courses are provided for education and general information. Business results depend on many factors, and we do not guarantee any particular outcome. The website is provided "as is" and may sometimes be unavailable.

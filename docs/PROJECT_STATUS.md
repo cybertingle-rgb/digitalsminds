@@ -69,6 +69,7 @@ Last updated: 2026-10-20 (Phase 13 complete; launch checklist with the owner).
 | 60 | eBay course focus | Owner request: the homepage opens with the paid eBay course (editable "Featured course" in Admin → Website → Homepage, can be switched off). "Enroll" opens the contact form with "eBay course enrollment" selected; leads arrive in Inquiries. Official eBay logo used at the owner's request via Media upload, with a "not affiliated with or endorsed by eBay" note. Courses wording, FAQ and Terms updated for paid courses |
 | 61 | Paid courses | PKR only. Students pay by bank transfer, JazzCash or EasyPaisa and send the transaction ID + receipt (image or PDF, stored privately outside the Media library); only Super Admins set prices, enter account details and confirm/reject payments; Content Managers can view. Confirming opens the course (usual access email); rejecting emails the reason and the student can resend. Card gateway is a later option |
 | 62 | Student portal | Sidebar portal: Dashboard (stats, continue learning, progress, activity), My courses, Certificates, Notifications, Support, Profile; account deletion stays by email request |
+| 63 | Live classes | Course staff schedule Zoom / Google Meet / Teams sessions per course (Pakistan time); approved students see them, join from 15 minutes before, add them to their calendar, and get email + in-app reminders 1 day and 1 hour before; new class = in-app notice, time change or cancellation = email |
 
 ## Open items (waiting on owner)
 

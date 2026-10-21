@@ -89,6 +89,7 @@ model User {
   settingsUpdated     SiteSetting[]
   payments            Payment[]          @relation("PaymentStudent")
   paymentDecisions    Payment[]          @relation("PaymentDecidedBy")
+  liveClassesCreated  LiveClass[]
 
   @@index([role, status])
   @@index([createdAt])
@@ -279,6 +280,7 @@ model Course {
   announcements  Announcement[]
   supportTickets SupportTicket[]
   payments       Payment[]
+  liveClasses    LiveClass[]
 
   @@index([status, featured, sortOrder])
   @@index([language, status])
@@ -768,4 +770,36 @@ model Payment {
   @@index([status, createdAt])
   @@index([userId, courseId])
   @@index([courseId])
+}
+
+// ---------------------------------------------------------------------------
+// Live classes (Zoom / Google Meet sessions for a course's students)
+// ---------------------------------------------------------------------------
+
+enum LiveClassStatus {
+  SCHEDULED
+  CANCELLED
+}
+
+model LiveClass {
+  id                 String          @id @default(cuid())
+  courseId           String
+  course             Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title              String          @db.VarChar(200)
+  description        String?         @db.Text
+  startsAt           DateTime
+  durationMinutes    Int
+  /// Zoom, Google Meet or Teams link; shown only to the course's approved students and staff.
+  meetingUrl         String          @db.VarChar(500)
+  status             LiveClassStatus @default(SCHEDULED)
+  createdById        String?         @db.VarChar(64)
+  createdBy          User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  /// Set when the 1-day / 1-hour reminders were sent, so each goes out once.
+  reminderDaySentAt  DateTime?
+  reminderHourSentAt DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([courseId, startsAt])
+  @@index([status, startsAt])
 }
