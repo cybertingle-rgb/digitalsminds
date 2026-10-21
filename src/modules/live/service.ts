@@ -197,7 +197,7 @@ const icsDate = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{
 /** Lines longer than 75 octets are folded (RFC 5545). */
 const fold = (line: string) => line.match(/.{1,73}/g)!.join("\r\n ");
 
-export function liveClassIcs(c: { id: string; title: string; description: string | null; startsAt: Date; durationMinutes: number; meetingUrl: string; status: string; updatedAt: Date; course: { title: string } }) {
+export function liveClassIcs(c: { id: string; title: string; description: string | null; startsAt: Date; durationMinutes: number; meetingUrl: string | null; status: string; updatedAt: Date; course: { title: string } }) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -210,8 +210,7 @@ export function liveClassIcs(c: { id: string; title: string; description: string
     `DTEND:${icsDate(endsAt(c))}`,
     `SUMMARY:${icsText(`${c.title} (${c.course.title})`)}`,
     `DESCRIPTION:${icsText([c.description, `Join: ${c.meetingUrl}`].filter(Boolean).join("\n\n"))}`,
-    `LOCATION:${icsText(c.meetingUrl)}`,
-    `URL:${c.meetingUrl}`,
+    ...(c.meetingUrl ? [`LOCATION:${icsText(c.meetingUrl)}`, `URL:${c.meetingUrl}`] : []),
     `STATUS:${c.status === "CANCELLED" ? "CANCELLED" : "CONFIRMED"}`,
     "BEGIN:VALARM",
     "TRIGGER:-PT15M",

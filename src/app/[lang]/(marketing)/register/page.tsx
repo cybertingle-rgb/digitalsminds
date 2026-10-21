@@ -1,32 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
-import { RegisterForm } from "@/components/auth/RegisterForm";
-import { FormAlert } from "@/components/forms/Field";
+import { LinkButton } from "@/components/ui/Button";
 import { localizePath } from "@/i18n/config";
-import { isAuthConfigured } from "@/lib/env";
 import { authPage, noindex } from "@/modules/auth/pages";
-import { getCurrentUser } from "@/modules/auth/session";
-import { getGoogleStatus } from "@/modules/settings/integrations";
 
-export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Create account", robots: noindex };
+export const metadata: Metadata = { title: "Student accounts", robots: noindex };
 
+/** Self sign-up is closed: student accounts are created after a verified enrollment payment. */
 export default async function RegisterPage({ params }: PageProps<"/[lang]/register">) {
   const { locale, dict } = await authPage(params);
   const t = dict.auth;
-  const account = localizePath("/account", locale);
-  if (!isAuthConfigured()) {
-    return (
-      <AuthCard title={t.registerTitle}>
-        <FormAlert tone="info">{t.unavailable}</FormAlert>
-      </AuthCard>
-    );
-  }
-  if (await getCurrentUser()) redirect(account);
-  const google = await getGoogleStatus();
-
   return (
     <AuthCard
       title={t.registerTitle}
@@ -40,14 +24,10 @@ export default async function RegisterPage({ params }: PageProps<"/[lang]/regist
         </>
       }
     >
-      <RegisterForm
-        t={t}
-        locale={locale}
-        verifiedCallback={`${account}?verified=1`}
-        googleEnabled={google.enabled}
-        googleCallback={account}
-        googleErrorUrl={`${localizePath("/register", locale)}?error=google`}
-      />
+      <div className="space-y-5">
+        <p className="text-charcoal-800">{t.signupClosedText}</p>
+        <LinkButton href={localizePath("/courses", locale)} className="w-full">{t.seePrograms}</LinkButton>
+      </div>
     </AuthCard>
   );
 }

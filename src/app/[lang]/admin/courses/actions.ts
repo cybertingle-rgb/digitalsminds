@@ -55,7 +55,7 @@ export async function createCourseAction(_prev: CourseState, fd: FormData): Prom
       newCourseInput.parse({ title: str(fd, "title"), language: str(fd, "language"), summary: str(fd, "summary") }),
       actor,
     );
-    return { message: "Course created.", redirectTo: `/admin/courses/${course.id}` };
+    return { message: "Program created.", redirectTo: `/admin/courses/${course.id}` };
   });
 }
 
@@ -72,7 +72,8 @@ export async function saveDetailsAction(courseId: string, _prev: CourseState, fd
       objectives: str(fd, "objectives"),
       prerequisites: str(fd, "prerequisites"),
       level: str(fd, "level"),
-      durationMinutes: str(fd, "durationMinutes"),
+      durationText: str(fd, "durationText"),
+      format: str(fd, "format"),
       thumbnailId: str(fd, "thumbnailId"),
       serviceSlug: str(fd, "serviceSlug"),
       certificateEnabled: fd.get("certificateEnabled") === "on",
@@ -80,7 +81,7 @@ export async function saveDetailsAction(courseId: string, _prev: CourseState, fd
       seoDescription: str(fd, "seoDescription"),
     });
     await courses.updateCourseDetails(id.parse(courseId), input, actor);
-    return "Course details saved.";
+    return "Program details saved.";
   });
 }
 

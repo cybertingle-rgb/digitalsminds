@@ -55,7 +55,7 @@ export function listCourses(actor: Actor, status?: "DRAFT" | "PUBLISHED" | "ARCH
     include: {
       thumbnail: { select: { storageKey: true, visibility: true, id: true } },
       instructors: { include: { user: { select: { name: true } } } },
-      _count: { select: { modules: true, enrollments: true } },
+      _count: { select: { batches: true, enrollments: true } },
     },
   });
 }
@@ -104,7 +104,7 @@ export async function getCourseForEdit(courseId: string, actor: Actor) {
         },
       },
       resources: { where: { lessonId: null }, orderBy: { position: "asc" }, include: { mediaAsset: true } },
-      _count: { select: { enrollments: true, certificates: true } },
+      _count: { select: { enrollments: true, certificates: true, batches: true, applications: true } },
     },
   });
 }
@@ -150,23 +150,18 @@ export function availableInstructors() {
 // ---------------------------------------------------------------------------
 
 export function publishChecklist(course: CourseForEdit) {
-  const lessons = course.modules.flatMap((m) => m.lessons);
-  const badVideos = lessons.filter((l) => l.videoUrl && !driveFileId(l.videoUrl));
   return [
     { ok: course.title.length >= 3 && course.summary.length >= 10, label: "Title and summary" },
-    { ok: lessons.length > 0, label: "At least one lesson" },
-    { ok: course.modules.every((m) => m.lessons.length > 0), label: "Every module has at least one lesson" },
-    { ok: badVideos.length === 0, label: badVideos.length ? `Fix the video link in: ${badVideos.map((l) => l.title).join(", ")}` : "All video links are valid" },
+    { ok: course.accessType === "PAID" && !!course.priceAmount, label: "Enrollment fee set (Super Admin)" },
   ];
 }
 
 /** Recommended but not required before publishing. */
-export function publishWarnings(course: CourseForEdit) {
-  const lessons = course.modules.flatMap((m) => m.lessons);
+export function publishWarnings(course: CourseForEdit & { _count: { batches?: number } }) {
   return [
-    !course.thumbnailId && "No thumbnail image: the course will show a plain placeholder in the catalogue.",
-    !course.description && "No description: students see only the short summary.",
-    lessons.some((l) => !l.videoUrl && !l.content) && "Some lessons have neither a video nor text.",
+    !course.thumbnailId && "No image: the program will show a plain placeholder.",
+    !course.description && "No description: visitors see only the short summary.",
+    !course._count.batches && "No batches yet: visitors can read about the program but can't apply until a batch is open.",
   ].filter((w): w is string => !!w);
 }
 
@@ -190,7 +185,9 @@ export async function deleteCourse(courseId: string, actor: Actor) {
   const course = await getCourseForEdit(courseId, actor);
   if (!course) throw new CourseError("Course not found.", 404);
   if (course.status !== "DRAFT") throw new CourseError("Only draft courses can be deleted. Archive published courses instead.");
-  if (course._count.enrollments > 0 || course._count.certificates > 0) throw new CourseError("Students are linked to this course, so it can only be archived.");
+  if (course._count.enrollments > 0 || course._count.certificates > 0 || course._count.batches > 0 || course._count.applications > 0) {
+    throw new CourseError("Batches or students are linked to this program, so it can only be archived.");
+  }
   await db().course.delete({ where: { id: courseId } });
   await audit({ actorId: actor.id, action: "course.deleted", entityType: "Course", entityId: courseId, metadata: { title: course.title } });
 }

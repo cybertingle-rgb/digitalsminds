@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseCard } from "@/components/learning/CourseCard";
-import { formatDuration, lessonCount } from "@/components/learning/format";
 import { LinkButton } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -10,7 +9,8 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { editablePageMetadata } from "@/modules/content/metadata";
 import { listingText, publishedCourses } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
-import { priceLabel } from "@/modules/payments/service";
+import { programMeta } from "@/components/learning/format";
+import { nextOpenBatchByCourse } from "@/modules/batches/service";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +27,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
   const dict = getDictionary(lang);
   const t = dict.courses;
   const courses = await publishedCourses();
+  const nextBatch = await nextOpenBatchByCourse(courses.map((c) => c.id));
 
   return (
     <Section>
@@ -48,7 +49,7 @@ export default async function CoursesPage({ params }: PageProps<"/[lang]/courses
                   summary={text.summary}
                   thumbnailUrl={c.thumbnail ? mediaUrl(c.thumbnail) : null}
                   courseLang={c.language}
-                  meta={[priceLabel(c, t.free), t.levels[c.level], t.languages[c.language], lessonCount(c.lessonCount, dict), formatDuration(c.minutes, dict)]}
+                  meta={programMeta(c, nextBatch.get(c.id), dict)}
                 />
               </li>
             );

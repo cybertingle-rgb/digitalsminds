@@ -73,16 +73,17 @@ describe("course input", () => {
       summary: "A useful summary",
       objectives: "- Learn SEO\n\n* Run ads\n  Build a brand  ",
       level: "BEGINNER",
-      durationMinutes: "",
+      durationText: "",
+      format: "ONLINE_LIVE",
       certificateEnabled: true,
     });
     expect(r.objectives).toEqual(["Learn SEO", "Run ads", "Build a brand"]);
-    expect(r.durationMinutes).toBeNull();
+    expect(r.durationText).toBeNull();
     expect(r.thumbnailId).toBeNull();
   });
 
   it("rejects bad slugs and non-https resource links", () => {
-    expect(courseDetailsInput.safeParse({ title: "Course", slug: "Bad Slug!", language: "en", summary: "Summary text", level: "BEGINNER", certificateEnabled: true }).success).toBe(false);
+    expect(courseDetailsInput.safeParse({ title: "Course", slug: "Bad Slug!", language: "en", summary: "Summary text", level: "BEGINNER", format: "ONLINE_LIVE", certificateEnabled: true }).success).toBe(false);
     expect(resourceInput.safeParse({ kind: "LINK", title: "Doc", url: "http://example.com" }).success).toBe(false);
     expect(resourceInput.safeParse({ kind: "LINK", title: "Doc", url: "javascript:alert(1)" }).success).toBe(false);
     expect(resourceInput.safeParse({ kind: "LINK", title: "Doc", url: "https://example.com/a.pdf" }).success).toBe(true);

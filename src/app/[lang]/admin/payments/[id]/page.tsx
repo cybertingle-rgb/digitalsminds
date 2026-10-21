@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { CopyField, StatusBadge } from "@/components/admin/ui";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
@@ -18,6 +18,8 @@ export default async function PaymentPage({ params }: PageProps<"/[lang]/admin/p
   const user = await requirePagePermission("payments.view", `/admin/payments/${id}`);
   const p = await getPayment(id);
   if (!p) notFound();
+  // Application payments are verified on the application page (which reserves the seat and creates the account).
+  if (p.applicationId) redirect(`/admin/applications/${p.applicationId}`);
   const receiptUrl = `/api/payments/${p.id}/receipt`;
   const currentPrice = p.course.accessType === "PAID" ? p.course.priceAmount : null;
   const row = (label: string, value: React.ReactNode) => (
@@ -39,7 +41,7 @@ export default async function PaymentPage({ params }: PageProps<"/[lang]/admin/p
         <section aria-labelledby="pay-details" className="glass rounded-2xl p-6">
           <h2 id="pay-details" className="text-lg font-semibold text-charcoal-900">Details</h2>
           <dl className="mt-3 divide-y divide-charcoal-200/50 text-sm">
-            {row("Student", <><span dir="auto">{p.user.name}</span><span className="block text-muted" dir="ltr">{p.user.email}</span></>)}
+            {row("Student", <><span dir="auto">{p.user?.name}</span><span className="block text-muted" dir="ltr">{p.user?.email}</span></>)}
             {row("Course", <Link href={`/admin/courses/${p.course.id}`} className="underline underline-offset-4" dir="auto">{p.course.title}</Link>)}
             {row("Amount due", <><span dir="ltr">{formatPkr(p.amount)}</span>{currentPrice && currentPrice !== p.amount && <span className="block text-xs text-muted">Current price: {formatPkr(currentPrice)}</span>}</>)}
             {row("Method", methodLabels[p.method])}
@@ -52,7 +54,7 @@ export default async function PaymentPage({ params }: PageProps<"/[lang]/admin/p
             {p.decisionNote && row("Reason given", <span dir="auto">{p.decisionNote}</span>)}
           </dl>
           <div className="mt-4">
-            <CopyField label="Google email (share course videos with)" value={p.user.googleEmail ?? p.user.email} />
+            <CopyField label="Google email (share course videos with)" value={p.user?.googleEmail ?? p.user?.email ?? ""} />
           </div>
         </section>
 
@@ -61,7 +63,7 @@ export default async function PaymentPage({ params }: PageProps<"/[lang]/admin/p
           {p.receiptMime?.startsWith("image/") ? (
             <a href={receiptUrl} target="_blank" rel="noopener noreferrer" className="block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={receiptUrl} alt={`Receipt sent by ${p.user.name}`} className="max-h-[32rem] w-full rounded-xl bg-white object-contain ring-1 ring-white" />
+              <img src={receiptUrl} alt={`Receipt sent by ${p.user?.name}`} className="max-h-[32rem] w-full rounded-xl bg-white object-contain ring-1 ring-white" />
             </a>
           ) : p.receiptKey ? (
             <a href={receiptUrl} className="inline-block rounded-xl bg-charcoal-900 px-4 py-2 text-sm font-semibold text-white">Download receipt (PDF)</a>

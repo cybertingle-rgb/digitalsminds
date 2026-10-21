@@ -87,6 +87,9 @@ function createAuth(google: GoogleCredentials) {
 
     emailAndPassword: {
       enabled: true,
+      // Student accounts are created by the enrollment process after a verified payment;
+      // staff accounts by invitation. Nobody can sign up on their own.
+      disableSignUp: true,
       requireEmailVerification: true,
       autoSignIn: false,
       minPasswordLength: 10,
@@ -109,7 +112,7 @@ function createAuth(google: GoogleCredentials) {
     },
 
     socialProviders: google
-      ? { google: { clientId: google.clientId, clientSecret: google.clientSecret, prompt: "select_account" } }
+      ? { google: { clientId: google.clientId, clientSecret: google.clientSecret, prompt: "select_account", disableSignUp: true } }
       : {},
 
     account: {
@@ -130,7 +133,6 @@ function createAuth(google: GoogleCredentials) {
       customRules: {
         // Per client IP. 15/min leaves room for a classroom on one Wi-Fi while still stopping guessing.
         "/sign-in/email": { window: 60, max: 15 },
-        "/sign-up/email": { window: 600, max: 5 },
         "/request-password-reset": { window: 600, max: 3 },
         "/send-verification-email": { window: 600, max: 3 },
         "/reset-password": { window: 600, max: 5 },
@@ -148,13 +150,11 @@ function createAuth(google: GoogleCredentials) {
       user: {
         create: {
           before: async (user, ctx) => {
-            // The Super Admin account can only be created through /setup.
-            if (user.email.toLowerCase() === siteConfig.superAdminEmail) return false;
-            // Students signing up with email must give a phone / WhatsApp number and a city
-            // (Google sign-ups add them later in their profile).
-            const u = user as Record<string, unknown>;
-            if (ctx?.path === "/sign-up/email" && (!phone.safeParse(u.phone).success || !city.safeParse(u.city).success || String(u.city).trim().length < 2)) {
-              throw new APIError("BAD_REQUEST", { message: "Phone and city are required.", code: "PROFILE_REQUIRED" });
+            // Accounts are never created through the auth API (sign-up is disabled above; this is
+            // a second lock): students get one when their payment is verified, staff by invitation,
+            // and the Super Admin through /setup.
+            if (ctx?.path || user.email.toLowerCase() === siteConfig.superAdminEmail) {
+              throw new APIError("FORBIDDEN", { message: "Accounts are created after enrollment.", code: "SIGNUP_CLOSED" });
             }
             return { data: { ...user, email: user.email.toLowerCase(), ...cleanProfile(user) } };
           },

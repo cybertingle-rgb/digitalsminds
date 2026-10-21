@@ -1,5 +1,6 @@
 /**
- * Paid courses and manual payments against a real database. Run with `npm run test:db`.
+ * Fees, payment details, receipts and legacy payments against a real database. Run with `npm run test:db`.
+ * The apply → pay → verify flow is covered in admissions.integration.test.ts.
  */
 import { randomUUID } from "node:crypto";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -22,7 +23,6 @@ run("paid courses (integration)", async () => {
   const { db } = await import("@/lib/db");
   const pay = await import("@/modules/payments/service");
   const enroll = await import("@/modules/learning/enrollment");
-  const { fileExists } = await import("@/lib/storage/local");
   const tag = randomUUID().slice(0, 8);
   const id = (n: string) => `t${tag}_${n}`;
   const sa = { id: id("sa"), role: "SUPER_ADMIN" as const };
@@ -31,7 +31,6 @@ run("paid courses (integration)", async () => {
   let course = "";
   let savedDetails: unknown = null;
   const png = await sharp({ create: { width: 40, height: 20, channels: 3, background: "#fdcf31" } }).png().toBuffer();
-  const input = { method: "BANK_TRANSFER" as const, reference: "TX-123456", payerName: null, paidOn: "2026-10-20", googleEmail: "ayesha.g@gmail.com", note: null };
 
   beforeAll(async () => {
     await db().user.createMany({
@@ -74,57 +73,37 @@ run("paid courses (integration)", async () => {
     expect(pay.availableMethods(await pay.getPaymentDetails())).toEqual(["BANK_TRANSFER"]);
   });
 
-  it("paid courses can't be joined with a free request", async () => {
-    await expect(enroll.requestEnrollment(student, course, { googleEmail: "a@gmail.com", note: null })).rejects.toThrow("paymentRequired");
+  it("checks receipts by content and strips images", async () => {
+    await expect(pay.prepareReceipt({ data: Buffer.from("<svg onload=alert(1)>hello world</svg>"), name: "r.svg" })).rejects.toThrow("receiptType");
+    const out = await pay.prepareReceipt({ data: png, name: "My Receipt.PNG" });
+    expect([out.mime, out.ext]).toEqual(["image/png", "png"]);
   });
 
-  it("checks the method and the receipt", async () => {
-    await expect(pay.submitPayment(student, course, { ...input, method: "JAZZCASH" }, { data: png, name: "r.png" })).rejects.toThrow("methodUnavailable");
-    await expect(pay.submitPayment(student, course, input, { data: Buffer.from("<svg onload=alert(1)>hello world</svg>"), name: "r.svg" })).rejects.toThrow("receiptType");
-    expect(() => pay.submitInput.parse({ ...input, paidOn: "2099-01-01" })).toThrow();
-  });
-
-  it("records a payment, keeps the receipt private, and blocks a second one while waiting", async () => {
-    const p = await pay.submitPayment(student, course, input, { data: png, name: "My Receipt.PNG" });
-    expect(p).toMatchObject({ status: "PENDING", amount: 1_500_000, method: "BANK_TRANSFER", receiptMime: "image/png" });
-    expect(p.receiptKey).toMatch(/^receipts\/\d{4}\/\d{2}\/[0-9a-f-]+\.png$/);
-    expect(await fileExists(p.receiptKey!)).toBe(true);
-    expect((await enroll.enrollmentFor(student.id, course))?.status).toBe("REQUESTED");
-    expect((await db().user.findUniqueOrThrow({ where: { id: student.id } })).googleEmail).toBe("ayesha.g@gmail.com");
-    expect(sent.some((m) => m.to === `ayesha.${tag}@example.com` && /received your payment details/.test(m.subject))).toBe(true);
-    expect(sent.some((m) => m.to === `sa.${tag}@example.com` && /Payment to check/.test(m.subject))).toBe(true);
-    await expect(pay.submitPayment(student, course, input, { data: png, name: "r.png" })).rejects.toThrow("alreadySubmitted");
-
-    // Receipts: the payer and payment staff only.
+  it("keeps receipts to payment staff and the student who paid", async () => {
+    const p = await db().payment.create({
+      data: { userId: student.id, courseId: course, amount: 1_500_000, method: "BANK_TRANSFER", reference: `TX-${tag}`, receiptKey: `receipts/${tag}.png`, receiptMime: "image/png", receiptSize: 10 },
+    });
     expect(await pay.receiptFor(p.id, { id: student.id, role: "STUDENT" })).not.toBeNull();
     expect(await pay.receiptFor(p.id, cm)).not.toBeNull();
     expect(await pay.receiptFor(p.id, { id: id("other"), role: "STUDENT" })).toBeNull();
     expect(await pay.receiptFor(p.id, { id: id("teach"), role: "INSTRUCTOR" })).toBeNull();
+    await db().payment.delete({ where: { id: p.id } });
   });
 
-  it("only payments open a paid course; Content Managers can't approve it", async () => {
-    const e = (await enroll.enrollmentFor(student.id, course))!;
-    await expect(enroll.decideEnrollment(e.id, "APPROVED", null, cm)).rejects.toThrow(/paid course/);
-    await expect(enroll.manualEnroll(student.id, course, cm)).rejects.toThrow(/paid course/);
-  });
-
-  it("rejecting tells the student why; they can pay again; confirming opens the course", async () => {
-    const first = (await db().payment.findFirstOrThrow({ where: { userId: student.id, status: "PENDING" } })).id;
-    await expect(pay.rejectPayment(first, "x", sa)).rejects.toThrow(/why/);
-    await expect(pay.confirmPayment(first, cm)).rejects.toThrow(/Super Admins/);
-    await pay.rejectPayment(first, "We couldn't find this transaction.", sa);
-    const e = (await enroll.enrollmentFor(student.id, course))!;
-    expect(e).toMatchObject({ status: "REJECTED", decisionNote: "Payment not confirmed: We couldn't find this transaction." });
-    await expect(pay.confirmPayment(first, sa)).rejects.toThrow(/already handled/);
-
-    const second = await pay.submitPayment(student, course, { ...input, reference: "TX-999" }, { data: png, name: "r2.png" });
-    expect((await enroll.enrollmentFor(student.id, course))?.status).toBe("REQUESTED");
+  it("still settles payments sent through the old per-course flow (Super Admins only)", async () => {
+    const legacy = () =>
+      db().payment.create({ data: { userId: student.id, courseId: course, amount: 1_500_000, method: "BANK_TRANSFER", reference: `OLD-${randomUUID().slice(0, 6)}` } });
+    await db().enrollment.create({ data: { userId: student.id, courseId: course, status: "REQUESTED" } });
+    const first = await legacy();
+    await expect(pay.rejectPayment(first.id, "x", sa)).rejects.toThrow(/why/);
+    await expect(pay.confirmPayment(first.id, cm)).rejects.toThrow(/Super Admins/);
+    await pay.rejectPayment(first.id, "We couldn't find this transaction.", sa);
+    expect(await enroll.enrollmentFor(student.id, course)).toMatchObject({ status: "REJECTED", decisionNote: "Payment not confirmed: We couldn't find this transaction." });
+    await expect(pay.confirmPayment(first.id, sa)).rejects.toThrow(/already handled/);
+    const second = await legacy();
     await pay.confirmPayment(second.id, sa);
     expect((await db().payment.findUniqueOrThrow({ where: { id: second.id } })).status).toBe("CONFIRMED");
     expect((await enroll.enrollmentFor(student.id, course))?.status).toBe("APPROVED");
-    await expect(pay.submitPayment(student, course, input, { data: png, name: "r3.png" })).rejects.toThrow("alreadyEnrolled");
-    const latest = await pay.latestPaymentsFor(student.id);
-    expect(latest.get(course)?.status).toBe("CONFIRMED");
-    expect(await db().auditLog.count({ where: { action: { in: ["payment.submitted", "payment.confirmed", "payment.rejected"] }, actorId: { in: [sa.id, student.id] } } })).toBe(4);
+    expect((await pay.latestPaymentsFor(student.id)).get(course)?.status).toBe("CONFIRMED");
   });
 });

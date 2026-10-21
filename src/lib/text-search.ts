@@ -18,6 +18,7 @@ const SEARCHABLE = {
   Certificate: ["code", "recipientName", "courseTitle"],
   SupportTicket: ["subject"],
   NewsletterSubscriber: ["email"],
+  EnrollmentApplication: ["name", "email", "phone", "reference"],
 } as const;
 
 type Table = keyof typeof SEARCHABLE;

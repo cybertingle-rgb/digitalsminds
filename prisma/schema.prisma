@@ -69,27 +69,33 @@ model User {
   suspendedAt     DateTime?
   suspendedReason String?    @db.VarChar(500)
 
-  sessions            Session[]
-  accounts            Account[]
-  enrollments         Enrollment[]       @relation("EnrollmentStudent")
-  enrollmentDecisions Enrollment[]       @relation("EnrollmentDecidedBy")
-  lessonProgress      LessonProgress[]
-  certificates        Certificate[]
-  notifications       Notification[]
-  supportTickets      SupportTicket[]
-  supportMessages     SupportMessage[]
-  teachingCourses     CourseInstructor[]
-  coursesCreated      Course[]           @relation("CourseCreatedBy")
-  announcements       Announcement[]
-  posts               Post[]
-  mediaUploads        MediaAsset[]
-  inquiriesAssigned   Inquiry[]
-  inquiryNotes        InquiryNote[]
-  auditLogs           AuditLog[]
-  settingsUpdated     SiteSetting[]
-  payments            Payment[]          @relation("PaymentStudent")
-  paymentDecisions    Payment[]          @relation("PaymentDecidedBy")
-  liveClassesCreated  LiveClass[]
+  sessions             Session[]
+  accounts             Account[]
+  enrollments          Enrollment[]            @relation("EnrollmentStudent")
+  enrollmentDecisions  Enrollment[]            @relation("EnrollmentDecidedBy")
+  lessonProgress       LessonProgress[]
+  certificates         Certificate[]
+  notifications        Notification[]
+  supportTickets       SupportTicket[]
+  supportMessages      SupportMessage[]
+  teachingCourses      CourseInstructor[]
+  coursesCreated       Course[]                @relation("CourseCreatedBy")
+  announcements        Announcement[]
+  posts                Post[]
+  mediaUploads         MediaAsset[]
+  inquiriesAssigned    Inquiry[]
+  inquiryNotes         InquiryNote[]
+  auditLogs            AuditLog[]
+  settingsUpdated      SiteSetting[]
+  payments             Payment[]               @relation("PaymentStudent")
+  paymentDecisions     Payment[]               @relation("PaymentDecidedBy")
+  liveClassesCreated   LiveClass[]
+  batchesCoordinated   Batch[]                 @relation("BatchCoordinator")
+  applications         EnrollmentApplication[] @relation("ApplicationStudent")
+  applicationDecisions EnrollmentApplication[] @relation("ApplicationDecidedBy")
+  enrollmentEvents     EnrollmentEvent[]
+  onboardingChecks     OnboardingProgress[]
+  documentsUploaded    StudentDocument[]
 
   @@index([role, status])
   @@index([createdAt])
@@ -256,6 +262,11 @@ model Course {
   currency           String?        @db.Char(3)
   certificateEnabled Boolean        @default(true)
 
+  // Training program details (shown on the public page)
+  format       TrainingFormat @default(ONLINE_LIVE)
+  /// e.g. "8 weeks, 3 live classes a week".
+  durationText String?        @db.VarChar(160)
+
   // Catalogue placement
   featured    Boolean @default(false)
   sortOrder   Int     @default(0)
@@ -272,15 +283,19 @@ model Course {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  instructors    CourseInstructor[]
-  modules        CourseModule[]
-  resources      CourseResource[]
-  enrollments    Enrollment[]
-  certificates   Certificate[]
-  announcements  Announcement[]
-  supportTickets SupportTicket[]
-  payments       Payment[]
-  liveClasses    LiveClass[]
+  instructors     CourseInstructor[]
+  modules         CourseModule[]
+  resources       CourseResource[]
+  enrollments     Enrollment[]
+  certificates    Certificate[]
+  announcements   Announcement[]
+  supportTickets  SupportTicket[]
+  payments        Payment[]
+  liveClasses     LiveClass[]
+  batches         Batch[]
+  applications    EnrollmentApplication[]
+  onboardingItems OnboardingItem[]
+  documents       StudentDocument[]
 
   @@index([status, featured, sortOrder])
   @@index([language, status])
@@ -390,10 +405,21 @@ model Enrollment {
   /// Admin's reason for rejection/revocation (shown to the student if set).
   decisionNote String?          @db.VarChar(1000)
   completedAt  DateTime?
+  /// Batch the student is placed in (null for enrollments made before batches existed).
+  batchId      String?
+  batch        Batch?           @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  /// Administrative stage (null for enrollments made before stages existed).
+  stage        EnrollmentStage?
+  stageAt      DateTime?
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
+  application EnrollmentApplication?
+  events      EnrollmentEvent[]
+  onboarding  OnboardingProgress[]
+
   @@unique([userId, courseId])
+  @@index([batchId, stage])
   @@index([courseId, status])
   @@index([status, requestedAt])
 }
@@ -439,6 +465,9 @@ model Announcement {
   /// Null = site-wide announcement for all students.
   courseId    String?
   course      Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  /// Set = only this batch's students (courseId is then the batch's program).
+  batchId     String?
+  batch       Batch?    @relation(fields: [batchId], references: [id], onDelete: Cascade)
   title       String    @db.VarChar(200)
   body        String    @db.Text
   authorId    String?   @db.VarChar(64)
@@ -449,6 +478,7 @@ model Announcement {
   updatedAt   DateTime  @updatedAt
 
   @@index([courseId, publishedAt])
+  @@index([batchId, publishedAt])
 }
 
 enum NotificationType {
@@ -456,6 +486,8 @@ enum NotificationType {
   ENROLLMENT_REJECTED
   ENROLLMENT_REVOKED
   ANNOUNCEMENT
+  ENROLLMENT_UPDATE
+  SCHEDULE
   SUPPORT_REPLY
   CERTIFICATE_ISSUED
   SYSTEM
@@ -738,38 +770,47 @@ enum PaymentStatus {
 
 /// A student's payment for a paid course, confirmed by a Super Admin.
 model Payment {
-  id            String        @id @default(cuid())
-  userId        String        @db.VarChar(64)
-  user          User          @relation("PaymentStudent", fields: [userId], references: [id], onDelete: Cascade)
-  courseId      String
+  id             String                 @id @default(cuid())
+  /// The student; null while the payment belongs to an application that has no account yet.
+  userId         String?                @db.VarChar(64)
+  user           User?                  @relation("PaymentStudent", fields: [userId], references: [id], onDelete: Cascade)
+  /// Enrollment application this payment is for (applications made after batches existed).
+  applicationId  String?
+  application    EnrollmentApplication? @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  /// Amount the Super Admin saw arrive in the account, in paisa.
+  amountReceived Int?
+  /// "METHOD:REFERENCE" of a verified payment: the same transaction can't be verified twice.
+  verifiedKey    String?                @unique @db.VarChar(120)
+  courseId       String
   /// Courses with payments cannot be deleted (archive them instead).
-  course        Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  course         Course                 @relation(fields: [courseId], references: [id], onDelete: Restrict)
   /// Fee in paisa (PKR minor units) when the student paid; the course price may change later.
-  amount        Int
-  currency      String        @default("PKR") @db.Char(3)
-  method        PaymentMethod
+  amount         Int
+  currency       String                 @default("PKR") @db.Char(3)
+  method         PaymentMethod
   /// Transaction ID / reference the student copied from their bank or wallet.
-  reference     String        @db.VarChar(100)
-  payerName     String?       @db.VarChar(120)
-  paidOn        DateTime?     @db.Date
-  note          String?       @db.VarChar(1000)
+  reference      String                 @db.VarChar(100)
+  payerName      String?                @db.VarChar(120)
+  paidOn         DateTime?              @db.Date
+  note           String?                @db.VarChar(1000)
   /// Receipt screenshot or PDF, stored privately (never in the Media library).
-  receiptKey    String?       @db.VarChar(500)
-  receiptMime   String?       @db.VarChar(127)
-  receiptSize   Int?
-  receiptName   String?       @db.VarChar(255)
-  status        PaymentStatus @default(PENDING)
-  decidedAt     DateTime?
-  decidedById   String?       @db.VarChar(64)
-  decidedBy     User?         @relation("PaymentDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  receiptKey     String?                @db.VarChar(500)
+  receiptMime    String?                @db.VarChar(127)
+  receiptSize    Int?
+  receiptName    String?                @db.VarChar(255)
+  status         PaymentStatus          @default(PENDING)
+  decidedAt      DateTime?
+  decidedById    String?                @db.VarChar(64)
+  decidedBy      User?                  @relation("PaymentDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
   /// Reason shown to the student when a payment is rejected.
-  decisionNote  String?       @db.VarChar(1000)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  decisionNote   String?                @db.VarChar(1000)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
 
   @@index([status, createdAt])
   @@index([userId, courseId])
   @@index([courseId])
+  @@index([applicationId])
 }
 
 // ---------------------------------------------------------------------------
@@ -790,7 +831,12 @@ model LiveClass {
   startsAt           DateTime
   durationMinutes    Int
   /// Zoom, Google Meet or Teams link; shown only to the course's approved students and staff.
-  meetingUrl         String          @db.VarChar(500)
+  meetingUrl         String?         @db.VarChar(500)
+  /// Class, holiday or other event in a batch's schedule.
+  kind               SessionKind     @default(CLASS)
+  /// Set = only this batch (courseId is then the batch's program).
+  batchId            String?
+  batch              Batch?          @relation(fields: [batchId], references: [id], onDelete: Cascade)
   status             LiveClassStatus @default(SCHEDULED)
   createdById        String?         @db.VarChar(64)
   createdBy          User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
@@ -802,4 +848,218 @@ model LiveClass {
 
   @@index([courseId, startsAt])
   @@index([status, startsAt])
+  @@index([batchId, startsAt])
+}
+
+enum SessionKind {
+  CLASS
+  HOLIDAY
+  EVENT
+}
+
+// ---------------------------------------------------------------------------
+// Enrollment platform: programs run in batches; visitors apply, pay, and are
+// given a student account only after a Super Admin verifies the payment.
+// ---------------------------------------------------------------------------
+
+enum TrainingFormat {
+  ONLINE_LIVE
+  IN_PERSON
+  HYBRID
+}
+
+enum BatchStatus {
+  /// Being prepared; not shown publicly.
+  DRAFT
+  /// Shown publicly and accepting applications (until full or past the deadline).
+  OPEN
+  /// Shown, not accepting applications.
+  CLOSED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+/// One intake of a program, with its own dates, schedule and seats.
+model Batch {
+  id                  String      @id @default(cuid())
+  courseId            String
+  course              Course      @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  name                String      @db.VarChar(120)
+  /// Short unique code, e.g. "EBAY-07".
+  code                String      @unique @db.VarChar(32)
+  status              BatchStatus @default(DRAFT)
+  startDate           DateTime    @db.Date
+  endDate             DateTime?   @db.Date
+  /// Public schedule summary, e.g. "Mon, Wed, Fri · 8:00-10:00 pm (PKT)".
+  scheduleText        String      @db.VarChar(300)
+  /// Seats; counted when a payment is verified.
+  capacity            Int
+  applicationDeadline DateTime?   @db.Date
+  /// Default Zoom / Google Meet link; shown only to this batch's active students.
+  meetingUrl          String?     @db.VarChar(500)
+  /// How to join and attend; shown only to this batch's students.
+  joiningInfo         String?     @db.Text
+  /// Staff-only notes.
+  internalNotes       String?     @db.Text
+  coordinatorId       String?     @db.VarChar(64)
+  coordinator         User?       @relation("BatchCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  enrollments     Enrollment[]
+  applications    EnrollmentApplication[]
+  sessions        LiveClass[]
+  announcements   Announcement[]
+  onboardingItems OnboardingItem[]
+  documents       StudentDocument[]
+
+  @@index([courseId, status, startDate])
+  @@index([status, startDate])
+}
+
+/// Administrative stages of a student's journey. Applications use the first
+/// five; enrollments continue from ENROLLMENT_CONFIRMED.
+enum EnrollmentStage {
+  APPLICATION_RECEIVED
+  PAYMENT_PENDING
+  PAYMENT_SUBMITTED
+  PAYMENT_VERIFIED
+  ENROLLMENT_CONFIRMED
+  ONBOARDING
+  ACTIVE
+  COMPLETED
+  WITHDRAWN
+  REJECTED
+  CANCELLED
+}
+
+/// A visitor's application for a batch, before (and leading to) a student account.
+model EnrollmentApplication {
+  id               String          @id @default(cuid())
+  /// Human-friendly reference shown to the applicant, e.g. "DM-7KQ4-XZ2M".
+  reference        String          @unique @db.VarChar(20)
+  courseId         String
+  course           Course          @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  batchId          String
+  batch            Batch           @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  name             String          @db.VarChar(120)
+  /// Lower-case.
+  email            String          @db.VarChar(254)
+  phone            String          @db.VarChar(40)
+  city             String          @db.VarChar(80)
+  /// "12345-1234567-1". Visible to Super Admins only.
+  cnic             String          @db.VarChar(15)
+  /// CV stored privately (never in the Media library). Visible to Super Admins only.
+  cvKey            String?         @db.VarChar(500)
+  cvMime           String?         @db.VarChar(127)
+  cvSize           Int?
+  cvName           String?         @db.VarChar(255)
+  message          String?         @db.VarChar(1000)
+  /// Fee in paisa when the applicant applied (the program fee may change later).
+  feeAmount        Int
+  currency         String          @default("PKR") @db.Char(3)
+  stage            EnrollmentStage @default(APPLICATION_RECEIVED)
+  /// SHA-256 of the private status-link token (the token itself is only emailed).
+  tokenHash        String          @unique @db.Char(64)
+  emailConfirmedAt DateTime?
+  termsAcceptedAt  DateTime
+  /// "email|batchId" while the application is open; null once closed. Stops duplicates.
+  openKey          String?         @unique @db.VarChar(300)
+  /// Student account created (or reused) when the payment was verified.
+  userId           String?         @db.VarChar(64)
+  user             User?           @relation("ApplicationStudent", fields: [userId], references: [id], onDelete: SetNull)
+  enrollmentId     String?         @unique
+  enrollment       Enrollment?     @relation(fields: [enrollmentId], references: [id], onDelete: SetNull)
+  decidedAt        DateTime?
+  decidedById      String?         @db.VarChar(64)
+  decidedBy        User?           @relation("ApplicationDecidedBy", fields: [decidedById], references: [id], onDelete: SetNull)
+  /// Reason shown to the applicant when rejected or cancelled.
+  decisionNote     String?         @db.VarChar(1000)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  payments Payment[]
+  events   EnrollmentEvent[]
+
+  @@index([stage, createdAt])
+  @@index([batchId, stage])
+  @@index([email])
+}
+
+/// Timeline of stage changes for an application and the enrollment that follows it.
+model EnrollmentEvent {
+  id            String                 @id @default(cuid())
+  applicationId String?
+  application   EnrollmentApplication? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  enrollmentId  String?
+  enrollment    Enrollment?            @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  stage         EnrollmentStage
+  /// Shown to the student (e.g. why a payment was rejected).
+  note          String?                @db.VarChar(1000)
+  actorId       String?                @db.VarChar(64)
+  actor         User?                  @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt     DateTime               @default(now())
+
+  @@index([applicationId, createdAt])
+  @@index([enrollmentId, createdAt])
+}
+
+/// Onboarding checklist item for all students, one program, or one batch.
+model OnboardingItem {
+  id               String    @id @default(cuid())
+  courseId         String?
+  course           Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  batchId          String?
+  batch            Batch?    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  title            String    @db.VarChar(200)
+  description      String?   @db.Text
+  required         Boolean   @default(true)
+  /// True = the student ticks it; false = staff confirm it (e.g. "Documents checked").
+  studentCompletes Boolean   @default(true)
+  position         Int       @default(0)
+  archivedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  progress OnboardingProgress[]
+
+  @@index([courseId, position])
+  @@index([batchId, position])
+}
+
+model OnboardingProgress {
+  enrollmentId  String
+  enrollment    Enrollment     @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  itemId        String
+  item          OnboardingItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  completedAt   DateTime       @default(now())
+  completedById String?        @db.VarChar(64)
+  completedBy   User?          @relation(fields: [completedById], references: [id], onDelete: SetNull)
+
+  @@id([enrollmentId, itemId])
+  @@index([itemId])
+}
+
+/// Forms, policies and onboarding files for all students, one program, or one batch. Stored privately.
+model StudentDocument {
+  id           String   @id @default(cuid())
+  title        String   @db.VarChar(200)
+  description  String?  @db.VarChar(500)
+  courseId     String?
+  course       Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  batchId      String?
+  batch        Batch?   @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  storageKey   String   @unique @db.VarChar(500)
+  fileName     String   @db.VarChar(255)
+  mimeType     String   @db.VarChar(127)
+  sizeBytes    Int
+  published    Boolean  @default(true)
+  uploadedById String?  @db.VarChar(64)
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([courseId, published])
+  @@index([batchId, published])
 }

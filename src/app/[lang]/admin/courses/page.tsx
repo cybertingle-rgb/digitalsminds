@@ -8,8 +8,9 @@ import { requirePagePermission } from "@/modules/auth/session";
 import { courseStatusLabels, languageLabels } from "@/modules/courses/labels";
 import { listCourses } from "@/modules/courses/service";
 import { mediaUrl } from "@/modules/media/service";
+import { formatPkr } from "@/modules/payments/service";
 
-export const metadata: Metadata = { title: "Courses" };
+export const metadata: Metadata = { title: "Programs" };
 
 const STATUSES = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
 const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "Asia/Karachi" });
@@ -28,13 +29,13 @@ export default async function CoursesPage({ searchParams }: PageProps<"/[lang]/a
     <div className="max-w-6xl space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-charcoal-900">Courses</h1>
+          <h1 className="text-2xl font-bold text-charcoal-900">Programs</h1>
           <p className="mt-1 text-muted">
-            {manageAll ? "All courses." : "Courses you teach."}{" "}
-            {can(user.role, "courses.publish") ? "Drafts are only visible to the team until you publish them." : "A Content Manager or Super Admin publishes your course when it's ready."}
+            Courses and training programs shown on the website, with their fee, objectives and requirements. Each program runs in batches.{" "}
+            {can(user.role, "courses.publish") ? "Drafts are only visible to the team until you publish them." : "A Content Manager or Super Admin publishes it when it's ready."}
           </p>
         </div>
-        <LinkButton href="/admin/courses/new" variant="dark">New course</LinkButton>
+        <LinkButton href="/admin/courses/new" variant="dark">New program</LinkButton>
       </div>
 
       <nav aria-label="Filter by status" className="flex flex-wrap gap-2">
@@ -52,8 +53,8 @@ export default async function CoursesPage({ searchParams }: PageProps<"/[lang]/a
 
       {list.length === 0 ? (
         <div className="glass-subtle rounded-2xl border-dashed !border-charcoal-300/70 p-10 text-center">
-          <p className="font-semibold text-charcoal-900">{status ? `No ${courseStatusLabels[status].toLowerCase()} courses.` : "No courses yet."}</p>
-          {!status && <p className="mt-1 text-sm text-muted">Create your first course, add modules and lessons, then publish it.</p>}
+          <p className="font-semibold text-charcoal-900">{status ? `No ${courseStatusLabels[status].toLowerCase()} programs.` : "No programs yet."}</p>
+          {!status && <p className="mt-1 text-sm text-muted">Create a program, set its fee, publish it, then open a batch.</p>}
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -71,14 +72,14 @@ export default async function CoursesPage({ searchParams }: PageProps<"/[lang]/a
                 <div className="flex flex-wrap gap-2">
                   <StatusBadge tone={c.status === "PUBLISHED" ? "ok" : c.status === "DRAFT" ? "warn" : "off"}>{courseStatusLabels[c.status]}</StatusBadge>
                   <StatusBadge tone="off">{languageLabels[c.language]}</StatusBadge>
+                  <StatusBadge tone={c.accessType === "PAID" && c.priceAmount ? "off" : "warn"}>{c.accessType === "PAID" && c.priceAmount ? formatPkr(c.priceAmount) : "No fee set"}</StatusBadge>
                 </div>
                 <h2 className="mt-3 font-semibold text-charcoal-900" dir="auto">
                   <Link href={`/admin/courses/${c.id}`} className="hover:underline">{c.title}</Link>
                 </h2>
                 <p className="mt-1 line-clamp-2 text-sm text-muted" dir="auto">{c.summary}</p>
                 <p className="mt-auto pt-3 text-xs text-muted">
-                  {c._count.modules} {c._count.modules === 1 ? "module" : "modules"} · {c._count.enrollments} {c._count.enrollments === 1 ? "student" : "students"} · updated {dateFmt.format(c.updatedAt)}
-                  {c.instructors.length > 0 && <><br />Instructors: {c.instructors.map((i) => i.user.name).join(", ")}</>}
+                  {c._count.batches} {c._count.batches === 1 ? "batch" : "batches"} · {c._count.enrollments} {c._count.enrollments === 1 ? "student" : "students"} · updated {dateFmt.format(c.updatedAt)}
                 </p>
               </div>
             </li>

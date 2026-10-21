@@ -76,23 +76,25 @@ run("team service (integration)", async () => {
     const res = await team.inviteStaff({ name: "Student", email: student.email, role: "INSTRUCTOR" }, actor.id);
     expect(res.promoted).toBe(true);
     expect((await db().user.findUniqueOrThrow({ where: { id: student.id } })).role).toBe("INSTRUCTOR");
+    // They already had a login, so inviting them again is refused (pending invitees get the email again instead).
+    await db().account.create({ data: { id: id("acc"), accountId: student.id, providerId: "credential", userId: student.id, password: "x" } });
     await expect(team.inviteStaff({ name: "Student", email: student.email, role: "INSTRUCTOR" }, actor.id)).rejects.toThrow(/already on the team/);
   });
 
-  it("limits instructors to their assigned courses", async () => {
+  it("keeps program editing to Content Managers and Super Admins (coordinators work through batches)", async () => {
     const instructor = await mk("instr", "INSTRUCTOR");
     const cm = await mk("cm2", "CONTENT_MANAGER");
     const student = await mk("stud2", "STUDENT");
     const mine = await db().course.create({ data: { slug: id("mine"), language: "en", title: "Mine", summary: "s", instructors: { create: { userId: instructor.id } } } });
     const other = await db().course.create({ data: { slug: id("other"), language: "en", title: "Other", summary: "s" } });
 
-    expect(await canManageCourse(instructor, mine.id)).toBe(true);
+    expect(await canManageCourse(instructor, mine.id)).toBe(false);
     expect(await canManageCourse(instructor, other.id)).toBe(false);
     expect(await canManageCourse(cm, other.id)).toBe(true);
     expect(await canManageCourse(student, mine.id)).toBe(false);
 
     const visible = await db().course.findMany({ where: { AND: [manageableCoursesWhere(instructor), { slug: { startsWith: `t${tag}` } }] } });
-    expect(visible.map((c) => c.id)).toEqual([mine.id]);
+    expect(visible).toEqual([]);
     expect(await db().course.count({ where: { AND: [manageableCoursesWhere(student), { slug: { startsWith: `t${tag}` } }] } })).toBe(0);
   });
 });

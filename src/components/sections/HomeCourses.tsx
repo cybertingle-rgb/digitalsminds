@@ -1,5 +1,5 @@
 import { CourseCard } from "@/components/learning/CourseCard";
-import { formatDuration, lessonCount } from "@/components/learning/format";
+import { programMeta } from "@/components/learning/format";
 import { LinkButton } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -7,13 +7,13 @@ import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { listingText, publishedCourses } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
-import { priceLabel } from "@/modules/payments/service";
+import { nextOpenBatchByCourse } from "@/modules/batches/service";
 
 /** Up to three published courses; the section is left out until one is published. */
 export async function HomeCourses({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const courses = await publishedCourses().catch(() => []);
   if (courses.length === 0) return null;
-  const t = dict.courses;
+  const nextBatch = await nextOpenBatchByCourse(courses.slice(0, 3).map((c) => c.id)).catch(() => new Map<string, Date>());
   return (
     <Section tone="alt">
       <div className="flex flex-wrap items-end justify-between gap-6">
@@ -31,7 +31,7 @@ export async function HomeCourses({ locale, dict }: { locale: Locale; dict: Dict
                 summary={text.summary}
                 thumbnailUrl={c.thumbnail ? mediaUrl(c.thumbnail) : null}
                 courseLang={c.language}
-                meta={[priceLabel(c, t.free), t.levels[c.level], t.languages[c.language], lessonCount(c.lessonCount, dict), formatDuration(c.minutes, dict)]}
+                meta={programMeta(c, nextBatch.get(c.id), dict)}
               />
             </li>
           );

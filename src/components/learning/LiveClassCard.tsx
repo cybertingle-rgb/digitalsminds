@@ -3,7 +3,7 @@ import type { Dictionary } from "@/i18n/dictionaries/en";
 import { format } from "@/i18n/merge";
 import { liveState } from "@/modules/live/service";
 
-type Live = { id: string; title: string; description: string | null; startsAt: Date; durationMinutes: number; meetingUrl: string; status: string; course: { title: string; titleUr: string | null } };
+type Live = { id: string; title: string; description: string | null; startsAt: Date; durationMinutes: number; meetingUrl: string | null; status: string; course: { title: string; titleUr: string | null } };
 
 /** A live class for a student: time, join button (from 15 minutes before) and "add to calendar". */
 export function LiveClassCard({ c, locale, dict, compact = false }: { c: Live; locale: Locale; dict: Dictionary; compact?: boolean }) {
@@ -29,7 +29,7 @@ export function LiveClassCard({ c, locale, dict, compact = false }: { c: Live; l
       </div>
       {state !== "cancelled" && state !== "ended" && (
         <div className="flex flex-wrap items-center gap-2">
-          {state === "live" ? (
+          {state === "live" && c.meetingUrl ? (
             <a href={c.meetingUrl} target="_blank" rel="noopener noreferrer" className="border-run rounded-xl bg-sun-400 px-4 py-2 text-sm font-semibold text-charcoal-900 shadow-sm hover:bg-sun-500">{t.join}</a>
           ) : (
             <span className="rounded-xl bg-charcoal-100 px-4 py-2 text-sm font-semibold text-charcoal-500" title={t.joinSoon} aria-label={`${t.join}: ${t.joinSoon}`}>{t.join}</span>

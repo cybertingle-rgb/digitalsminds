@@ -20,15 +20,9 @@ export async function publishedCourses() {
   const courses = await db().course.findMany({
     where: { status: "PUBLISHED" },
     orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { publishedAt: "desc" }],
-    include: {
-      thumbnail: { select: { id: true, storageKey: true, visibility: true, altText: true } },
-      modules: { select: { lessons: { select: { durationMinutes: true } } } },
-    },
+    include: { thumbnail: { select: { id: true, storageKey: true, visibility: true, altText: true } } },
   });
-  return courses.map(({ modules, ...c }) => {
-    const lessons = modules.flatMap((m) => m.lessons);
-    return { ...c, lessonCount: lessons.length, minutes: c.durationMinutes ?? (lessons.reduce((s, l) => s + (l.durationMinutes ?? 0), 0) || null) };
-  });
+  return courses;
 }
 
 /** Full course with curriculum, for the public page and the lesson player. */

@@ -87,7 +87,7 @@ export function PaymentDetailsForm({ value }: { value: Details }) {
 <input type="hidden" name="instructionsUr" value={value.instructionsUr ?? ""} />
         </div>
       </fieldset>
-      <p className="text-xs text-muted">These details are shown only to signed-in students on a paid course&apos;s payment page, never elsewhere on the website.</p>
+      <p className="text-xs text-muted">These details are shown only to applicants on their private application page (after they confirm their email), never elsewhere on the website.</p>
       <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" variant="dark" disabled={pending}>{pending ? "Saving…" : "Save payment details"}</Button>
         {state.message && <Notice tone={state.status === "error" ? "error" : "success"}>{state.message}</Notice>}

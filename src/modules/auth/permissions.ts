@@ -37,8 +37,20 @@ export const permissions = [
   "backups.download",
   /** See payments waiting and their status. */
   "payments.view",
-  /** Confirm or reject payments, set course prices and payment account details. */
+  /** Verify or reject payments (which activates student accounts), set fees and payment account details. */
   "payments.manage",
+  /** Create and edit batches (dates, schedule, seats, joining details). */
+  "batches.manage",
+  /** See enrollment applications (without CNIC and CV). */
+  "applications.view",
+  /** See applicants' CNIC numbers and CVs. */
+  "applications.sensitive",
+  /** Transfer students between batches, withdraw them, or cancel/reject applications. */
+  "enrollments.admin",
+  /** Onboarding checklists and student documents. */
+  "onboarding.manage",
+  /** Coordinators: roster, schedule and notices of the batches assigned to them. */
+  "batches.coordinate",
 ] as const;
 export type Permission = (typeof permissions)[number];
 
@@ -58,9 +70,12 @@ const grants: Record<Role, readonly Permission[]> = {
     "announcements.site",
     "newsletter.view",
     "payments.view",
+    "batches.manage",
+    "applications.view",
+    "onboarding.manage",
   ],
-  // Instructors are further limited to their own courses (CourseInstructor) in later phases.
-  INSTRUCTOR: ["admin.access", "courses.manage.own", "media.manage.own", "support.manage.own"],
+  // Batch coordinators: only the batches assigned to them (Batch.coordinatorId).
+  INSTRUCTOR: ["admin.access", "batches.coordinate", "support.manage.own"],
   STUDENT: [],
 };
 
@@ -72,6 +87,6 @@ export function can(role: Role | string | null | undefined, permission: Permissi
 export const roleLabels: Record<Role, string> = {
   SUPER_ADMIN: "Super Admin",
   CONTENT_MANAGER: "Content Manager",
-  INSTRUCTOR: "Instructor",
+  INSTRUCTOR: "Batch Coordinator",
   STUDENT: "Student",
 };

@@ -23,7 +23,7 @@ export const slugSchema = z
   .max(80);
 
 export const newCourseInput = z.object({
-  title: text(200).min(3, "Enter a course title"),
+  title: text(200).min(3, "Enter a program title"),
   language: z.enum(["en", "ur"]),
   summary: text(500).min(10, "Write a short summary (at least 10 characters)"),
 });
@@ -46,7 +46,9 @@ export const courseDetailsInput = z.object({
   ),
   prerequisites: optional(5000),
   level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "ALL_LEVELS"]),
-  durationMinutes: z.preprocess((v) => (v === "" || v === null ? undefined : v), z.coerce.number().int().min(1).max(100_000).optional()).transform((v) => v ?? null),
+  /** e.g. "8 weeks · 3 live classes a week". */
+  durationText: optional(160),
+  format: z.enum(["ONLINE_LIVE", "IN_PERSON", "HYBRID"]),
   thumbnailId: z.string().max(64).optional().transform((v) => (v ? v : null)),
   serviceSlug: z.enum([...serviceSlugs, ""] as [string, ...string[]]).optional().transform((v) => (v ? v : null)),
   certificateEnabled: z.boolean(),

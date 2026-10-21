@@ -60,7 +60,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/[lang]/
         <input type="hidden" name="status" value={current} />
         <div>
           <label htmlFor="q" className="block text-sm font-medium text-charcoal-900">Search</label>
-          <input id="q" name="q" defaultValue={filter.q} placeholder="Student name or email" className={`${inputClass} w-64`} />
+          <input id="q" name="q" defaultValue={filter.q} placeholder="Name, email or reference" className={`${inputClass} w-64`} />
         </div>
         <button type="submit" className="rounded-lg bg-charcoal-900 px-4 py-2.5 text-sm font-semibold text-white">Apply</button>
       </form>
@@ -86,11 +86,11 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/[lang]/
               {items.map((p) => (
                 <tr key={p.id} className="hover:bg-white/50">
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <Link href={`/admin/payments/${p.id}`} className="font-medium text-charcoal-900 underline underline-offset-4">{dateFmt.format(p.createdAt)}</Link>
+                    <Link href={p.application ? `/admin/applications/${p.application.id}` : `/admin/payments/${p.id}`} className="font-medium text-charcoal-900 underline underline-offset-4">{dateFmt.format(p.createdAt)}</Link>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="block font-medium text-charcoal-900" dir="auto">{p.user.name}</span>
-                    <span className="block text-muted" dir="ltr">{p.user.email}</span>
+                    <span className="block font-medium text-charcoal-900" dir="auto">{p.application?.name ?? p.user?.name}</span>
+                    <span className="block text-muted" dir="ltr">{p.application ? `${p.application.reference} · ${p.application.email}` : p.user?.email}</span>
                   </td>
                   <td className="px-4 py-3" dir="auto">{p.course.title}</td>
                   <td className="px-4 py-3 whitespace-nowrap font-semibold" dir="ltr">{formatPkr(p.amount)}</td>

@@ -46,7 +46,7 @@ export default async function LiveClassesAdminPage() {
                       <p className="font-semibold text-charcoal-900" dir="auto">{c.title}</p>
                       <p className="text-sm text-muted" dir="auto">{c.course.title} · {c.course._count.enrollments} students</p>
                       <p className="mt-1 text-sm text-charcoal-800">{fmt.format(c.startsAt)} · {c.durationMinutes} min</p>
-                      <a href={c.meetingUrl} target="_blank" rel="noopener noreferrer" className="mt-1 block truncate text-sm underline underline-offset-4" dir="ltr">{c.meetingUrl}</a>
+                      {c.meetingUrl && <a href={c.meetingUrl} target="_blank" rel="noopener noreferrer" className="mt-1 block truncate text-sm underline underline-offset-4" dir="ltr">{c.meetingUrl}</a>}
                     </div>
                     <StatusBadge tone={state === "cancelled" ? "off" : state === "live" ? "ok" : "warn"}>{{ cancelled: "Cancelled", live: "Live now", upcoming: "Scheduled", ended: "Ended" }[state]}</StatusBadge>
                   </div>
@@ -58,7 +58,7 @@ export default async function LiveClassesAdminPage() {
                           <LiveClassForm
                             id={c.id}
                             courses={[{ id: c.course.id, title: c.course.title }]}
-                            value={{ courseId: c.courseId, title: c.title, description: c.description ?? "", date: parts.date, time: parts.time, durationMinutes: String(c.durationMinutes), meetingUrl: c.meetingUrl }}
+                            value={{ courseId: c.courseId, title: c.title, description: c.description ?? "", date: parts.date, time: parts.time, durationMinutes: String(c.durationMinutes), meetingUrl: c.meetingUrl ?? "" }}
                           />
                         </div>
                       </details>

@@ -1,14 +1,15 @@
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { format } from "@/i18n/merge";
+import { formatDay } from "@/modules/batches/rules";
+import { coursePrice, formatPkr } from "@/modules/payments/format";
 
-/** "1 h 30 min" in the visitor's language. */
-export function formatDuration(minutes: number | null | undefined, dict: Pick<Dictionary, "courses">): string | null {
-  if (!minutes) return null;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return [h && format(dict.courses.hours, { hours: String(h) }), m && format(dict.courses.minutes, { minutes: String(m) })].filter(Boolean).join(" ");
-}
-
-export function lessonCount(count: number, dict: Pick<Dictionary, "courses">) {
-  return count === 1 ? dict.courses.oneLesson : format(dict.courses.lessons, { count: String(count) });
+/** Card details for a program: fee, format, duration and the next open batch. */
+export function programMeta(
+  c: { accessType: string; priceAmount: number | null; format: keyof Dictionary["courses"]["formats"]; durationText: string | null },
+  nextBatch: Date | undefined,
+  dict: Pick<Dictionary, "courses">,
+) {
+  const t = dict.courses;
+  const fee = coursePrice(c);
+  return [fee ? formatPkr(fee) : null, t.formats[c.format], c.durationText, nextBatch ? format(t.nextBatch, { date: formatDay(nextBatch) }) : t.noOpenBatch];
 }

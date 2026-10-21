@@ -5,9 +5,8 @@ import { CopyField, StatusBadge } from "@/components/admin/ui";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
 import { describeAction } from "@/modules/audit/labels";
-import { enrollableCourses, getStudent, inquiriesFromEmail } from "@/modules/students/service";
-import { EnrollmentActions } from "../../enrollments/EnrollmentActions";
-import { DeleteStudent, EditStudentForm, ManualEnrollForm, SuspendControl } from "../StudentForms";
+import { getStudent, inquiriesFromEmail } from "@/modules/students/service";
+import { DeleteStudent, EditStudentForm, SuspendControl } from "../StudentForms";
 
 export const metadata: Metadata = { title: "Student" };
 
@@ -22,8 +21,6 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
   if (!data) notFound();
   const { user, enrollments, history, signIn, lastActive } = data;
   const canManage = can(viewer.role, "students.manage");
-  const canDecide = can(viewer.role, "enrollments.decide");
-  const courses = canDecide && user.status === "ACTIVE" ? await enrollableCourses(user.id) : [];
 
   const details: [string, string | null][] = [
     ["Email", user.email],
@@ -80,15 +77,9 @@ export default async function StudentPage({ params }: PageProps<"/[lang]/admin/s
                     </p>
                     {e.requestNote && <p className="text-sm text-charcoal-800" dir="auto">Student&apos;s note: “{e.requestNote}”</p>}
                     {e.decisionNote && <p className="text-sm text-charcoal-800" dir="auto">Note to student: {e.decisionNote}</p>}
-                    {canDecide && <EnrollmentActions id={e.id} status={e.status} student={user.name} />}
                   </li>
                 ))}
               </ul>
-            )}
-            {canDecide && user.status === "ACTIVE" && (
-              <div className="mt-4 border-t border-line pt-4">
-                <ManualEnrollForm id={user.id} courses={courses} />
-              </div>
             )}
           </section>
 

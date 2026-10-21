@@ -37,7 +37,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
       footer={
         <>
           {t.noAccount}{" "}
-          <Link href={localizePath("/register", locale)} className="font-semibold text-charcoal-900 underline-offset-4 hover:underline">
+          <Link href={localizePath("/courses", locale)} className="font-semibold text-charcoal-900 underline-offset-4 hover:underline">
             {t.registerLink}
           </Link>
         </>
@@ -47,7 +47,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
         {sp.setup && <FormAlert tone="success">Super Admin account created. Log in with {siteConfig.superAdminEmail}.</FormAlert>}
         {sp.verified && <FormAlert tone="success">{t.verifiedNotice}</FormAlert>}
         {sp.reset && <FormAlert tone="success">{t.resetNotice}</FormAlert>}
-        {sp.error && <FormAlert>{t.errors.generic}</FormAlert>}
+        {sp.error && <FormAlert>{sp.error === "signup_disabled" ? t.googleNoAccount : t.errors.generic}</FormAlert>}
         <LoginForm
           t={t}
           next={next}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { describedBy, Field, FormAlert, inputClass } from "@/components/forms/Field";
 import { Button } from "@/components/ui/Button";
@@ -8,9 +9,10 @@ import type { Dictionary } from "@/i18n/dictionaries/en";
 type Labels = Dictionary["payments"];
 type ErrorKey = keyof Labels["errors"];
 
-/** Payment details + receipt upload for a paid course (posts to /api/payments). */
-export function PayForm(props: { courseId: string; methods: { value: string; label: string }[]; googleEmail: string; doneHref: string; labels: Labels }) {
+/** Transaction details + receipt for an application (posts to /api/applications/payment). */
+export function ApplicationPayForm(props: { methods: { value: string; label: string }[]; labels: Labels }) {
   const t = props.labels;
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<{ key: ErrorKey; field?: string } | null>(null);
@@ -18,15 +20,14 @@ export function PayForm(props: { courseId: string; methods: { value: string; lab
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    form.set("courseId", props.courseId);
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/payments", { method: "POST", body: form });
+      const res = await fetch("/api/applications/payment", { method: "POST", body: new FormData(e.currentTarget) });
       const json = (await res.json().catch(() => null)) as { ok?: boolean; error?: string; field?: string } | null;
       if (res.ok && json?.ok) {
         setDone(true);
+        router.refresh();
         return;
       }
       const key = (json?.error && json.error in t.errors ? json.error : "generic") as ErrorKey;
@@ -38,14 +39,7 @@ export function PayForm(props: { courseId: string; methods: { value: string; lab
     }
   }
 
-  if (done) {
-    return (
-      <div className="space-y-4">
-        <FormAlert tone="success">{t.sent}</FormAlert>
-        <a href={props.doneHref} className="inline-block font-semibold text-charcoal-900 underline underline-offset-4">{t.emailReceivedButton}</a>
-      </div>
-    );
-  }
+  if (done) return <FormAlert tone="success">{t.sent}</FormAlert>;
 
   const err = (field: string) => (error?.field === field ? t.errors[error.key] : undefined);
   const aria = (field: string, hint?: string) => ({ "aria-invalid": err(field) ? true : undefined, "aria-describedby": describedBy(field, err(field), hint) });
@@ -77,13 +71,10 @@ export function PayForm(props: { courseId: string; methods: { value: string; lab
       <Field label={t.receipt} name="receipt" hint={t.receiptHint} error={err("receipt")}>
         <input id="receipt" name="receipt" type="file" required accept="image/jpeg,image/png,image/webp,application/pdf" className={`${inputClass} file:me-3 file:rounded-lg file:border-0 file:bg-charcoal-900 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} {...aria("receipt", t.receiptHint)} />
       </Field>
-      <Field label={t.googleEmail} name="googleEmail" error={err("googleEmail")}>
-        <input id="googleEmail" name="googleEmail" type="email" required dir="ltr" autoComplete="email" defaultValue={props.googleEmail} className={inputClass} {...aria("googleEmail")} />
-      </Field>
       <Field label={t.note} name="note">
         <textarea id="note" name="note" rows={3} maxLength={1000} dir="auto" className={inputClass} />
       </Field>
-      {error && !["reference", "paidOn", "receipt", "googleEmail"].includes(error.field ?? "") && <FormAlert>{t.errors[error.key]}</FormAlert>}
+      {error && !["reference", "paidOn", "receipt"].includes(error.field ?? "") && <FormAlert>{t.errors[error.key]}</FormAlert>}
       <Button type="submit" className="w-full" disabled={busy}>{busy ? t.sending : t.submit}</Button>
     </form>
   );

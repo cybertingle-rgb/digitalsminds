@@ -6,7 +6,7 @@ import { Notice } from "@/components/admin/ui";
 import { describedBy, Field, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
-import { languageLabels, levelLabels } from "@/modules/courses/labels";
+import { formatLabels, languageLabels, levelLabels } from "@/modules/courses/labels";
 import {
   createCourseAction,
   deleteCourseAction,
@@ -90,19 +90,19 @@ export function NewCourseForm() {
   useFollow(state);
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <Field label="Course title" name="title" error={err(state, "title")}>
+      <Field label="Program title" name="title" error={err(state, "title")}>
         <input id="title" name="title" required maxLength={200} dir="auto" className={inputClass} aria-invalid={invalid(state, "title")} aria-describedby={describedBy("title", err(state, "title"))} />
       </Field>
-      <Field label="Taught in" name="language" hint="Each course is in one language. Lessons, videos and resources should match it.">
+      <Field label="Taught in" name="language" hint="The language the classes are taught in.">
         <select id="language" name="language" defaultValue="en" className={inputClass} aria-describedby={describedBy("language", undefined, "hint")}>
           {Object.entries(languageLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </select>
       </Field>
-      <Field label="Short summary" name="summary" error={err(state, "summary")} hint="One or two sentences shown in the course catalogue.">
+      <Field label="Short summary" name="summary" error={err(state, "summary")} hint="One or two sentences shown in the program list.">
         <textarea id="summary" name="summary" rows={3} required maxLength={500} dir="auto" className={inputClass} aria-invalid={invalid(state, "summary")} aria-describedby={describedBy("summary", err(state, "summary"), "hint")} />
       </Field>
       {state.status === "error" && <Result state={state} />}
-      <Button type="submit" variant="dark" disabled={pending}>{pending ? "Creating…" : "Create course"}</Button>
+      <Button type="submit" variant="dark" disabled={pending}>{pending ? "Creating…" : "Create program"}</Button>
     </form>
   );
 }
@@ -122,7 +122,8 @@ export type CourseDetails = {
   objectives: string;
   prerequisites: string;
   level: keyof typeof levelLabels;
-  durationMinutes: string;
+  durationText: string;
+  format: keyof typeof formatLabels;
   thumbnailId: string;
   serviceSlug: string;
   certificateEnabled: boolean;
@@ -188,16 +189,17 @@ export function DetailsForm({ course, images, services }: { course: CourseDetail
       </fieldset>
 
       <fieldset className="space-y-5">
-        <legend className="text-sm font-semibold uppercase tracking-wider text-muted">Course page</legend>
+        <legend className="text-sm font-semibold uppercase tracking-wider text-muted">Program page</legend>
         <div className="grid gap-5 sm:grid-cols-3">
           {f("language", "Taught in", <select {...a("language")} defaultValue={course.language} className={inputClass}>{Object.entries(languageLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>)}
           {f("level", "Level", <select {...a("level")} defaultValue={course.level} className={inputClass}>{Object.entries(levelLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>)}
-          {f("durationMinutes", "Total length (minutes)", <input {...a("durationMinutes", true)} type="number" min={1} inputMode="numeric" defaultValue={course.durationMinutes} className={inputClass} />, "Optional, e.g. 240 for 4 hours.")}
+          {f("format", "Format", <select {...a("format")} defaultValue={course.format} className={inputClass}>{Object.entries(formatLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>)}
         </div>
+        {f("durationText", "Duration (optional)", <input {...a("durationText", true)} defaultValue={course.durationText} maxLength={160} className={inputClass} />, "e.g. “8 weeks · 3 live classes a week”. Batch dates and class times are set per batch.")}
         {f("description", "Description", <textarea {...a("description", true)} defaultValue={course.description} rows={8} maxLength={20000} dir="auto" className={inputClass} />, formattingHint)}
         <div className="grid gap-5 sm:grid-cols-2">
-          {f("objectives", "What students will learn", <textarea {...a("objectives", true)} defaultValue={course.objectives} rows={6} dir="auto" className={inputClass} />, "One per line.")}
-          {f("prerequisites", "Before you start (optional)", <textarea {...a("prerequisites", true)} defaultValue={course.prerequisites} rows={6} dir="auto" className={inputClass} />, "Requirements or recommended knowledge.")}
+          {f("objectives", "Learning objectives", <textarea {...a("objectives", true)} defaultValue={course.objectives} rows={6} dir="auto" className={inputClass} />, "One per line.")}
+          {f("prerequisites", "Eligibility and requirements (optional)", <textarea {...a("prerequisites", true)} defaultValue={course.prerequisites} rows={6} dir="auto" className={inputClass} />, "Who can join and what they need, e.g. a laptop and internet connection.")}
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
           {f(
@@ -210,7 +212,7 @@ export function DetailsForm({ course, images, services }: { course: CourseDetail
           )}
           <label className="flex items-center gap-3 self-end pb-2 text-sm text-charcoal-900">
             <input type="checkbox" name="certificateEnabled" defaultChecked={course.certificateEnabled} className="h-5 w-5 accent-charcoal-900" />
-            Award a certificate when a student completes every lesson
+            Students can receive a certificate when staff mark them completed
           </label>
         </div>
       </fieldset>
@@ -218,7 +220,7 @@ export function DetailsForm({ course, images, services }: { course: CourseDetail
       <details className="rounded-xl border border-line p-4">
         <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">Search engine settings (optional)</summary>
         <div className="mt-4 grid gap-5 sm:grid-cols-2">
-          {f("seoTitle", "Search title", <input {...a("seoTitle", true)} defaultValue={course.seoTitle} maxLength={200} dir="auto" className={inputClass} />, "Defaults to the course title.")}
+          {f("seoTitle", "Search title", <input {...a("seoTitle", true)} defaultValue={course.seoTitle} maxLength={200} dir="auto" className={inputClass} />, "Defaults to the program title.")}
           {f("seoDescription", "Search description", <textarea {...a("seoDescription", true)} defaultValue={course.seoDescription} rows={3} maxLength={320} dir="auto" className={inputClass} />, "Defaults to the summary.")}
         </div>
       </details>
@@ -263,21 +265,15 @@ export function InstructorsForm(props: { courseId: string; assigned: string[]; o
 
 export function PriceForm(props: { courseId: string; paid: boolean; pricePkr: number | null }) {
   const [state, onSubmit, pending] = useFormAction(setPriceAction.bind(null, props.courseId), idle);
-  const [paid, setPaid] = useState(props.paid);
   const err = state.errors?.pricePkr;
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
-      <fieldset className="space-y-2 text-sm">
-        <legend className="sr-only">Access</legend>
-        <label className="flex items-center gap-3"><input type="radio" name="access" value="FREE" checked={!paid} onChange={() => setPaid(false)} className="h-4 w-4 accent-charcoal-900" /> Free (students request access)</label>
-        <label className="flex items-center gap-3"><input type="radio" name="access" value="PAID" checked={paid} onChange={() => setPaid(true)} className="h-4 w-4 accent-charcoal-900" /> Paid (students pay, you confirm in Payments)</label>
-      </fieldset>
-      {paid && (
-        <Field label="Fee in rupees (PKR)" name="pricePkr" error={err} hint="Whole rupees, e.g. 15000.">
-          <input id="pricePkr" name="pricePkr" inputMode="numeric" dir="ltr" defaultValue={props.pricePkr ?? ""} className={inputClass} aria-invalid={err ? true : undefined} aria-describedby={describedBy("pricePkr", err, "Whole rupees, e.g. 15000.")} />
-        </Field>
-      )}
-      <Button type="submit" variant="secondary" className="py-2" disabled={pending}>{pending ? "Saving…" : "Save price"}</Button>
+      {/* Every program charges its full fee before enrollment is confirmed. */}
+      <input type="hidden" name="access" value="PAID" />
+      <Field label="Enrollment fee in rupees (PKR)" name="pricePkr" error={err} hint="Whole rupees, e.g. 15000. Paid in full before enrollment is confirmed. New applications use the new fee; earlier ones keep theirs.">
+        <input id="pricePkr" name="pricePkr" inputMode="numeric" dir="ltr" defaultValue={props.pricePkr ?? ""} className={inputClass} aria-invalid={err ? true : undefined} aria-describedby={describedBy("pricePkr", err, "hint")} />
+      </Field>
+      <Button type="submit" variant="secondary" className="py-2" disabled={pending}>{pending ? "Saving…" : "Save fee"}</Button>
       <Result state={state} />
     </form>
   );
@@ -344,9 +340,9 @@ export function PublishPanel(props: {
 
       {props.canPublish && props.status !== "ARCHIVED" && (
         <ConfirmButton
-          label="Archive course"
+          label="Archive program"
           className="text-sm text-charcoal-700 underline underline-offset-4"
-          question={`Archive this course? It disappears from the catalogue and new students can't request it.${props.enrollments ? " Enrolled students keep their progress history." : ""}`}
+          question={`Archive this program? It disappears from the website and takes no new applications.${props.enrollments ? " Enrolled students keep their records." : ""}`}
           confirmLabel="Archive"
           run={() => setStatusAction(props.courseId, "ARCHIVED")}
           onResult={setResult}
@@ -354,8 +350,8 @@ export function PublishPanel(props: {
       )}
       {props.deletable && (
         <ConfirmButton
-          label="Delete course"
-          question="Delete this draft course with all its modules, lessons and resource links? Files stay in the Media library."
+          label="Delete program"
+          question="Delete this draft program? Files stay in the Media library."
           confirmLabel="Delete permanently"
           run={() => deleteCourseAction(props.courseId)}
           onResult={(r) => r.redirectTo && router.push(r.redirectTo)}

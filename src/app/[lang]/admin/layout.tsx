@@ -22,8 +22,9 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
 
   const nav = [
     { label: "Overview", href: "/admin" },
-    ...(can(user.role, "courses.manage.all") || can(user.role, "courses.manage.own") ? [{ label: "Courses", href: "/admin/courses" }] : []),
-    ...(can(user.role, "enrollments.decide") ? [{ label: "Enrollments", href: "/admin/enrollments" }] : []),
+    ...(can(user.role, "courses.manage.all") ? [{ label: "Programs", href: "/admin/courses" }] : []),
+    ...(can(user.role, "batches.manage") || can(user.role, "batches.coordinate") ? [{ label: "Batches", href: "/admin/batches" }] : []),
+    ...(can(user.role, "applications.view") ? [{ label: "Applications", href: "/admin/applications" }] : []),
     ...(can(user.role, "payments.view") ? [{ label: "Payments", href: "/admin/payments" }] : []),
     ...(can(user.role, "courses.manage.all") || can(user.role, "courses.manage.own") ? [{ label: "Live classes", href: "/admin/live-classes" }] : []),
     ...(can(user.role, "announcements.site") || can(user.role, "courses.manage.all") || can(user.role, "courses.manage.own") ? [{ label: "Announcements", href: "/admin/announcements" }] : []),

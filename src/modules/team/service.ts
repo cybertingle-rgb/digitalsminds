@@ -4,11 +4,11 @@ import { z } from "zod";
 import { siteConfig } from "@/config/site";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
-import { getAuth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sendMail } from "@/lib/mailer";
 import { audit } from "@/modules/audit/log";
 import { roleLabels, type Role } from "@/modules/auth/permissions";
+import { passwordSetupUrl } from "@/modules/auth/password-link";
 import { actionEmail } from "@/modules/email/templates";
 
 /** Roles that make someone part of the admin team. */
@@ -81,14 +81,7 @@ export async function listTeam(): Promise<TeamMember[]> {
 }
 
 async function sendInvite(user: { id: string; name: string; email: string; role: Role }) {
-  // Uses Better Auth's own reset-token storage, so the normal reset page sets the password.
-  const ctx = await (await getAuth()).$context;
-  const token = randomUUID().replace(/-/g, "") + randomUUID().replace(/-/g, "");
-  await ctx.internalAdapter.createVerificationValue({
-    identifier: `reset-password:${token}`,
-    value: user.id,
-    expiresAt: new Date(Date.now() + INVITE_TTL_SECONDS * 1000),
-  });
+  const url = await passwordSetupUrl(user.id, INVITE_TTL_SECONDS);
   const dict = getDictionary("en");
   try {
     await sendMail(
@@ -100,7 +93,7 @@ async function sendInvite(user: { id: string; name: string; email: string; role:
         subject: dict.emails.inviteSubject,
         intro: format(dict.emails.inviteIntro, { role: roleLabels[user.role] }),
         buttonLabel: dict.emails.inviteButton,
-        url: `${siteConfig.url}/reset-password?token=${token}`,
+        url,
       }),
     );
   } catch (e) {

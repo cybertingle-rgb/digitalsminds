@@ -75,7 +75,7 @@ export default async function AdminOverview() {
       )}
 
       <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        {paymentsWaiting !== null && <Stat label="Payments to check" value={paymentsWaiting} hint="Paid course enrollments" href="/admin/payments" />}
+        {paymentsWaiting !== null && <Stat label="Payments to verify" value={paymentsWaiting} hint="Applications waiting for a Super Admin" href="/admin/applications" />}
         {support !== null && <Stat label="Support requests needing a reply" value={support} href="/admin/support?status=OPEN" />}
         {certificatesReady !== null && <Stat label="Certificates ready to issue" value={certificatesReady} href="/admin/certificates" />}
         {learning && <Stat label="Access requests waiting" value={learning.waiting} hint={`${learning.enrolled} enrolled · ${learning.published} published courses`} href="/admin/enrollments" />}
