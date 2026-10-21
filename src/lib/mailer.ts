@@ -51,14 +51,26 @@ export type Mail = { to: string; subject: string; html: string; text: string };
 export async function sendMail(mail: Mail, cfg?: SmtpConfig | null) {
   const config = cfg ?? (await getSmtpConfig());
   if (!config) throw new MailNotConfiguredError();
-  await transport(config).sendMail({
+  const message = {
     from: { name: config.fromName, address: config.fromEmail },
     to: mail.to,
     subject: mail.subject,
     html: mail.html,
     text: mail.text,
-  });
+  };
+  try {
+    await transport(config).sendMail(message);
+  } catch (e) {
+    // The mail server sometimes doesn't answer a connection in time; one retry usually gets through.
+    if (!RETRYABLE.has((e as { code?: string })?.code ?? "")) throw e;
+    console.warn("[mail] connection failed, retrying once:", (e as Error).message);
+    await new Promise((r) => setTimeout(r, 1500));
+    await transport(config).sendMail(message);
+  }
 }
+
+/** Failures before the message was handed over, so retrying can't send it twice. */
+const RETRYABLE = new Set(["ECONNECTION", "EDNS", "ETIMEDOUT"]);
 
 /** Checks the SMTP login without sending anything. */
 export async function verifySmtp(cfg: SmtpConfig) {

@@ -123,9 +123,15 @@ async function assertNotLastSuperAdmin(target: { id: string; role: Role }) {
   if (others === 0) throw new TeamError("There must always be at least one active Super Admin.");
 }
 
-export async function inviteStaff(input: z.infer<typeof inviteInput>, actorId: string): Promise<{ promoted: boolean }> {
-  const existing = await db().user.findUnique({ where: { email: input.email } });
-  if (existing && existing.role !== "STUDENT") throw new TeamError("This person is already on the team.");
+export async function inviteStaff(input: z.infer<typeof inviteInput>, actorId: string): Promise<{ promoted: boolean; resent?: boolean }> {
+  const existing = await db().user.findUnique({ where: { email: input.email }, include: { accounts: { select: { id: true } } } });
+  if (existing && existing.role !== "STUDENT") {
+    if (existing.accounts.length > 0 || existing.status === "SUSPENDED") throw new TeamError("This person is already on the team.");
+    // Invited before but never set a password (e.g. the first email failed): send the invitation again.
+    await sendInvite(existing);
+    await audit({ actorId, action: "team.invite_resent", entityType: "User", entityId: existing.id });
+    return { promoted: false, resent: true };
+  }
 
   if (existing) {
     // An existing student account: give it the staff role (they keep their login).

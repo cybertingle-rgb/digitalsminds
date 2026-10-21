@@ -45,10 +45,10 @@ export async function inviteAction(_prev: TeamState, formData: FormData): Promis
     return { status: "error", fields };
   }
   return run(async (actorId) => {
-    const { promoted } = await inviteStaff(parsed.data, actorId);
-    return promoted
-      ? `${parsed.data.email} already had an account and now has team access.`
-      : `Invitation sent to ${parsed.data.email}. The link is valid for 3 days.`;
+    const { promoted, resent } = await inviteStaff(parsed.data, actorId);
+    if (promoted) return `${parsed.data.email} already had an account and now has team access.`;
+    if (resent) return `${parsed.data.email} was already invited and hasn't set a password yet, so the invitation was sent again. The link is valid for 3 days.`;
+    return `Invitation sent to ${parsed.data.email}. The link is valid for 3 days.`;
   });
 }
 
