@@ -75,8 +75,13 @@ run("content management (integration)", async () => {
 
   it("publishes the built-in legal text until an edited version is saved", async () => {
     expect(await settings.getLegalPage("privacy")).toMatchObject({ title: "Privacy Policy", published: true, builtIn: true });
-    await settings.saveSetting("page.privacy", { ...settings.legalInput.parse({ title: "Privacy Policy", body: "We respect your privacy and explain here.", published: false }) }, actor);
-    expect(await settings.getLegalPage("privacy")).toMatchObject({ published: false, builtIn: false });
+    // An edit saved before the current built-in version is replaced by the newer text...
+    await settings.saveSetting("page.privacy", { ...settings.legalInput.parse({ title: "Privacy Policy", body: "Old text from before the enrollment changes.", published: false }), updatedAt: "2026-10-01T00:00:00Z" }, actor);
+    expect(await settings.getLegalPage("privacy")).toMatchObject({ published: true, builtIn: true, supersededEdit: true });
+    // ...while a newer edit (or a draft) is used as saved.
+    await settings.saveSetting("page.privacy", { ...settings.legalInput.parse({ title: "Privacy Policy", body: "We respect your privacy and explain here.", published: false }), updatedAt: new Date().toISOString() }, actor);
+    expect(await settings.getLegalPage("privacy")).toMatchObject({ published: false, builtIn: false, supersededEdit: false });
+    expect(await settings.getLegalPage("refund")).toMatchObject({ title: "Refund Policy", published: true, builtIn: true });
   });
 
   it("imports built-in FAQs once, then serves only published ones in order", async () => {

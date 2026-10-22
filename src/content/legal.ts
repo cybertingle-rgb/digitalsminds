@@ -1,13 +1,15 @@
 /**
  * Built-in Privacy Policy, Terms & Conditions and Refund Policy, published by default.
  * Editing them in Admin → Website → Legal pages saves a copy in the database,
- * which then replaces this text. Written in the site's simple formatting.
+ * which then replaces this text, unless that copy was saved before
+ * LEGAL_EFFECTIVE_DATE (a newer built-in version supersedes older edits).
+ * Written in the site's simple formatting.
  *
  * They describe how this website actually works (what is collected, which
  * services are used). Update them whenever that changes.
  */
 
-export const LEGAL_EFFECTIVE_DATE = "2026-10-21";
+export const LEGAL_EFFECTIVE_DATE = "2026-10-22";
 
 const contact = `Digitals Minds
 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan
@@ -71,13 +73,14 @@ We do not sell your personal information. We share it only with:
 - Hostinger, which hosts our website, database and email
 - Google, when you choose to sign in with Google, and, if you accept analytics cookies, Google Analytics
 - Zoom, Google Meet or Microsoft Teams, when you join a live class through the link we give you (their own privacy policies apply)
+- WhatsApp (Meta), only if you choose to message us there
 - authorities, if the law requires it
 
 Certificates: anyone who has a certificate ID can open its verification page, which shows the name on the certificate, the course title, the issue date and the ID. No other details are shown.
 
 ## Cookies and similar technologies
-- Essential cookies keep you signed in. The website cannot work without them.
-- Your browser's session storage remembers, for the current tab only, the campaign link that brought you to the site and whether you have already seen our opening animation.
+- Essential cookies keep you signed in, and keep your private application link working on your device after you open it from our email (for up to 60 days). The website cannot work without them.
+- Your browser's local storage remembers your cookie choice. Its session storage remembers, for the current tab only, the campaign link that brought you to the site and whether you have already seen our opening animation.
 - Analytics cookies (Google Analytics) are set only if you accept them in the cookie banner. You can change your choice at any time using "Cookie settings" at the bottom of every page.
 
 ## How long we keep information
@@ -96,7 +99,7 @@ Certificates: anyone who has a certificate ID can open its verification page, wh
 We may need to confirm your identity before acting on a request.
 
 ## Security
-We use encrypted connections (HTTPS), store passwords only in scrambled form, encrypt sensitive settings, limit our team's access by role, keep CVs, receipts and student documents in private storage, and make batch details and documents available only to the students they are for. No website can be completely secure, so please keep your password private.
+We use encrypted connections (HTTPS), store passwords only in scrambled form, encrypt sensitive settings, limit our team's access by role, keep CVs, receipts and student documents in private storage, and make batch details and documents available only to the students they are for. No website can be completely secure, so please keep your password private, and don't forward the private application link we email you: anyone with it can see your application's status. You can ask for a new link at any time, which stops the old one working.
 
 ## Children
 Our services are intended for adults and businesses. If you are under 18, please use the website with the involvement of a parent or guardian.
@@ -126,11 +129,12 @@ Digitals Minds offers business growth services through five divisions: Digital M
 - Our courses and training programs run in batches. Each program page shows the enrollment fee in Pakistani rupees, the requirements, and the batches with their dates, class times and seats.
 - To enroll, you apply for an open batch, confirm your email, and pay the full enrollment fee by bank transfer, JazzCash or EasyPaisa, then send us the transaction details and receipt.
 - Sending a receipt does not confirm your place. Your enrollment is confirmed only when our team has checked that the full fee arrived in our account. If we cannot confirm a payment, we will tell you why so you can correct it.
-- Seats are limited. A seat is reserved when your payment is verified, so a batch can fill up before your payment is checked; if that happens we will contact you about another batch.
+- Seats are limited. A seat is reserved when your payment is verified, so a batch can fill up before your payment is checked. If that happens after you have paid, we will offer you a place in another batch of the same program.
 - Once your enrollment is confirmed we create your student account and email you a link to set your password. We may reject or cancel an application, for example if the information given is incomplete or untrue.
 - Fees are non-refundable once paid. See our Refund Policy.
 - Classes are taught live online (Zoom or Google Meet). Class links and batch material are for you only: do not share them, and do not record, copy or redistribute classes or materials without our written permission.
-- We may change a batch's schedule (for example for holidays), move you to another batch with your agreement, or withdraw you from a program if these Terms are broken. Changes are shown in your student portal.
+- We may change a batch's schedule (for example for holidays), move you to another batch with your agreement, or withdraw you from a program if these Terms are broken. Changes are shown in your student portal and important changes are emailed.
+- If we cancel or postpone a batch, we will offer you a place in another batch of the same program (see our Refund Policy).
 - A certificate of completion confirms that our team marked you as having completed a program. It is not an accredited qualification. We may revoke a certificate issued in error or obtained by breaking these Terms.
 
 ## Acceptable use
@@ -174,6 +178,9 @@ The enrollment fee is paid in full before your enrollment is confirmed. Once pai
 
 ## Before you pay
 Please read the program page carefully before you apply and pay: the fee, the requirements, the format (live online classes), and the batch dates and class times. If anything is unclear, contact us before you pay.
+
+## If we cancel or postpone a batch
+If Digitals Minds cancels or postpones a batch you have paid for, or a batch fills up before your payment is verified, we will offer you a place in another batch of the same program. Your fee carries over to that batch.
 
 ## Payments we cannot verify
 Your place is confirmed only after our team has checked that the full fee arrived in our account. If we cannot verify a payment, we will tell you why so you can correct the details. This is not a refund: if no money reached us, there is nothing to refund.

@@ -177,11 +177,14 @@ export const getHomeContent = () => readParsed("site.home", homeInput);
 export const getContactSetting = () => readParsed("site.contact", contactInput);
 export const getSeoSetting = async (): Promise<Partial<SeoContent>> => (await readParsed("site.seo", seoInput)) ?? {};
 /** Saved page from the admin, or the built-in published text (src/content/legal.ts). */
-export async function getLegalPage(page: LegalPage): Promise<(LegalContent & { builtIn: boolean }) | null> {
+export async function getLegalPage(page: LegalPage): Promise<(LegalContent & { builtIn: boolean; supersededEdit: boolean }) | null> {
   const saved = await readParsed(`page.${page}`, legalInput.extend({ updatedAt: z.string().optional() }));
-  if (saved) return { ...saved, builtIn: false };
+  const effective = new Date(`${LEGAL_EFFECTIVE_DATE}T00:00:00+05:00`).getTime();
+  // An edit saved before the current built-in version describes an older version of the site, so the newer text wins.
+  const superseded = !!saved && !(saved.updatedAt && new Date(saved.updatedAt).getTime() >= effective);
+  if (saved && !superseded) return { ...saved, builtIn: false, supersededEdit: false };
   const d = legalDefaults[page];
-  return { title: d.title, titleUr: undefined, body: d.body, bodyUr: undefined, published: true, updatedAt: `${LEGAL_EFFECTIVE_DATE}T00:00:00+05:00`, builtIn: true };
+  return { title: d.title, titleUr: undefined, body: d.body, bodyUr: undefined, published: true, updatedAt: `${LEGAL_EFFECTIVE_DATE}T00:00:00+05:00`, builtIn: true, supersededEdit: superseded };
 }
 export const getLogoSetting = async () => (await readParsed("site.logo", logoInput)) ?? { lightId: null, darkId: null };
 export const getFeaturedSetting = () => readParsed("site.featured", featuredInput);

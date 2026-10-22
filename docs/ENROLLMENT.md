@@ -69,7 +69,7 @@ Nothing new to configure in Hostinger. Requirements:
 - **Email** (Admin → Integrations → Email) must work: applicants receive their private link, payment updates and the set-password link by email.
 - **Payment details** must be entered, or applicants see "contact us" instead of the accounts.
 - Uploaded CVs, receipts and student documents are stored privately under the upload folder (`UPLOAD_DIR`, default `~/digitalsminds-uploads`) in `applications/cv/`, `receipts/` and `documents/`. They are included in Admin → Backups → files.
-- Legal pages: the built-in Privacy Policy, Terms and new Refund Policy describe this model. If edited copies were saved earlier in Admin → Website → Legal pages, those saved copies are shown instead: review and update them.
+- Legal pages: the built-in Privacy Policy, Terms and Refund Policy (effective 2026-10-22) describe this model and are published. Edited copies saved in Admin → Website → Legal pages before that date are replaced by the new text (the admin page says so); edits saved after it are shown as saved.
 
 ## Data
 

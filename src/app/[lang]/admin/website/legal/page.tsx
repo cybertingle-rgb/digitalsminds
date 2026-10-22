@@ -24,6 +24,11 @@ export default async function LegalSettingsPage() {
               {values[i]?.published ? (values[i]?.builtIn ? "Published (built-in text)" : "Published") : "Draft"}
             </span>
           </h2>
+          {values[i]?.supersededEdit && (
+            <p className="mb-4 rounded-lg bg-sun-50 px-4 py-3 text-sm text-charcoal-900">
+              An earlier edited version was replaced by the updated built-in text (enrollment, payments and refunds). Saving here creates a new edited version.
+            </p>
+          )}
           <LegalForm page={p.key} url={p.url} value={values[i] ?? { title: p.label, body: "", published: false }} />
         </section>
       ))}

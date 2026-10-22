@@ -79,7 +79,7 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 | 70 | Format | Online live classes (Zoom / Google Meet); joining links only for the batch's current students |
 | 71 | Stages | Application received → Payment pending → Payment submitted → Payment verified → Enrollment confirmed → Onboarding → Active → Completed; plus Withdrawn / Rejected / Cancelled. Onboarding starts on the first portal visit; Active once required checklist steps are done |
 | 72 | Optional features | Certificates kept (issued by staff after "Completed"); **no attendance tracking** |
-| 73 | Refund policy | Fees are non-refundable once paid (built-in Refund Policy page, drafted for the owner's review) |
+| 73 | Refund policy | Fees are non-refundable once paid. If Digitals Minds cancels or postpones a batch, or a batch fills before a paid applicant's payment is verified, the applicant is offered a place in another batch of the same program and the fee carries over. Refund Policy, Privacy Policy and Terms reviewed and published 2026-10-22 (owner delegated); older edited copies saved before that date are replaced by the new built-in text |
 | 74 | Old accounts | Free-sign-up student accounts (no payment, application or batch) are suspended by the Super Admin from Admin → Students after reviewing the list (reversible) |
 | 75 | WhatsApp | WhatsApp support button and contact link appear once the owner enters the number in Admin → Website → Contact (supersedes the "no numbers" rule for that one number) |
 | 76 | Roles | Instructor becomes **Batch Coordinator** (own batches: roster, schedule, notices, staff-confirmed onboarding steps, support). Content Managers manage programs, batches, onboarding and documents and can view applications without CNIC/CV |
@@ -97,7 +97,7 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 - [ ] eBay logo: download it from the Wikimedia link, upload in Admin → Media (public), choose it in Admin → Website → Homepage → Featured course
 - [ ] Payments: enter your bank / JazzCash / EasyPaisa details in Admin → Payments → Payment details
 - [ ] eBay program: in Admin → Programs fill in description, objectives, eligibility, duration; set the fee; publish; then Admin → Batches → New batch (dates, class times, seats, meeting link) and set it to Open. Point the homepage button to /courses/<its address>
-- [ ] Review the drafted Refund Policy, Privacy Policy and Terms (built-in text); if edited copies were saved earlier in Admin → Website → Legal pages, update those
+- [x] Refund Policy, Privacy Policy and Terms reviewed and published (owner delegated, 2026-10-22); have them checked by a lawyer when convenient
 - [ ] Review the homepage FAQs in Admin → Website → FAQs if they were imported before (the old ones say courses are free)
 - [ ] Send the WhatsApp support number, or enter it yourself in Admin → Website → Contact
 - [ ] Admin → Students: review the "old free sign-up" list and suspend those accounts
