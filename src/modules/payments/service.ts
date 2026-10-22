@@ -11,6 +11,7 @@ import type { CurrentUser } from "@/modules/auth/session";
 import { saveSetting } from "@/modules/content/settings";
 import { decideEnrollment, enrollmentFor } from "@/modules/learning/enrollment";
 import { processImage } from "@/modules/media/images";
+import { mediaUrl } from "@/modules/media/service";
 import { detectFile } from "@/modules/media/validate";
 
 /**
@@ -53,6 +54,8 @@ export const paymentDetailsInput = z.object({
   easypaisaNumber: opt(40),
   instructions: opt(1500),
   instructionsUr: opt(1500),
+  /** Bank transfer QR code: empty = the built-in Meezan Bank QR, "none" = no QR, or a public image from Media. */
+  bankQrId: opt(64),
 });
 export type PaymentDetails = Partial<z.infer<typeof paymentDetailsInput>>;
 
@@ -73,13 +76,25 @@ export async function savePaymentDetails(value: PaymentDetails, actor: Actor) {
   await audit({ actorId: actor.id, action: "payments.details", entityType: "Setting", entityId: "site.payments", metadata: { methods: availableMethods(value) } });
 }
 
-/** Methods the owner has filled in (only these are offered to students). */
+export const NO_BANK_QR = "none";
+
+/** Methods the owner has filled in (only these are offered to students). A bank QR code alone is enough for bank transfer. */
 export function availableMethods(d: PaymentDetails): PaymentMethod[] {
   return [
-    ...(d.bankAccountNumber ? (["BANK_TRANSFER"] as const) : []),
+    ...(d.bankAccountNumber || d.bankQrId !== NO_BANK_QR ? (["BANK_TRANSFER"] as const) : []),
     ...(d.jazzcashNumber ? (["JAZZCASH"] as const) : []),
     ...(d.easypaisaNumber ? (["EASYPAISA"] as const) : []),
   ];
+}
+
+/** The bank QR code to show: "builtin" (the bundled image), a Media image, or null for none. */
+export async function bankQr(d: PaymentDetails): Promise<"builtin" | { src: string; width: number; height: number } | null> {
+  if (d.bankQrId === NO_BANK_QR) return null;
+  if (!d.bankQrId) return "builtin";
+  const a = await db().mediaAsset.findUnique({ where: { id: d.bankQrId } }).catch(() => null);
+  if (a?.visibility === "PUBLIC" && a.mimeType.startsWith("image/") && a.width && a.height) return { src: mediaUrl(a), width: a.width, height: a.height };
+  // The chosen image was deleted from Media: fall back to the built-in QR rather than a bank method with nothing to pay to.
+  return "builtin";
 }
 
 // ---------------------------------------------------------------------------

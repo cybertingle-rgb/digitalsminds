@@ -42,7 +42,7 @@ export async function rejectPaymentAction(paymentId: string, note: string): Prom
 export async function savePaymentDetailsAction(_prev: PaymentState, fd: FormData): Promise<PaymentState> {
   try {
     const actor = await assertPermission("payments.manage");
-    const keys = ["bankName", "bankAccountTitle", "bankAccountNumber", "jazzcashTitle", "jazzcashNumber", "easypaisaTitle", "easypaisaNumber", "instructions", "instructionsUr"] as const;
+    const keys = ["bankName", "bankAccountTitle", "bankAccountNumber", "jazzcashTitle", "jazzcashNumber", "easypaisaTitle", "easypaisaNumber", "instructions", "instructionsUr", "bankQrId"] as const;
     const value = paymentDetailsInput.parse(Object.fromEntries(keys.map((k) => [k, String(fd.get(k) ?? "")])));
     await savePaymentDetails(value, actor);
     revalidatePath("/admin/payments", "layout");

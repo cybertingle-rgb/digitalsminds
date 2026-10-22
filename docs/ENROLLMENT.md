@@ -9,7 +9,7 @@ program to paying, enrolling, joining a batch, onboarding and ongoing administra
 | # | Stage | Who | What happens |
 | --- | --- | --- | --- |
 | 1 | **Application received** | Visitor | Chooses an open batch on the program page and applies: name, email, phone/WhatsApp, city, CNIC, CV (PDF/DOCX ≤ 5 MB), accepts the Terms and Refund Policy. No account is created. |
-| 2 | **Payment pending** | Visitor | Opens the private link we email them (it confirms the email address). The status page shows the reference (e.g. `DM-7KQ4-XZ2M`), fee and payment accounts. |
+| 2 | **Payment pending** | Visitor | Opens the private link we email them (the status page confirms the email address on its first visit; the link itself only stores the token and redirects, so it never waits on the database). The status page shows the reference (e.g. `DM-7KQ4-XZ2M`), fee and payment accounts. |
 | 3 | **Payment submitted** | Visitor | Sends method, transaction ID, date and receipt (JPG/PNG/WebP/PDF ≤ 8 MB). Super Admins get an email. A receipt alone unlocks nothing. |
 | 4 | **Payment verified** | Super Admin | Checks the money arrived in the statement, enters the amount received (must be the full fee) and verifies. |
 | 5 | **Enrollment confirmed** | System | In the same database transaction: the seat is reserved (batch row locked, so no overbooking), the student account is created (or an old suspended account reactivated) and the enrollment is placed in the batch. The student is emailed a "Set my password" link (valid 7 days). |
@@ -52,7 +52,7 @@ application goes back to *Payment pending* and the applicant is emailed the reas
 
 ## Admin quick guide
 
-1. **Payments → Payment details**: enter the bank / JazzCash / EasyPaisa accounts applicants pay to (shown only on their private application page).
+1. **Payments → Payment details**: enter the bank / JazzCash / EasyPaisa accounts applicants pay to (shown only on their private application page). Bank transfer shows the built-in Meezan Bank QR code by default (enough on its own to offer bank transfer); choose another public Media image or "No QR code" there.
 2. **Programs**: create the program, write the description, objectives, eligibility, format and duration; set the **Enrollment fee** (Super Admin); publish.
 3. **Batches → New batch**: dates, class times, seats, optional deadline, meeting link, joining instructions, coordinator. Set the status to **Open** to take applications.
 4. **Onboarding** and **Documents**: add checklist steps and files for everyone, a program or a batch.

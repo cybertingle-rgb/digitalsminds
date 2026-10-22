@@ -83,6 +83,8 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 | 74 | Old accounts | Free-sign-up student accounts (no payment, application or batch) are suspended by the Super Admin from Admin → Students after reviewing the list (reversible) |
 | 75 | WhatsApp | WhatsApp support button and contact link appear once the owner enters the number in Admin → Website → Contact (supersedes the "no numbers" rule for that one number) |
 | 76 | Roles | Instructor becomes **Batch Coordinator** (own batches: roster, schedule, notices, staff-confirmed onboarding steps, support). Content Managers manage programs, batches, onboarding and documents and can view applications without CNIC/CV |
+| 77 | Bank transfer QR | The Meezan Bank QR code (DIGITAL SETUPS-6845) ships with the site and is shown under Bank transfer on the applicant's payment page; a QR alone turns bank transfer on. Admin → Payments → Payment details can switch it to another Media image or off |
+| 78 | Homepage hero | The eBay hero's button, price line and logo card lead to the programs page (`/courses`) by default; a saved copy of the old "contact us" link or price text is replaced by the new default |
 
 ## Open items (waiting on owner)
 

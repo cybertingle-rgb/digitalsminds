@@ -71,6 +71,12 @@ run("paid courses (integration)", async () => {
     await expect(pay.savePaymentDetails({ bankAccountNumber: "123" }, cm)).rejects.toThrow(/Super Admins/);
     await pay.savePaymentDetails({ bankName: "Meezan", bankAccountTitle: "Digitals Minds", bankAccountNumber: "PK00TEST0000000000000000" }, sa);
     expect(pay.availableMethods(await pay.getPaymentDetails())).toEqual(["BANK_TRANSFER"]);
+    // The built-in bank QR code alone offers bank transfer; "none" turns it off.
+    expect(pay.availableMethods({ jazzcashNumber: "03000000000" })).toEqual(["BANK_TRANSFER", "JAZZCASH"]);
+    expect(pay.availableMethods({ bankQrId: "none", jazzcashNumber: "03000000000" })).toEqual(["JAZZCASH"]);
+    expect(await pay.bankQr({})).toBe("builtin");
+    expect(await pay.bankQr({ bankQrId: "none" })).toBeNull();
+    expect(await pay.bankQr({ bankQrId: "missing-asset" })).toBe("builtin");
   });
 
   it("checks receipts by content and strips images", async () => {

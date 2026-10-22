@@ -4,21 +4,22 @@ import { createRateLimiter } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { APPLICATION_COOKIE, APPLICATION_COOKIE_MAX_AGE } from "@/modules/admissions/cookie";
 import { looksLikeToken } from "@/modules/admissions/rules";
-import { confirmApplicationEmail } from "@/modules/admissions/service";
 
 export const dynamic = "force-dynamic";
 
 const limiter = createRateLimiter({ limit: 30, windowMs: 10 * 60 * 1000 });
 
 /**
- * The emailed status link. Confirms the email, keeps the token in an httpOnly
- * cookie and redirects to /application, so the token leaves the address bar
- * (and never reaches browser history or referrers of later pages).
+ * The emailed status link. Keeps the token in an httpOnly cookie and redirects
+ * to /application, so the token leaves the address bar (and never reaches
+ * browser history or referrers of later pages). It never waits on the
+ * database, so the click always lands: /application checks the token and
+ * confirms the email when it loads.
  */
-export async function GET(request: NextRequest) {
+export function GET(request: NextRequest) {
   const target = new URL("/application", siteConfig.url);
   const token = request.nextUrl.searchParams.get("t");
-  if (!limiter(clientIp(request.headers)).allowed || !looksLikeToken(token) || !(await confirmApplicationEmail(token))) {
+  if (!limiter(clientIp(request.headers)).allowed || !looksLikeToken(token)) {
     target.searchParams.set("invalid", "1");
     return NextResponse.redirect(target, 303);
   }

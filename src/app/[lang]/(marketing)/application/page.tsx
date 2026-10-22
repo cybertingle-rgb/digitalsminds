@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import builtinQr from "@/assets/payments/bank-qr.jpg";
 import { ApplicationPayForm } from "@/components/admissions/ApplicationPayForm";
 import { FindApplicationForm } from "@/components/admissions/FindApplicationForm";
 import { FormAlert } from "@/components/forms/Field";
@@ -13,9 +15,9 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
 import { APPLICATION_COOKIE } from "@/modules/admissions/cookie";
 import { CLOSED_STAGES, looksLikeToken, STAGE_PATH, stageIndex } from "@/modules/admissions/rules";
-import { applicationByToken, type ApplicantView } from "@/modules/admissions/service";
+import { applicationByToken, confirmApplicationEmail, type ApplicantView } from "@/modules/admissions/service";
 import { formatDay } from "@/modules/batches/rules";
-import { availableMethods, formatPkr, getPaymentDetails } from "@/modules/payments/service";
+import { availableMethods, bankQr, formatPkr, getPaymentDetails } from "@/modules/payments/service";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Your application", robots: { index: false, follow: false } };
@@ -28,7 +30,9 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   const t = dict.apply;
   const sp = await searchParams;
   const token = (await cookies()).get(APPLICATION_COOKIE)?.value;
-  const app = !sp.invalid && looksLikeToken(token) ? await applicationByToken(token) : null;
+  let app = !sp.invalid && looksLikeToken(token) ? await applicationByToken(token) : null;
+  // The first visit from the emailed link proves the applicant owns the inbox.
+  if (app && !app.emailConfirmedAt && token && (await confirmApplicationEmail(token))) app = await applicationByToken(token);
 
   return (
     <Section className="!py-12">
@@ -125,6 +129,8 @@ async function PaymentSection({ dict, amount }: { dict: Dictionary; amount: numb
   const t = dict.payments;
   const details = await getPaymentDetails();
   const methods = availableMethods(details);
+  const qr = methods.includes("BANK_TRANSFER") ? await bankQr(details) : null;
+  const qrImage = qr === "builtin" ? { src: builtinQr.src, width: builtinQr.width, height: builtinQr.height } : qr;
   const row = (label: string, value?: string) =>
     value ? (
       <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 py-1.5">
@@ -142,6 +148,12 @@ async function PaymentSection({ dict, amount }: { dict: Dictionary; amount: numb
           <div>
             <h3 className="font-semibold text-charcoal-900">{t.bank}</h3>
             <dl className="mt-1 divide-y divide-charcoal-200/60 text-sm">{row(t.bankName, details.bankName)}{row(t.accountTitle, details.bankAccountTitle)}{row(t.accountNumber, details.bankAccountNumber)}</dl>
+            {qrImage && (
+              <figure className="mt-3 flex flex-wrap items-center gap-4">
+                <Image src={qrImage.src} alt={t.bankQrAlt} width={qrImage.width} height={qrImage.height} unoptimized className="h-52 w-52 rounded-2xl bg-white object-contain p-2 ring-1 ring-charcoal-200/60" />
+                <figcaption className="max-w-xs text-sm text-charcoal-700">{t.bankQrHint}</figcaption>
+              </figure>
+            )}
           </div>
         )}
         {methods.includes("JAZZCASH") && (

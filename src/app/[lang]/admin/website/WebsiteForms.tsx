@@ -101,8 +101,8 @@ export function FeaturedForm({ value, defaults, images }: { value: Featured; def
         <Pair state={state} name="points" label="What you'll learn (one point per line, up to 8)" en={value.points} ur={value.pointsUr} placeholder="e.g. Setting up your eBay seller account" rows={5} max={1200} />
         <Pair state={state} name="price" label="Price / how to join" en={value.price} ur={value.priceUr} placeholder={defaults.price} max={160} />
         <Pair state={state} name="button" label="Button text" en={value.button} ur={value.buttonUr} placeholder={defaults.button} max={80} />
-        <Field label="Button link" name="href" error={e("href")} hint="A page on this website. Default: the contact form with “eBay course enrollment” selected. Once the course is published, you can use /courses/its-web-address.">
-          <input id="href" name="href" dir="ltr" defaultValue={value.href ?? ""} placeholder="/contact?service=ebay-course" className={inputClass} aria-invalid={e("href") ? true : undefined} aria-describedby={describedBy("href", e("href"))} />
+        <Field label="Button link" name="href" error={e("href")} hint="A page on this website. Default: the programs page (/courses). To open one program directly, use /courses/its-web-address. The logo card and the price line link to the same page.">
+          <input id="href" name="href" dir="ltr" defaultValue={value.href ?? ""} placeholder="/courses" className={inputClass} aria-invalid={e("href") ? true : undefined} aria-describedby={describedBy("href", e("href"))} />
         </Field>
         <Pair state={state} name="disclaimer" label="Trademark note" en={value.disclaimer} ur={value.disclaimerUr} placeholder={defaults.disclaimer} rows={2} max={300} />
       </Group>

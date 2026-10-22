@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { localizePath, type Locale } from "@/i18n/config";
@@ -9,6 +10,8 @@ type Featured = NonNullable<Awaited<ReturnType<typeof featuredText>>>;
 
 /** Homepage hero for the featured course (the eBay course). Edited in Admin → Website → Homepage. */
 export function FeaturedHero({ locale, dict, f }: { locale: Locale; dict: Dictionary; f: Featured }) {
+  // The button, the price line and the logo card all lead to the program (the programs page by default).
+  const href = localizePath(f.href, locale);
   return (
     <section className="relative overflow-x-clip" aria-labelledby="featured-title">
       <Container className="relative grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:py-24">
@@ -25,22 +28,27 @@ export function FeaturedHero({ locale, dict, f }: { locale: Locale; dict: Dictio
             {f.title}
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-charcoal-700 text-pretty" dir="auto">{f.text}</p>
-          <p className="glass-subtle mt-6 inline-flex rounded-full px-4 py-1.5 text-sm font-semibold text-charcoal-800" dir="auto">{f.price}</p>
+          <p className="mt-6">
+            <Link href={href} className="glass-subtle inline-flex rounded-full px-4 py-1.5 text-sm font-semibold text-charcoal-800 underline-offset-4 transition hover:underline" dir="auto">
+              {f.price}
+            </Link>
+          </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <LinkButton href={localizePath(f.href, locale)} className="border-run">{f.button}</LinkButton>
+            <LinkButton href={href} className="border-run">{f.button}</LinkButton>
             <LinkButton href={localizePath("/services", locale)} variant="secondary">{dict.featured.secondary}</LinkButton>
           </div>
         </div>
         <div className="relative lg:col-span-5">
           <div aria-hidden="true" className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-br from-sun-400/45 via-sun-200/25 to-charcoal-900/10 blur-2xl" />
           <div className="glass-blur border-run-live rounded-[2rem] p-5 sm:p-7">
-            <div className="flex min-h-40 items-center justify-center rounded-3xl bg-white/90 px-8 py-10 ring-1 ring-white sm:min-h-48">
+            {/* Decorative duplicate of the button's link, so keyboard users don't tab to it twice. */}
+            <Link href={href} tabIndex={-1} aria-hidden="true" className="flex min-h-40 items-center justify-center rounded-3xl bg-white/90 px-8 py-10 ring-1 ring-white transition hover:ring-sun-400 sm:min-h-48">
               {f.logo ? (
                 <Image src={f.logo.src} alt={f.logo.alt} width={f.logo.width} height={f.logo.height} priority className="h-auto max-h-32 w-auto max-w-full object-contain sm:max-h-36" />
               ) : (
                 <span className="text-7xl font-bold tracking-tight text-charcoal-900 sm:text-8xl" dir="ltr">{dict.featured.logoFallback}</span>
               )}
-            </div>
+            </Link>
             {f.points.length > 0 && (
               <div className="mt-5">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">{dict.featured.pointsTitle}</p>

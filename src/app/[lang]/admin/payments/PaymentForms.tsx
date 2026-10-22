@@ -5,6 +5,7 @@ import { Notice } from "@/components/admin/ui";
 import { Field, inputClass } from "@/components/forms/Field";
 import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
+import builtinQr from "@/assets/payments/bank-qr.jpg";
 import { confirmPaymentAction, rejectPaymentAction, savePaymentDetailsAction, type PaymentState } from "./actions";
 
 /** Confirm (opens the course) or reject (with a reason for the student). */
@@ -41,10 +42,12 @@ export function PaymentDecision({ id }: { id: string }) {
   );
 }
 
-type Details = Partial<Record<"bankName" | "bankAccountTitle" | "bankAccountNumber" | "jazzcashTitle" | "jazzcashNumber" | "easypaisaTitle" | "easypaisaNumber" | "instructions" | "instructionsUr", string>>;
+type Details = Partial<Record<"bankName" | "bankAccountTitle" | "bankAccountNumber" | "jazzcashTitle" | "jazzcashNumber" | "easypaisaTitle" | "easypaisaNumber" | "instructions" | "instructionsUr" | "bankQrId", string>>;
 
-export function PaymentDetailsForm({ value }: { value: Details }) {
+export function PaymentDetailsForm({ value, images }: { value: Details; images: { id: string; name: string; url: string }[] }) {
   const [state, onSubmit, pending] = useFormAction(savePaymentDetailsAction, { status: "idle" } as PaymentState);
+  const [qr, setQr] = useState(value.bankQrId ?? "");
+  const qrUrl = qr === "" ? builtinQr.src : images.find((i) => i.id === qr)?.url;
   const input = (name: keyof Details, label: string, hint?: string) => (
     <Field label={label} name={name} hint={hint}>
       <input id={name} name={name} defaultValue={value[name] ?? ""} dir="auto" autoComplete="off" className={inputClass} />
@@ -58,7 +61,22 @@ export function PaymentDetailsForm({ value }: { value: Details }) {
         <div className="grid gap-4 sm:grid-cols-3">
           {input("bankName", "Bank")}
           {input("bankAccountTitle", "Account title")}
-          {input("bankAccountNumber", "Account number / IBAN", "Leave empty to turn bank transfer off.")}
+          {input("bankAccountNumber", "Account number / IBAN", "Leave this and the QR code empty to turn bank transfer off.")}
+        </div>
+        <div className="flex flex-wrap items-start gap-4">
+          <div className="min-w-60 flex-1">
+            <Field label="QR code" name="bankQrId" hint="Shown under the bank details for applicants to scan. To use another QR, upload it in Media as a public image first.">
+              <select id="bankQrId" name="bankQrId" value={qr} onChange={(e) => setQr(e.target.value)} className={inputClass}>
+                <option value="">Meezan Bank QR (DIGITAL SETUPS-6845)</option>
+                <option value="none">No QR code</option>
+                {images.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
+              </select>
+            </Field>
+          </div>
+          {qrUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrUrl} alt="Selected QR code" className="h-32 w-32 rounded-lg bg-white object-contain ring-1 ring-white" />
+          )}
         </div>
       </fieldset>
       <fieldset className="glass space-y-4 rounded-2xl p-5">

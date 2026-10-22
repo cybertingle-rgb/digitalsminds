@@ -103,7 +103,7 @@ export type Logo = { src: string; width: number; height: number };
 
 // --- Featured course (homepage hero) ---------------------------------------------
 
-/** Internal path (e.g. /contact?service=ebay-course or /courses/ebay) for the hero button. */
+/** Internal path (e.g. /courses or /courses/ebay) for the hero button. */
 const internalPath = z
   .string()
   .trim()
@@ -263,6 +263,12 @@ export async function publicImages() {
   return rows.map((r) => ({ id: r.id, name: r.originalName, url: mediaUrl(r) }));
 }
 
+/** Where the hero leads by default: the programs page, where visitors see fees and batches and apply. */
+export const FEATURED_DEFAULT_HREF = "/courses";
+// Before enrollment opened on the website the hero pointed to the contact form; saved copies of that old default now lead to the programs.
+const LEGACY_FEATURED_HREF = "/contact?service=ebay-course";
+const LEGACY_FEATURED_PRICE = "Paid course · Contact us for the fee and how to join";
+
 /** The featured course shown at the top of the homepage (eBay course by default), or null when switched off. */
 export async function featuredText(locale: Locale, dict: Dictionary) {
   const f = (await getFeaturedSetting()) ?? featuredInput.parse({ enabled: true });
@@ -281,9 +287,9 @@ export async function featuredText(locale: Locale, dict: Dictionary) {
     title: pick(locale, f.title, f.titleUr, d.title),
     text: pick(locale, f.text, f.textUr, d.text),
     points: lines(pick(locale, f.points, f.pointsUr, "")),
-    price: pick(locale, f.price, f.priceUr, d.price),
+    price: pick(locale, f.price === LEGACY_FEATURED_PRICE ? undefined : f.price, f.priceUr, d.price),
     button: pick(locale, f.button, f.buttonUr, d.button),
-    href: f.href ?? "/contact?service=ebay-course",
+    href: !f.href || f.href === LEGACY_FEATURED_HREF ? FEATURED_DEFAULT_HREF : f.href,
     disclaimer: pick(locale, f.disclaimer, f.disclaimerUr, d.disclaimer),
     logo,
   };
