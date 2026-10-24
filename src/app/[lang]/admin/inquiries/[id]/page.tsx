@@ -8,6 +8,7 @@ import { requirePagePermission } from "@/modules/auth/session";
 import { assignableStaff, getInquiry } from "@/modules/inquiries/admin";
 import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
 import { DeleteLead, LeadUpdateForm, NoteForm } from "../LeadForms";
+import { inquiryTopicLabels } from "@/modules/catalog/service";
 
 export const metadata: Metadata = { title: "Inquiry" };
 
@@ -16,12 +17,12 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyl
 export default async function InquiryPage({ params }: PageProps<"/[lang]/admin/inquiries/[id]">) {
   const user = await requirePagePermission("inquiries.manage", "/admin/inquiries");
   const { id } = await params;
-  const [inquiry, staff] = await Promise.all([getInquiry(id), assignableStaff()]);
+  const [inquiry, staff, labels] = await Promise.all([getInquiry(id), assignableStaff(), inquiryTopicLabels()]);
   if (!inquiry) notFound();
 
   const details: [string, string | null][] = [
     ["Received", dateFmt.format(inquiry.createdAt)],
-    ["Service", serviceLabel(inquiry.service)],
+    ["Service", serviceLabel(inquiry.service, labels)],
     ["Company", inquiry.company],
     ["Sent from page", inquiry.source],
     ["Website language", inquiry.locale === "ur" ? "Urdu" : inquiry.locale === "en" ? "English" : null],

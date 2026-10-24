@@ -4,7 +4,7 @@ import { CtaBanner } from "@/components/sections/CtaBanner";
 import { Pillars } from "@/components/sections/Pillars";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getServices } from "@/content/services";
+import { siteServices } from "@/modules/catalog/service";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { homeText } from "@/modules/content/settings";
@@ -41,7 +41,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/about">) 
       <Section>
         <SectionHeading title={dict.about.divisionsTitle} description={dict.about.divisionsDescription} />
         <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-          {getServices(dict).map((s) => (
+          {(await siteServices()).map((s) => (
             <li key={s.slug} className="glass glow-card rounded-2xl !border-s-4 !border-s-sun-400 p-5">
               <h3 className="font-semibold text-charcoal-900">{s.title}</h3>
               <p className="mt-1 text-sm text-muted">{s.summary}</p>

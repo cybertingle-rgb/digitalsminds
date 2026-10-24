@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { format } from "@/i18n/merge";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BatchFacts, PortalHeading, StageTimeline, stageHelp } from "@/components/portal/PortalParts";
@@ -9,6 +10,7 @@ import { getCurrentUser } from "@/modules/auth/session";
 import { RichText } from "@/modules/courses/richtext";
 import { formatPkr } from "@/modules/payments/format";
 import { ACTIVE_STAGES, myEnrollments } from "@/modules/portal/service";
+import { studentAttendance } from "@/modules/attendance/service";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "My program", robots: noindex };
@@ -18,7 +20,7 @@ export default async function ProgramPage({ params }: PageProps<"/[lang]/account
   const user = await getCurrentUser();
   if (!user) redirect(`${localizePath("/login", locale)}?next=${encodeURIComponent(localizePath("/account/program", locale))}`);
   const p = dict.portal;
-  const enrollments = await myEnrollments(user.id);
+  const [enrollments, attendance] = await Promise.all([myEnrollments(user.id), studentAttendance(user.id)]);
   const fmt = new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "medium", timeZone: "Asia/Karachi" });
   const paymentLabel = { PENDING: p.paymentPending, CONFIRMED: p.paymentVerified, REJECTED: p.paymentRejected } as const;
 
@@ -44,6 +46,11 @@ export default async function ProgramPage({ params }: PageProps<"/[lang]/account
                   <p className="mt-2 inline-flex rounded-full bg-charcoal-900 px-3 py-1 text-sm font-semibold text-sun-400">{dict.apply.stages[e.effective]}</p>
                   <p className="mt-2 text-sm text-charcoal-800">{stageHelp(e, dict)}</p>
                   <div className="mt-5"><BatchFacts e={e} dict={dict} /></div>
+                  {attendance.summary.get(e.id)?.total ? (
+                    <p className="mt-3 text-sm font-semibold text-charcoal-800">
+                      {format(dict.live.attendanceSummary, { attended: String(attendance.summary.get(e.id)!.attended), total: String(attendance.summary.get(e.id)!.total) })}
+                    </p>
+                  ) : null}
                 </section>
                 {active && (e.batch?.joiningInfo || link) && (
                   <section aria-labelledby={`join-${e.id}`} className="glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6">

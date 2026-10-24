@@ -5,6 +5,7 @@ import { createRateLimiter } from "@/lib/rate-limit";
 import { clientIp, isSameOrigin } from "@/lib/request";
 import { fieldErrors } from "@/lib/validation";
 import { inquiryInputSchema } from "@/modules/inquiries/schema";
+import { isInquiryTopic } from "@/modules/catalog/service";
 import { createInquiry } from "@/modules/inquiries/service";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -49,7 +50,9 @@ export async function POST(request: NextRequest) {
       throw new ApiError(422, "validation_failed", "Please check the highlighted fields.", fieldErrors(parsed.error));
     }
 
-    await createInquiry(parsed.data);
+    // A topic that no longer exists (e.g. an unpublished service in an old tab) is kept as a general inquiry.
+    const service = (await isInquiryTopic(parsed.data.service)) ? parsed.data.service : "general";
+    await createInquiry({ ...parsed.data, service });
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err) {
     return errorResponse(err);

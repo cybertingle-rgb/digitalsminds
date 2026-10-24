@@ -6,6 +6,7 @@ import { can } from "@/modules/auth/permissions";
 import { getCurrentUser } from "@/modules/auth/session";
 import { inquiriesForExport, parseFilters } from "@/modules/inquiries/admin";
 import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
+import { inquiryTopicLabels } from "@/modules/catalog/service";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   const user = await getCurrentUser();
   if (!user || !can(user.role, "inquiries.export")) return new Response("Not found", { status: 404 });
   const filters = parseFilters(Object.fromEntries(request.nextUrl.searchParams));
-  const rows = await inquiriesForExport(filters, user);
+  const [rows, labels] = await Promise.all([inquiriesForExport(filters, user), inquiryTopicLabels()]);
   const csv = toCsv(
     ["Received (UTC)", "Name", "Email", "Phone", "Company", "Service", "Status", "Assigned to", "Follow-up (PKT)", "Message", "Source page", "Language", "UTM source", "UTM medium", "UTM campaign"],
     rows.map((r) => [
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
       r.email,
       r.phone,
       r.company,
-      serviceLabel(r.service),
+      serviceLabel(r.service, labels),
       statusLabels[r.status],
       r.assignedTo?.name,
       r.followUpAt ? pkDay(r.followUpAt) : "",

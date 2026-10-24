@@ -5,9 +5,9 @@ import { CtaBanner } from "@/components/sections/CtaBanner";
 import { Arrow } from "@/components/ui/Arrow";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getServices } from "@/content/services";
 import { hasLocale, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
+import { siteServices } from "@/modules/catalog/service";
 import { homeText } from "@/modules/content/settings";
 import { editablePageMetadata } from "@/modules/content/metadata";
 
@@ -22,8 +22,7 @@ export default async function ServicesPage({ params }: PageProps<"/[lang]/servic
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const h = await homeText(lang, dict);
-  const services = getServices(dict);
+  const [h, services] = await Promise.all([homeText(lang, dict), siteServices()]);
   return (
     <>
       <Section>
@@ -45,7 +44,9 @@ export default async function ServicesPage({ params }: PageProps<"/[lang]/servic
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
               <h2 className="text-2xl font-bold text-charcoal-900 sm:text-3xl">{s.title}</h2>
+              {s.category && <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-gold-700">{s.category.title}</p>}
               <p className="mt-4 text-muted">{s.description}</p>
+              {s.notice && <p className="mt-4 rounded-xl border-s-4 border-sun-400 bg-white/60 px-4 py-3 text-sm text-charcoal-800">{s.notice}</p>}
               <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
                 <Link href={localizePath(`/services/${s.slug}`, lang)} className="font-semibold text-charcoal-900 underline-offset-4 hover:underline">
                   {dict.common.viewDetails} <Arrow />

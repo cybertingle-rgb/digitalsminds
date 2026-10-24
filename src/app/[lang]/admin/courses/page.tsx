@@ -35,7 +35,10 @@ export default async function CoursesPage({ searchParams }: PageProps<"/[lang]/a
             {can(user.role, "courses.publish") ? "Drafts are only visible to the team until you publish them." : "A Content Manager or Super Admin publishes it when it's ready."}
           </p>
         </div>
-        <LinkButton href="/admin/courses/new" variant="dark">New program</LinkButton>
+        <div className="flex flex-wrap gap-2">
+          <LinkButton href="/admin/courses/categories" variant="secondary">Categories</LinkButton>
+          <LinkButton href="/admin/courses/new" variant="dark">New program</LinkButton>
+        </div>
       </div>
 
       <nav aria-label="Filter by status" className="flex flex-wrap gap-2">

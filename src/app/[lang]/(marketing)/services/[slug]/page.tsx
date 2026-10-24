@@ -6,7 +6,8 @@ import { LinkButton } from "@/components/ui/Button";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getService, getServices, serviceSlugs } from "@/content/services";
+import { serviceSeeds } from "@/content/service-defaults";
+import { siteService, siteServices } from "@/modules/catalog/service";
 import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
 import { hasLocale, locales, localizePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
@@ -15,28 +16,28 @@ import { pageMetadata } from "@/i18n/metadata";
 
 type Props = PageProps<"/[lang]/services/[slug]">;
 
-export const dynamicParams = false;
-
+// Services added in the admin later are rendered on first visit.
 export function generateStaticParams() {
-  return locales.flatMap((lang) => serviceSlugs.map((slug) => ({ lang, slug })));
+  return locales.flatMap((lang) => serviceSeeds.map((s) => ({ lang, slug: s.slug })));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) return {};
-  const service = getService(getDictionary(lang), slug);
-  return service ? pageMetadata(lang, `/services/${slug}`, { title: service.title, description: service.summary }) : {};
+  const service = await siteService(slug);
+  return service ? pageMetadata(lang, `/services/${slug}`, { title: service.seoTitle || service.title, description: service.seoDescription || service.summary }) : {};
 }
 
 export default async function ServicePage({ params }: Props) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const service = getService(dict, slug);
+  const services = await siteServices();
+  const service = services.find((s) => s.slug === slug);
   if (!service) notFound();
 
   const quoteHref = `${localizePath("/contact", lang)}?service=${service.slug}`;
-  const others = getServices(dict).filter((s) => s.slug !== service.slug);
+  const others = services.filter((s) => s.slug !== service.slug);
 
   return (
     <>
@@ -65,8 +66,13 @@ export default async function ServicePage({ params }: Props) {
           / <span className="text-charcoal-900">{service.title}</span>
         </nav>
         <div className="mt-6">
-          <SectionHeading as="h1" title={service.title} description={service.description} />
+          <SectionHeading as="h1" eyebrow={service.category?.title} title={service.title} description={service.description} />
         </div>
+        {service.notice && (
+          <p className="mt-6 max-w-3xl rounded-2xl border-s-4 border-sun-400 bg-white/60 px-5 py-4 text-sm text-charcoal-800">
+            <strong className="font-semibold text-charcoal-900">{dict.servicePage.noticeTitle}</strong> {service.notice}
+          </p>
+        )}
         <div className="mt-8 flex flex-wrap gap-3">
           <LinkButton href={quoteHref}>{dict.servicePage.requestQuote}</LinkButton>
           <LinkButton href={localizePath("/services", lang)} variant="secondary">
@@ -89,7 +95,7 @@ export default async function ServicePage({ params }: Props) {
               ))}
             </ul>
           </div>
-          <div>
+          {service.idealFor.length > 0 && <div>
             <h2 className="text-2xl font-bold text-charcoal-900">{dict.servicePage.idealFor}</h2>
             <ul className="mt-6 space-y-3">
               {service.idealFor.map((i) => (
@@ -98,7 +104,7 @@ export default async function ServicePage({ params }: Props) {
                 </li>
               ))}
             </ul>
-          </div>
+          </div>}
         </div>
       </Section>
       <Section>

@@ -8,6 +8,7 @@ import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
 import type { CurrentUser } from "@/modules/auth/session";
 import { availability, dateOnly, PUBLIC_BATCH_STATUSES, SEAT_STAGES, seatsLeft } from "./rules";
+import { DEFAULT_TIME_ZONE, isValidTimeZone } from "@/lib/timezone";
 
 /**
  * Batches: intakes of a program with their own dates, schedule and seats.
@@ -49,6 +50,9 @@ export const batchInput = z
     joiningInfo: optionalText(5000),
     internalNotes: optionalText(5000),
     coordinatorId: z.preprocess((v) => (v === "" || v == null ? undefined : v), z.string().max(64).optional()),
+    timeZone: z.preprocess((v) => (v === "" || v == null ? DEFAULT_TIME_ZONE : v), z.string().max(64).refine(isValidTimeZone, "Choose a valid time zone")),
+    /** Checkbox: "on" when ticked. */
+    attendanceEnabled: z.preprocess((v) => v === true || v === "on", z.boolean()),
   })
   .refine((v) => !v.endDate || v.endDate >= v.startDate, { path: ["endDate"], message: "Ends before it starts" })
   .refine((v) => !v.applicationDeadline || v.applicationDeadline <= (v.endDate ?? v.startDate), {
@@ -90,6 +94,8 @@ function toData(input: BatchInput) {
     joiningInfo: input.joiningInfo,
     internalNotes: input.internalNotes,
     coordinatorId: input.coordinatorId ?? null,
+    timeZone: input.timeZone,
+    attendanceEnabled: input.attendanceEnabled,
   };
 }
 
@@ -191,7 +197,7 @@ export async function publicBatches(courseId: string) {
   const batches = await db().batch.findMany({
     where: { courseId, status: { in: [...PUBLIC_BATCH_STATUSES] } },
     orderBy: { startDate: "asc" },
-    select: { id: true, name: true, code: true, status: true, startDate: true, endDate: true, scheduleText: true, capacity: true, applicationDeadline: true },
+    select: { id: true, name: true, code: true, status: true, startDate: true, endDate: true, scheduleText: true, timeZone: true, capacity: true, applicationDeadline: true },
   });
   const taken = await seatsTaken(batches.map((b) => b.id));
   const today = pkDay();

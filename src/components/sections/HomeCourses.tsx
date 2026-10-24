@@ -8,6 +8,7 @@ import type { Dictionary } from "@/i18n/get-dictionary";
 import { listingText, publishedCourses } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
 import { nextOpenBatchByCourse } from "@/modules/batches/service";
+import { coursePrice } from "@/modules/payments/format";
 
 /** Up to three published courses; the section is left out until one is published. */
 export async function HomeCourses({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -32,6 +33,7 @@ export async function HomeCourses({ locale, dict }: { locale: Locale; dict: Dict
                 thumbnailUrl={c.thumbnail ? mediaUrl(c.thumbnail) : null}
                 courseLang={c.language}
                 meta={programMeta(c, nextBatch.get(c.id), dict)}
+                  fee={coursePrice(c)}
               />
             </li>
           );

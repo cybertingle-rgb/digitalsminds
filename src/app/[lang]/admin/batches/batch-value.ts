@@ -13,6 +13,8 @@ export type BatchValue = {
   joiningInfo: string;
   internalNotes: string;
   coordinatorId: string;
+  timeZone: string;
+  attendanceEnabled: boolean;
 };
 
 export const emptyBatch: BatchValue = {
@@ -29,4 +31,6 @@ export const emptyBatch: BatchValue = {
   joiningInfo: "",
   internalNotes: "",
   coordinatorId: "",
+  timeZone: "Asia/Karachi",
+  attendanceEnabled: false,
 };

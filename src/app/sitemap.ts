@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { features } from "@/config/features";
 import { siteConfig } from "@/config/site";
-import { serviceSlugs } from "@/content/services";
+import { siteServices } from "@/modules/catalog/service";
 import { localizePath, type Locale } from "@/i18n/config";
 import { db } from "@/lib/db";
 import { publicPosts } from "@/modules/content/blog";
@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: { path: string; lastModified?: string }[] = [
     ...["/", "/about", "/services", "/courses", "/blog", "/contact"].map((path) => ({ path })),
     ...(await publishedCourseEntries()),
-    ...serviceSlugs.map((slug) => ({ path: `/services/${slug}` })),
+    ...(await siteServices()).map((s) => ({ path: `/services/${s.slug}` })),
     ...(await contentEntries()),
   ];
   // Urdu URLs are listed only once the translation is public (see features.urduPublic).

@@ -7,6 +7,7 @@ import { sendMail } from "@/lib/mailer";
 import { actionEmail } from "@/modules/email/templates";
 import { serviceLabel } from "./labels";
 import type { InquiryInput } from "./schema";
+import { inquiryTopicLabels } from "@/modules/catalog/service";
 
 /** Where "new inquiry" alert emails go (Admin → Inquiries → Alert settings). */
 const KEY = "notifications.inquiry";
@@ -29,6 +30,7 @@ export async function sendLeadAlert(id: string, input: InquiryInput) {
     const setting = await getLeadAlertSetting();
     if (!setting.enabled) return;
     const dict = getDictionary("en");
+    const topic = serviceLabel(input.service, await inquiryTopicLabels());
     const excerpt = input.message.length > 400 ? `${input.message.slice(0, 400)}…` : input.message;
     await sendMail(
       actionEmail({
@@ -36,8 +38,8 @@ export async function sendLeadAlert(id: string, input: InquiryInput) {
         locale: "en",
         to: setting.email,
         name: "Digitals Minds team",
-        subject: `New inquiry: ${serviceLabel(input.service)} from ${input.name}`,
-        intro: `${input.name} (${input.email}) sent an inquiry about ${serviceLabel(input.service)}: “${excerpt}”`,
+        subject: `New inquiry: ${topic} from ${input.name}`,
+        intro: `${input.name} (${input.email}) sent an inquiry about ${topic}: “${excerpt}”`,
         buttonLabel: "Open the inquiry",
         url: `${siteConfig.url}/admin/inquiries/${id}`,
       }),

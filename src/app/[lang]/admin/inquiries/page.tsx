@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { StatusBadge } from "@/components/admin/ui";
 import { inputClass } from "@/components/forms/Field";
-import { serviceSlugs } from "@/content/services";
 import { pkTodayRange } from "@/lib/pk-time";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
@@ -11,6 +10,7 @@ import { getLeadAlertSetting } from "@/modules/inquiries/alerts";
 import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
 import { getSmtpStatus } from "@/modules/settings/integrations";
 import { AlertSettingForm } from "./LeadForms";
+import { inquiryTopicLabels } from "@/modules/catalog/service";
 
 export const metadata: Metadata = { title: "Inquiries" };
 
@@ -24,11 +24,12 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
   const sp = await searchParams;
   const filters = parseFilters(sp);
   const page = Math.max(1, Math.min(1000, Number(sp.page) || 1));
-  const [{ items, total }, staff, alerts, smtp] = await Promise.all([
+  const [{ items, total }, staff, alerts, smtp, labels] = await Promise.all([
     listInquiries(filters, user, page, PAGE_SIZE),
     assignableStaff(),
     getLeadAlertSetting(),
     getSmtpStatus(),
+    inquiryTopicLabels(),
   ]);
   const { start } = pkTodayRange();
   const qs = (extra: Record<string, string>) =>
@@ -68,7 +69,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
           <label htmlFor="service" className="block text-sm font-medium">Service</label>
           <select id="service" name="service" defaultValue={filters.service ?? ""} className={inputClass}>
             <option value="">Any</option>
-            {[...serviceSlugs, "ebay-course", "general"].map((s) => <option key={s} value={s}>{serviceLabel(s)}</option>)}
+            {[...labels].sort((a, b) => a[1].localeCompare(b[1])).map(([slug, label]) => <option key={slug} value={slug}>{label}</option>)}
           </select>
         </div>
         <div>
@@ -122,7 +123,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/[lang]
                       <span className="block text-muted" dir="ltr">{i.email}</span>
                       {i.company && <span className="block text-xs text-muted">{i.company}</span>}
                     </td>
-                    <td className="px-4 py-3">{serviceLabel(i.service)}</td>
+                    <td className="px-4 py-3">{serviceLabel(i.service, labels)}</td>
                     <td className="px-4 py-3"><StatusBadge tone={tone[i.status]}>{statusLabels[i.status]}</StatusBadge></td>
                     <td className="px-4 py-3">{i.assignedTo?.name ?? <span className="text-muted">-</span>}</td>
                     <td className={`whitespace-nowrap px-4 py-3 ${overdue ? "font-semibold text-red-700" : ""}`}>

@@ -20,6 +20,8 @@ import { detectFile } from "@/modules/media/validate";
 import { notify } from "@/modules/notifications/service";
 import { availableMethods, coursePrice, formatPkr, getPaymentDetails, PAYMENT_METHODS, prepareReceipt } from "@/modules/payments/service";
 import { CV_MAX_BYTES, CV_TYPES, formatCnic, hashToken, newReference, newToken, normaliseReference, OPEN_APPLICATION_STAGES, transactionKey } from "./rules";
+import { priceSnapshot } from "@/modules/currency/service";
+import { isSupportedCurrency, minorDigits } from "@/modules/currency/rules";
 
 /**
  * Admissions: a visitor applies for a batch, confirms their email through a
@@ -62,6 +64,8 @@ export const applicationInput = z.object({
   }),
   message: z.string().trim().max(1000).optional().transform((v) => v || null),
   acceptTerms: z.literal(true, "acceptTerms"),
+  /** Currency the applicant was viewing prices in (display only; recomputed from the server's own rate). */
+  displayCurrency: z.string().regex(/^[A-Z]{3}$/).optional().catch(undefined),
 });
 export type ApplicationInput = z.infer<typeof applicationInput>;
 
@@ -103,6 +107,8 @@ export async function submitApplication(input: ApplicationInput, cv: Upload) {
   const cvKey = privateKey("applications/cv", file.ext);
   await putFile(cvKey, cv.data);
 
+  // What they were shown, recorded with the rate so it can be explained later; the PKR fee is what is owed.
+  const snapshot = await priceSnapshot(fee, input.displayCurrency).catch(() => null);
   const token = newToken();
   let application;
   try {
@@ -122,6 +128,7 @@ export async function submitApplication(input: ApplicationInput, cv: Upload) {
         cvName: `cv.${file.ext}`,
         message: input.message,
         feeAmount: fee,
+        ...snapshot,
         tokenHash: hashToken(token),
         termsAcceptedAt: new Date(),
         openKey,
@@ -160,6 +167,9 @@ const applicantView = {
   stage: true,
   feeAmount: true,
   currency: true,
+  displayCurrency: true,
+  displayAmount: true,
+  displayRateAt: true,
   decisionNote: true,
   emailConfirmedAt: true,
   createdAt: true,
@@ -223,6 +233,22 @@ export const paymentInput = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, "paidOn")
     .refine((v) => new Date(`${v}T00:00:00Z`).getTime() <= Date.now() + 36 * 3600_000, "paidOn"),
   note: z.string().trim().max(1000).optional().transform((v) => v || null),
+  /** Payers abroad: what they sent and in which currency (information for the Super Admin; the PKR received is what counts). */
+  sentAmount: z
+    .string()
+    .trim()
+    .max(20)
+    .optional()
+    .transform((v) => (v ? v.replace(/[,\s]/g, "") : ""))
+    .refine((v) => v === "" || (/^\d{1,9}(\.\d{1,3})?$/.test(v) && Number(v) > 0), "sentAmount"),
+  sentCurrency: z.string().trim().max(3).optional().transform((v) => v || ""),
+}).transform((v, ctx) => {
+  if (!v.sentAmount) return { ...v, sent: null };
+  if (!isSupportedCurrency(v.sentCurrency) || v.sentCurrency === "PKR") {
+    ctx.addIssue({ code: "custom", path: ["sentCurrency"], message: "sentCurrency" });
+    return z.NEVER;
+  }
+  return { ...v, sent: { amount: Math.round(Number(v.sentAmount) * 10 ** minorDigits(v.sentCurrency)), currency: v.sentCurrency } };
 });
 
 /** The applicant sends the transaction ID and receipt. Errors are keys of dict.payments.errors. */
@@ -256,6 +282,8 @@ export async function submitApplicationPayment(token: string, input: z.infer<typ
           method: input.method,
           reference: input.reference,
           payerName: input.payerName,
+          sentAmount: input.sent?.amount ?? null,
+          sentCurrency: input.sent?.currency ?? null,
           paidOn: new Date(`${input.paidOn}T00:00:00Z`),
           note: input.note,
           receiptKey,

@@ -8,7 +8,7 @@ import { audit } from "@/modules/audit/log";
 import { can } from "@/modules/auth/permissions";
 import type { CurrentUser } from "@/modules/auth/session";
 import { inquiryStatuses, type InquiryStatus } from "./labels";
-import { INQUIRY_SERVICE_OPTIONS } from "./schema";
+import { inquiryTopicSchema } from "./schema";
 
 export class InquiryError extends Error {
   constructor(message: string) {
@@ -24,7 +24,7 @@ const OPEN: InquiryStatus[] = ["NEW", "CONTACTED", "QUALIFIED"];
 export const filtersSchema = z.object({
   q: z.string().trim().max(100).optional().catch(undefined),
   status: z.enum(inquiryStatuses as [InquiryStatus, ...InquiryStatus[]]).optional().catch(undefined),
-  service: z.enum(INQUIRY_SERVICE_OPTIONS).optional().catch(undefined),
+  service: inquiryTopicSchema.optional().catch(undefined),
   assignee: z.string().max(64).optional().catch(undefined), // "me" | "none" | userId
   followUp: z.enum(["overdue", "today", "upcoming"]).optional().catch(undefined),
 });

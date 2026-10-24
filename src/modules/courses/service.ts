@@ -88,6 +88,9 @@ export async function updateCourseDetails(courseId: string, input: z.infer<typeo
     const img = await db().mediaAsset.findFirst({ where: { id: input.thumbnailId, ...mediaScope(actor) } });
     if (!img || img.visibility !== "PUBLIC" || !img.mimeType.startsWith("image/")) throw new CourseError("Choose a public image from the Media library as the thumbnail.");
   }
+  if (input.categoryId && !(await db().programCategory.findUnique({ where: { id: input.categoryId }, select: { id: true } }))) {
+    throw new CourseError("Choose an existing category.");
+  }
   try {
     await db().course.update({ where: { id: courseId }, data: { ...input, objectives: input.objectives } });
   } catch (e) {

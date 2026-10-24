@@ -16,8 +16,11 @@ import { RichText } from "@/modules/courses/richtext";
 import { db } from "@/lib/db";
 import { courseBySlug, listingText, objectivesOf } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
-import { coursePrice, formatPkr } from "@/modules/payments/service";
+import { CurrencySwitcher } from "@/components/currency/CurrencySwitcher";
+import { Price } from "@/components/currency/Price";
+import { coursePrice } from "@/modules/payments/service";
 import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
+import { zoneLabel, zoneName } from "@/lib/timezone";
 
 export const dynamic = "force-dynamic";
 
@@ -87,10 +90,16 @@ export default async function CoursePage({ params }: Props) {
         </nav>
         <div className="mt-6 grid gap-8 lg:grid-cols-5 lg:items-center">
           <div className="lg:col-span-3">
+            {course.category?.active && (
+              <Link href={`${localizePath("/courses", lang)}?category=${course.category.slug}`} className="mb-3 inline-block text-xs font-semibold uppercase tracking-wider text-gold-700 hover:underline">
+                {(lang === "ur" && course.category.titleUr) || course.category.title}
+              </Link>
+            )}
             <h1 className="text-3xl font-bold tracking-tight text-balance text-charcoal-900 sm:text-4xl" dir="auto">{text.title}</h1>
             <p className="mt-4 text-lg text-muted" dir="auto">{text.summary}</p>
             <ul className="mt-6 flex flex-wrap gap-2 text-sm">
-              {[price ? formatPkr(price) : null, t.formats[course.format], course.durationText, t.levels[course.level], t.languages[course.language], course.certificateEnabled ? t.certificate : null]
+              {price && <li className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800"><Price pkr={price} /></li>}
+              {[t.formats[course.format], course.durationText, t.levels[course.level], t.languages[course.language], course.certificateEnabled ? t.certificate : null]
                 .filter(Boolean)
                 .map((m) => <li key={m} className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800">{m}</li>)}
             </ul>
@@ -118,7 +127,9 @@ export default async function CoursePage({ params }: Props) {
                     <li key={b.id} className="glass flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5" aria-label={b.name}>
                       <div className="min-w-0">
                         <p className="font-semibold text-charcoal-900">{b.name}</p>
-                        <p className="mt-1 text-sm text-charcoal-800">{b.scheduleText}</p>
+                        <p className="mt-1 text-sm text-charcoal-800">{b.scheduleText}
+                          {/* Older batches wrote the zone into the text already. */}
+                          {!b.scheduleText.includes(zoneLabel(b.timeZone, b.startDate)) && <span className="text-muted"> ({format(a.timesIn, { zone: zoneName(b.timeZone, b.startDate) })})</span>}</p>
                         <p className="mt-1 text-sm text-muted">
                           {format(a.starts, { date: formatDay(b.startDate) })}
                           {b.endDate && ` · ${format(a.ends, { date: formatDay(b.endDate) })}`}
@@ -163,13 +174,20 @@ export default async function CoursePage({ params }: Props) {
                 <RichText text={course.prerequisites} className="mt-4 text-charcoal-800" />
               </section>
             )}
+            {course.category?.active && course.category.notice && (
+              <section aria-labelledby="notice-title" className="rounded-2xl border-s-4 border-sun-400 bg-white/60 p-5">
+                <h2 id="notice-title" className="font-bold text-charcoal-900">{t.importantNotice}</h2>
+                <p className="mt-2 whitespace-pre-line text-sm text-charcoal-800">{course.category.notice}</p>
+              </section>
+            )}
           </div>
 
           <aside className="min-w-0 space-y-6">
             <div className="glass space-y-4 rounded-2xl p-6" aria-labelledby="fee-title">
               <h2 id="fee-title" className="text-sm font-semibold uppercase tracking-wider text-gold-700">{a.fee}</h2>
-              {price && <p className="text-3xl font-bold text-charcoal-900" dir="ltr">{formatPkr(price)}</p>}
+              {price && <Price pkr={price} size="large" className="text-3xl font-bold text-charcoal-900" />}
               <p className="text-sm text-muted">{a.feeNote}</p>
+              <CurrencySwitcher />
               {enrolled ? (
                 <>
                   <FormAlert tone="success">{a.enrolledNotice}</FormAlert>

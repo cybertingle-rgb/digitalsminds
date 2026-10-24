@@ -52,7 +52,7 @@ run("programs and batches (integration)", async () => {
     durationText: "8 weeks",
     format: "ONLINE_LIVE" as const,
     thumbnailId: null,
-    serviceSlug: null,
+    serviceSlug: null, categoryId: null,
     certificateEnabled: true,
     seoTitle: null,
     seoDescription: null,

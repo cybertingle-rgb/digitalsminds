@@ -85,6 +85,11 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 | 76 | Roles | Instructor becomes **Batch Coordinator** (own batches: roster, schedule, notices, staff-confirmed onboarding steps, support). Content Managers manage programs, batches, onboarding and documents and can view applications without CNIC/CV |
 | 77 | Bank transfer QR | The Meezan Bank QR code (DIGITAL SETUPS-6845) ships with the site and is shown under Bank transfer on the applicant's payment page; a QR alone turns bank transfer on. Admin → Payments → Payment details can switch it to another Media image or off |
 | 78 | Homepage hero | The eBay hero's button, price line and logo card lead to the programs page (`/courses`) by default; a saved copy of the old "contact us" link or price text is replaced by the new default |
+| 79 | Catalogue | Program categories and professional services live in the database (Admin → Programs → Categories, Admin → Services). Six starting categories (marketplaces, brand launching, LLC & readiness, reinstatement, marketing, AI) and nine services (four new: brand launch, LLC & marketplace readiness, account reinstatement, AI & automation). Each category/service can carry a notice; marketplace, LLC and reinstatement notices say approval is the platform's or authority's decision and is never guaranteed, and that we never ask for passwords or codes |
+| 80 | Currency | PKR is the base and payment currency. Visitors abroad see a converted estimate (their own choice, else country from a CDN header, else the browser time zone; never GPS) using ExchangeRate-API's open-access endpoint (daily, attribution shown), refreshed every 12 h, last known good kept, not shown once older than 72 h. Admin → Payments → Currency & rates: provider (open, own API key, or manual), currencies offered, status, errors, manual refresh. Applications keep a snapshot of the estimate shown; the PKR fee is what's owed. Non-PKR legacy prices are flagged and converted only by a Super Admin with the recorded rate |
+| 81 | Time zones | Each batch has a time zone (default Asia/Karachi); class times are entered and shown in it, students abroad also see their own time |
+| 82 | Attendance | Optional per batch (off by default, matching decision 7): coordinators/managers mark present/late/absent/excused after a class; students see their own record and summary |
+| 83 | Preloader | First visit per session: official logo in an orbit of nine SVG learning/business icons with sparks, 1.1-2.8 s, still with reduced motion; page changes show a slim progress bar instead |
 
 ## Open items (waiting on owner)
 
@@ -105,6 +110,10 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 - [ ] Admin → Students: review the "old free sign-up" list and suspend those accounts
 - [ ] Add onboarding steps (Admin → Onboarding) and documents (Admin → Documents) for the first batch
 - [ ] Optional, later: approve deleting the unused lesson/progress tables (after a backup)
+- [ ] Programs for the new catalogue (Amazon, Walmart, TikTok Shop, Shopify, brand launching, LLC readiness, AI): create them in Admin → Programs with their fee, category, duration and batches (fees are a business decision; nothing was invented)
+- [ ] Decide whether you accept payments from abroad in another way (e.g. a USD account, Wise, Payoneer). Until then the site says fees are paid in PKR to the listed accounts
+- [ ] Check the currencies offered in Admin → Payments → Currency & rates (defaults: USD, GBP, EUR, AED, SAR, QAR, KWD, OMR, BHD, CAD, AUD); optionally add an ExchangeRate-API key
+- [ ] Review the four new services' text in Admin → Services
 - [ ] Launch checklist: docs/LAUNCH.md (production settings, tests on the live site, uptime monitor on `/api/health`)
 - [ ] Weekly backups from Admin → Backups, stored privately (docs/BACKUP.md)
 - [ ] Ask Hostinger support whether requests pass through more than one proxy (only if yes: set `TRUSTED_PROXY_HOPS`)
@@ -154,3 +163,4 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 | 2026-10-20 | Phase 12: structured data, GA4 behind a consent banner with events, Search Console verification, robots rules, WCAG 2.1 AA audit (no violations), login/password-form fixes, 28-check e2e run | `08eec38` |
 | 2026-10-20 | Phase 13: Admin → Backups (database .sql.gz + files .tar.gz) with a tested restore drill, security review and fixes, dependency audit, launch checklist and maintenance runbook | `1ffc2f4` |
 | 2026-10-21 | Phases 15-19: paid enrollment platform: programs and batches, apply → pay → Super Admin verification → account, private status links, student portal (stage timeline, schedule, onboarding, documents, notices), admin applications/rosters/transfers/withdrawals/onboarding/documents/exports, Refund Policy, WhatsApp button, old-account clean-up; 59 DB tests, 37-check end-to-end run | see `git log` |
+| 2026-10-24 | Phases 21-25: database catalogue (categories, services incl. brand launch, LLC readiness, reinstatement, AI), international price display with rate provider/snapshots/admin status, batch time zones, optional attendance, animated SVG preloader and page-change bar; 73 DB tests, 41 + 37-check end-to-end runs | see `git log` |

@@ -20,7 +20,7 @@ export async function publishedCourses() {
   const courses = await db().course.findMany({
     where: { status: "PUBLISHED" },
     orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { publishedAt: "desc" }],
-    include: { thumbnail: { select: { id: true, storageKey: true, visibility: true, altText: true } } },
+    include: { thumbnail: { select: { id: true, storageKey: true, visibility: true, altText: true } }, category: { select: { id: true, slug: true, title: true, titleUr: true, sortOrder: true, active: true } } },
   });
   return courses;
 }
@@ -31,6 +31,7 @@ export function courseBySlug(slug: string) {
     where: { slug },
     include: {
       thumbnail: true,
+      category: true,
       instructors: { include: { user: { select: { name: true } } } },
       modules: {
         orderBy: { position: "asc" },

@@ -4,10 +4,10 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 import { SocialRow } from "@/components/effects/SocialLinks";
 import { Container } from "@/components/ui/Container";
 import { siteConfig } from "@/config/site";
-import { getServices } from "@/content/services";
 import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
 import { format } from "@/i18n/merge";
+import { siteServices } from "@/modules/catalog/service";
 import { publishedCaseStudies } from "@/modules/content/items";
 import { getLegalPage } from "@/modules/content/settings";
 import { ContactDetails } from "./ContactDetails";
@@ -17,7 +17,7 @@ const linkClass = "rounded-md text-charcoal-700 transition-colors hover:text-cha
 
 export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const year = new Date().getFullYear();
-  const [privacy, terms, refund, caseStudies] = await Promise.all([getLegalPage("privacy"), getLegalPage("terms"), getLegalPage("refund"), publishedCaseStudies()]);
+  const [privacy, terms, refund, caseStudies, services] = await Promise.all([getLegalPage("privacy"), getLegalPage("terms"), getLegalPage("refund"), publishedCaseStudies(), siteServices()]);
   return (
     <footer className="pb-4 pt-8 sm:pt-12 print:hidden">
       <Container>
@@ -47,11 +47,16 @@ export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dicti
             <div className="lg:col-span-3">
               <h2 className="font-semibold text-charcoal-900">{dict.footer.services}</h2>
               <ul className="mt-4 space-y-2.5">
-                {getServices(dict).map((s) => (
+                {services.slice(0, 6).map((s) => (
                   <li key={s.slug}>
                     <Link href={localizePath(`/services/${s.slug}`, locale)} className={linkClass}>{s.title}</Link>
                   </li>
                 ))}
+                {services.length > 6 && (
+                  <li>
+                    <Link href={localizePath("/services", locale)} className={`${linkClass} font-semibold`}>{dict.common.allServices}</Link>
+                  </li>
+                )}
               </ul>
             </div>
             <div className="lg:col-span-2">

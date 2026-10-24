@@ -6,6 +6,7 @@ import { useFormAction } from "@/components/forms/useFormAction";
 import { Button } from "@/components/ui/Button";
 import { createBatchAction, updateBatchAction, type BatchState } from "./actions";
 import { emptyBatch, type BatchValue } from "./batch-value";
+import { COMMON_TIME_ZONES } from "@/lib/timezone";
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: "Draft (hidden)",
@@ -32,7 +33,7 @@ export function BatchForm({
   const aria = (k: string, hint?: string) => ({ "aria-invalid": e(k) ? true : undefined, "aria-describedby": describedBy(k, e(k), hint) });
   const hints = {
     code: "Short and unique, e.g. EBAY-07. Shown to applicants.",
-    scheduleText: "Shown publicly, e.g. “Mon, Wed, Fri · 8:00–10:00 pm (Pakistan time)”.",
+    scheduleText: "Shown publicly, e.g. “Mon, Wed, Fri · 8:00–10:00 pm”. The time zone is added automatically.",
     capacity: "Seats are counted when a payment is verified. A full batch stops taking applications.",
     applicationDeadline: "Optional. Without it, applications close on the start date.",
     meetingUrl: "Optional default Zoom / Google Meet link. Only this batch's enrolled students see it.",
@@ -73,9 +74,22 @@ export function BatchForm({
           <input id="capacity" name="capacity" type="number" min={1} max={2000} defaultValue={value.capacity} className={inputClass} {...aria("capacity", hints.capacity)} />
         </Field>
       </div>
-      <Field label="Class days and times" name="scheduleText" error={e("scheduleText")} hint={hints.scheduleText}>
-        <input id="scheduleText" name="scheduleText" defaultValue={value.scheduleText} maxLength={300} className={inputClass} {...aria("scheduleText", hints.scheduleText)} />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="sm:col-span-2">
+          <Field label="Class days and times" name="scheduleText" error={e("scheduleText")} hint={hints.scheduleText}>
+            <input id="scheduleText" name="scheduleText" defaultValue={value.scheduleText} maxLength={300} className={inputClass} {...aria("scheduleText", hints.scheduleText)} />
+          </Field>
+        </div>
+        <Field label="Time zone" name="timeZone" error={e("timeZone")} hint="Class times are set and shown in this zone; students abroad also see their own time.">
+          <select id="timeZone" name="timeZone" defaultValue={value.timeZone} className={inputClass} {...aria("timeZone")}>
+            {[...new Set([value.timeZone, ...COMMON_TIME_ZONES])].map((z) => <option key={z} value={z}>{z.replace(/_/g, " ")}</option>)}
+          </select>
+        </Field>
+      </div>
+      <label className="flex items-start gap-3 text-sm text-charcoal-900">
+        <input type="checkbox" name="attendanceEnabled" defaultChecked={value.attendanceEnabled} className="mt-0.5 h-5 w-5 accent-charcoal-900" />
+        <span>Record attendance for this batch&apos;s classes <span className="block text-muted">Staff mark each student present, late, absent or excused after a class; students see their own record.</span></span>
+      </label>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Meeting link (optional)" name="meetingUrl" error={e("meetingUrl")} hint={hints.meetingUrl}>
           <input id="meetingUrl" name="meetingUrl" type="url" dir="ltr" defaultValue={value.meetingUrl} placeholder="https://zoom.us/j/…" className={inputClass} {...aria("meetingUrl", hints.meetingUrl)} />

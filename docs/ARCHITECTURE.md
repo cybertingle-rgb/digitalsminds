@@ -66,6 +66,26 @@ Digitals Minds is a paid enrollment and student administration platform; online 
 - Public routes: `/courses/[slug]` (batches), `/courses/[slug]/apply`, `/application` (status page), `/refund-policy`; APIs: `/api/applications` (apply), `/open`, `/payment`, `/link`, `/api/applications/[id]/cv` (Super Admin), `/api/documents/[id]`.
 - Admin routes: Applications, Batches (roster), Schedule (`/admin/live-classes`), Announcements, Onboarding, Documents; CSV exports at `/api/admin/applications/export` and `/api/admin/batches/[id]/export`.
 
+## Catalogue, pricing, time zones, attendance (Phases 21-25)
+
+- `src/modules/catalog/`: program categories and services (Prisma `ProgramCategory`, `Service`). Services are copied from
+  `src/content/service-defaults.ts` into the database once (flag `catalog.servicesSeeded`); public pages read
+  `siteServices()`, which falls back to that text if the database is unreachable (e.g. at build time). Inquiry topics are
+  any published service slug or a fixed topic (`general`, `training`); the API route checks it.
+- `src/modules/currency/rules.ts` (pure, shared with the browser): supported currencies, ISO minor units, half-up
+  conversion from paisa, formatting, freshness, country/time-zone → currency. `service.ts`: provider client
+  (`fetchProviderRates`, 10 s timeout, Zod-validated), `refreshRates` (last-known-good upserts into `CurrencyRate`, status
+  in `currency.status`), `getDisplayRates` (fresh + enabled + current provider only), `priceSnapshot`, settings (API key
+  encrypted with `encryptSecret`), legacy price conversion. `scheduler.ts` checks hourly (started in `instrumentation.ts`).
+  Browser: `CurrencyProvider` fetches `/api/currency` only on pages with a `<Price>`; `/api/geo` returns a CDN country
+  header if present. Server-rendered HTML always shows PKR, so a missing rate can't show a wrong number.
+- `src/lib/timezone.ts`: Intl-based zone conversion (`zonedToUtc` handles DST gaps/overlaps), labels. Batches store an
+  IANA zone; `createLiveClass`/`updateLiveClass` read the entered date/time in it.
+- `src/modules/attendance/`: per-class marks (`Attendance`, unique per class + enrollment) for batches with
+  `attendanceEnabled`; `canCoordinate` scopes staff; students read only their own.
+- `src/components/effects/Preloader.tsx` + `globals.css` (`dm-pl-*`): first-visit preloader (CSS transforms/opacity,
+  inline SVG icons, the logo from `getLogos()`); `NavigationProgress.tsx`: top bar for slow in-site navigations (10 s cap).
+
 ## Authentication & authorisation (Phase 3)
 
 ```

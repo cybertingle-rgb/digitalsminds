@@ -1,5 +1,4 @@
-import { en } from "@/i18n/dictionaries/en";
-import { isServiceSlug } from "@/content/services";
+import { extraInquiryTopics } from "@/content/service-defaults";
 
 export const statusLabels = {
   NEW: "New",
@@ -11,7 +10,7 @@ export const statusLabels = {
 export type InquiryStatus = keyof typeof statusLabels;
 export const inquiryStatuses = Object.keys(statusLabels) as InquiryStatus[];
 
-export function serviceLabel(slug: string): string {
-  if (slug === "ebay-course") return en.form.serviceEbayCourse;
-  return isServiceSlug(slug) ? en.services[slug].title : "General inquiry";
+/** Name of an inquiry topic; `labels` comes from inquiryTopicLabels() (services are edited in the admin). */
+export function serviceLabel(slug: string, labels?: Map<string, string>): string {
+  return labels?.get(slug) ?? extraInquiryTopics[slug] ?? slug.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
 }

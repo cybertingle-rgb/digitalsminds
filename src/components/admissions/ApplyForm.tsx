@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, type FormEvent, type ReactNode } from "react";
+import { useCurrency } from "@/components/currency/CurrencyContext";
 import { track } from "@/components/analytics/track";
 import { describedBy, Field, FormAlert, inputClass } from "@/components/forms/Field";
 import { Button } from "@/components/ui/Button";
@@ -27,6 +28,7 @@ export function ApplyForm(props: {
   links: { terms: string; refund: string; privacy: string };
 }) {
   const t = props.labels;
+  const { currency } = useCurrency();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<{ email: string; reference: string } | null>(null);
   const [error, setError] = useState<{ key: ErrorKey; field?: string } | null>(null);
@@ -106,6 +108,7 @@ export function ApplyForm(props: {
       <Field label={t.message} name="message">
         <textarea id="message" name="message" rows={3} maxLength={1000} dir="auto" className={inputClass} />
       </Field>
+      <input type="hidden" name="displayCurrency" value={currency} />
       {/* Honeypot: hidden from people, filled by bots. */}
       <div aria-hidden="true" className="hidden">
         <label htmlFor="website">Website</label>

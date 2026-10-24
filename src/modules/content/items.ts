@@ -1,6 +1,5 @@
 import "server-only";
 import { z } from "zod";
-import { serviceSlugs } from "@/content/services";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { db } from "@/lib/db";
@@ -139,7 +138,7 @@ export const caseStudyInput = z
     summaryUr: opt(500),
     body: text(100_000).min(20, "Write the case study"),
     bodyUr: opt(100_000),
-    serviceSlug: z.enum([...serviceSlugs, ""] as [string, ...string[]]).transform((v) => v || null),
+    serviceSlug: z.union([z.literal(""), slugSchema]).transform((v) => v || null),
     coverImageId: z.string().max(64).optional().transform((v) => v || null),
     consentConfirmed: z.boolean(),
     published: z.boolean(),

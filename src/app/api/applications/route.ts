@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     cnic: text("cnic"),
     message: text("message"),
     acceptTerms: form.get("acceptTerms") === "on",
+    displayCurrency: text("displayCurrency") || undefined,
   });
   if (!parsed.success) {
     const issue = parsed.error.issues[0];

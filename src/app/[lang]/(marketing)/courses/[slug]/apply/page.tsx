@@ -10,6 +10,8 @@ import { formatDay } from "@/modules/batches/rules";
 import { publicBatches } from "@/modules/batches/service";
 import { courseBySlug } from "@/modules/learning/catalogue";
 import { coursePrice, formatPkr } from "@/modules/payments/service";
+import { Price } from "@/components/currency/Price";
+import { zoneName } from "@/lib/timezone";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Apply", robots: { index: false, follow: true } };
@@ -37,15 +39,16 @@ export default async function ApplyPage({ params, searchParams }: PageProps<"/[l
           <h1 className="text-3xl font-bold text-charcoal-900" dir="auto">{format(t.formTitle, { program: course.title })}</h1>
           <p className="mt-2 text-muted">{t.formIntro}</p>
           <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-sun-100 px-3 py-1 text-sm font-semibold text-charcoal-900">
-            {t.fee}: <span dir="ltr">{formatPkr(price)}</span>
+            {t.fee}: <Price pkr={price} />
           </p>
+          <p className="mt-2 text-xs text-muted">{dict.currency.paidInPkr}</p>
         </div>
         <div className="glass rounded-3xl p-6 sm:p-8">
           {open.length === 0 ? (
             <p className="text-charcoal-800">{t.noBatches}</p>
           ) : (
             <ApplyForm
-              batches={open.map((b) => ({ id: b.id, label: `${b.name} · ${format(t.starts, { date: formatDay(b.startDate) })} · ${b.scheduleText}` }))}
+              batches={open.map((b) => ({ id: b.id, label: `${b.name} · ${format(t.starts, { date: formatDay(b.startDate) })} · ${b.scheduleText} (${zoneName(b.timeZone, b.startDate)})` }))}
               selected={selected}
               labels={t}
               links={{ terms: localizePath("/terms", lang), refund: localizePath("/refund-policy", lang), privacy: localizePath("/privacy", lang) }}

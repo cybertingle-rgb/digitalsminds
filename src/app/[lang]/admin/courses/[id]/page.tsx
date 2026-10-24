@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StatusBadge } from "@/components/admin/ui";
-import { serviceSlugs } from "@/content/services";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
 import { courseStatusLabels, languageLabels } from "@/modules/courses/labels";
 import { getCourseForEdit, pickableMedia, publishChecklist, publishWarnings } from "@/modules/courses/service";
-import { serviceLabel } from "@/modules/inquiries/labels";
+import { listCategories, listServicesAdmin } from "@/modules/catalog/service";
 import { formatDay } from "@/modules/batches/rules";
 import { listBatches } from "@/modules/batches/service";
 import { batchStatusLabels } from "@/modules/batches/labels";
@@ -24,7 +23,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
   const user = await requirePagePermission("admin.access", `/admin/courses/${id}`);
   const course = await getCourseForEdit(id, user);
   if (!course) notFound();
-  const [media, batches] = await Promise.all([pickableMedia(user), listBatches(user, { courseId: course.id })]);
+  const [media, batches, services, categories] = await Promise.all([pickableMedia(user), listBatches(user, { courseId: course.id }), listServicesAdmin(), listCategories()]);
 
   const images = media.filter((m) => m.visibility === "PUBLIC" && m.mimeType.startsWith("image/")).map((m) => ({ id: m.id, name: m.originalName, url: mediaUrl(m) }));
   // The current thumbnail stays selectable even if someone else uploaded it.
@@ -97,12 +96,14 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
                 format: course.format,
                 thumbnailId: course.thumbnailId ?? "",
                 serviceSlug: course.serviceSlug ?? "",
+                categoryId: course.categoryId ?? "",
                 certificateEnabled: course.certificateEnabled,
                 seoTitle: course.seoTitle ?? "",
                 seoDescription: course.seoDescription ?? "",
               }}
               images={images}
-              services={serviceSlugs.map((slug) => ({ slug, title: serviceLabel(slug) }))}
+              services={services.map((s) => ({ slug: s.slug, title: s.title }))}
+              categories={categories.map((c) => ({ id: c.id, title: c.title }))}
             />
           </section>
         </div>
@@ -133,7 +134,7 @@ export default async function EditCoursePage({ params }: PageProps<"/[lang]/admi
             )}
           </section>
 
-          {course.serviceSlug && <p className="text-xs text-muted">Related service: {serviceLabel(course.serviceSlug)}</p>}
+          {course.serviceSlug && <p className="text-xs text-muted">Related service: {services.find((s) => s.slug === course.serviceSlug)?.title ?? course.serviceSlug}</p>}
         </aside>
       </div>
     </div>

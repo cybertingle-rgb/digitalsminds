@@ -13,6 +13,7 @@ import { formatDay } from "@/modules/batches/rules";
 import { formatPkr } from "@/modules/payments/service";
 import { methodLabels, statusLabels, statusTone } from "../../payments/labels";
 import { CloseApplication, MoveApplication, PaymentDecision, ResendLink } from "../ApplicationForms";
+import { formatMoney } from "@/modules/currency/rules";
 
 export const metadata: Metadata = { title: "Application" };
 
@@ -61,6 +62,7 @@ export default async function ApplicationPage({ params }: PageProps<"/[lang]/adm
               {row("Program", <Link href={`/admin/courses/${app.course.id}`} className="underline underline-offset-4" dir="auto">{app.course.title}</Link>)}
               {row("Batch", <><Link href={`/admin/batches/${app.batch.id}`} className="underline underline-offset-4">{app.batch.name}</Link><span className="block text-xs text-muted">starts {formatDay(app.batch.startDate)}</span></>)}
               {row("Fee", <span dir="ltr">{formatPkr(app.feeAmount)}</span>)}
+              {app.displayCurrency && app.displayAmount !== null && row("Shown to the applicant", <span dir="ltr">≈ {formatMoney(app.displayAmount, app.displayCurrency)} (rate {app.displayRate?.toString()} per PKR{app.displayRateAt ? `, ${dayFmt.format(app.displayRateAt)}` : ""}{app.displayProvider ? `, ${app.displayProvider}` : ""}) · estimate only, the PKR fee is due</span>)}
               {row("Applied", dateFmt.format(app.createdAt))}
               {app.user && row("Student account", <Link href={`/admin/students/${app.user.id}`} className="underline underline-offset-4">{app.user.name}{app.user.status === "SUSPENDED" ? " (suspended)" : ""}</Link>)}
               {app.decisionNote && row("Note", <span dir="auto">{app.decisionNote}</span>)}
@@ -82,6 +84,7 @@ export default async function ApplicationPage({ params }: PageProps<"/[lang]/adm
                     {row("Amount due", <span dir="ltr">{formatPkr(p.amount)}</span>)}
                     {p.amountReceived !== null && row("Amount received", <span dir="ltr">{formatPkr(p.amountReceived)}</span>)}
                     {p.payerName && row("Paid from", <span dir="auto">{p.payerName}</span>)}
+                    {p.sentAmount !== null && p.sentCurrency && row("Sent from abroad (as stated)", <span dir="ltr">{formatMoney(p.sentAmount, p.sentCurrency)} · check the PKR that arrived</span>)}
                     {p.paidOn && row("Paid on", dayFmt.format(p.paidOn))}
                     {row("Sent", dateFmt.format(p.createdAt))}
                     {p.note && row("Message", <span className="whitespace-pre-line" dir="auto">{p.note}</span>)}

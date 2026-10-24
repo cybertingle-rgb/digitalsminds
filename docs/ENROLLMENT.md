@@ -46,6 +46,9 @@ application goes back to *Payment pending* and the applicant is emailed the reas
 | Schedule (classes, holidays, events) and batch notices | ✓ | ✓ | own batches | view own |
 | Onboarding checklists and documents | ✓ | ✓ | confirm staff steps (own batches) | tick own steps, download own |
 | Student records | ✓ (edit, suspend, delete) | view | | own profile |
+| Categories and services | ✓ | ✓ | | |
+| Currency settings, rate refresh, converting old prices | ✓ | | | |
+| Attendance (where switched on) | ✓ | ✓ | own batches | view own |
 | CSV exports (students, applications, batch roster) | ✓ | | | |
 
 "Batch Coordinator" is the former Instructor role. Assign a coordinator on the batch page.
@@ -62,9 +65,37 @@ application goes back to *Payment pending* and the applicant is emailed the reas
 8. **Announcements**: notices to all current students, a program or a batch (optionally emailed).
 9. **Students**: a one-off panel lists old free-sign-up accounts (no payment, application or batch) with a button to suspend them after you've checked the list.
 
+## Catalogue: categories and services
+
+- **Admin → Programs → Categories**: groups for programs and services (six to start: E-commerce Marketplace Training, International Brand Launching, LLC Registration & Marketplace Readiness, Suspended Account Reinstatement, Digital Marketing & Business Skills, AI & Automation). Categories with published programs become filters on `/courses`; a category's **notice** is shown on its program and service pages (e.g. marketplace eligibility depends on each platform's policies; approval is never guaranteed).
+- **Admin → Programs → (program)**: choose the program's category. Fees, batches and seats are set as before.
+- **Admin → Services**: the professional services visitors ask about without an account (brand launch, LLC & marketplace readiness, account reinstatement, AI & automation, plus the original five). Each has a summary, description, what's included, who it suits, a notice, a category, an order and draft/published/archived. Published services appear on `/services`, `/services/<address>`, the home page, the footer and the contact form; inquiries land in **Inquiries** with the service name.
+- The contact form tells visitors not to send passwords or codes; the reinstatement service says the same and that reinstatement is the marketplace's decision.
+
+## International prices (display only)
+
+Fees are set, owed and paid in **PKR**. Visitors abroad also see an estimate in their own currency:
+
+| | |
+| --- | --- |
+| Which currency | The visitor's own choice ("Show prices in", remembered in their browser), else their country (from a CDN header such as Cloudflare's, if one is in front of the site, else the browser's time zone; never GPS), else PKR. |
+| Rates | ExchangeRate-API open access (`https://open.er-api.com/v6/latest/PKR`, updated daily, "Rates by ExchangeRate-API" shown), or ExchangeRate-API with your key, or rates you type in. Fetched inside the server every 12 hours (10-second timeout); the last good rates are kept if a fetch fails. |
+| Never stale | A rate older than 72 hours (configurable) is not shown; prices fall back to PKR. The provider's own update time is stored and shown. |
+| Rounding | Each currency's own minor unit (JPY 0, KWD 3, most 2), half up; amounts from 1,000 are shown without cents. |
+| Applications | When someone applies, the server records the estimate it would show them (currency, amount, rate, rate date, provider) next to the PKR fee. The fee owed never changes. |
+| Paying from abroad | The payment page says the full PKR amount must arrive. Payers abroad can note what they sent and in which currency; the Super Admin verifies the PKR received. |
+| Old prices | Any fee stored in another currency (or none) was flagged by the migration, not guessed. **Admin → Payments → Currency & rates → Prices to review**: convert it with the current rate (original amount, rate, date and source are kept) or set the PKR fee by hand. |
+
+**Admin → Payments → Currency & rates** (Super Admin): status (last success, last attempt, error), current rates, "Update rates now", currencies offered, update interval, maximum age, provider and API key (stored encrypted), manual rates. Failures also appear on the admin overview.
+
+## Time zones and attendance
+
+- Each batch has a **time zone** (default Pakistan). Class times are entered in it, shown with its abbreviation (PKT, GMT, …) in the portal, emails and the program page, and students whose browser is elsewhere also see their own time.
+- **Attendance** is off unless switched on for a batch (batch settings). Then **Batches → (batch) → Attendance** lists the classes that have started (not holidays or cancelled ones); the coordinator or a manager marks each student present, late, absent or excused, with an optional note. Students see their mark on each past class and "Attended X of Y classes" (excused classes don't count). Switching it off keeps earlier records.
+
 ## Configuration
 
-Nothing new to configure in Hostinger. Requirements:
+Nothing new to configure in Hostinger (exchange rates need outgoing HTTPS to `open.er-api.com`, which Hostinger allows; set `CURRENCY_REFRESH=off` to stop the scheduled updates). Requirements:
 
 - **Email** (Admin → Integrations → Email) must work: applicants receive their private link, payment updates and the set-password link by email.
 - **Payment details** must be entered, or applicants see "contact us" instead of the accounts.
@@ -77,5 +108,12 @@ Additive migration `20261022000000_phase15_enrollment_platform`: tables `Batch`,
 `EnrollmentEvent`, `OnboardingItem`, `OnboardingProgress`, `StudentDocument`; new nullable columns on
 `Enrollment` (batch, stage), `Payment` (application, amount received, verified key; `userId` now nullable),
 `LiveClass` (batch, kind; meeting link optional), `Announcement` (batch), `Course` (format, duration text).
-No data was changed or deleted. The old lesson, module, resource and progress tables are kept untouched
+No data was changed or deleted.
+
+Additive migration `20261024000000_phase21_catalog_pricing_attendance`: tables `ProgramCategory` (six starting rows),
+`Service` (filled from the built-in text on first use), `CurrencyRate`, `Attendance`; new columns on `Course` (category,
+original price and conversion record, review flag), `Batch` (time zone, attendance switch), `EnrollmentApplication`
+(price snapshot) and `Payment` (amount/currency sent from abroad). Data steps only add: existing non-PKR prices are copied
+to the "original" columns and flagged for review, and programs with "eBay" in their name or address are put in the
+marketplace category. The old lesson, module, resource and progress tables are kept untouched
 (unused); removing them is a separate, optional step that needs the owner's approval and a backup first.

@@ -11,6 +11,8 @@ import { serviceLabel, statusLabels } from "@/modules/inquiries/labels";
 import { getStorageStatus } from "@/modules/media/storage-check";
 import { getGoogleStatus, getSmtpStatus } from "@/modules/settings/integrations";
 import { formatDay } from "@/modules/batches/rules";
+import { inquiryTopicLabels } from "@/modules/catalog/service";
+import { getRefreshStatus, pricesToReview } from "@/modules/currency/service";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -45,13 +47,17 @@ function Panel({ title, children, action }: { title: string; children: ReactNode
 
 export default async function AdminOverview() {
   const user = await requirePagePermission("admin.access", "/admin");
-  const { leads, people, media, admissions, seats, support, certificatesReady, activity } = await dashboardStats(user);
+  const [{ leads, people, media, admissions, seats, support, certificatesReady, activity }, labels] = await Promise.all([dashboardStats(user), inquiryTopicLabels()]);
   const setup = can(user.role, "integrations.manage") ? await Promise.all([getSmtpStatus(), getGoogleStatus(), getStorageStatus()]) : null;
+  const rates = can(user.role, "payments.manage") ? await getRefreshStatus() : null;
+  const priceReview = can(user.role, "payments.manage") ? (await pricesToReview()).length : 0;
   const todo = setup
     ? [
         !setup[0].verifiedAt && { label: "Set up email so students can verify accounts and reset passwords", href: "/admin/integrations" },
         !setup[2].uploadsEnabled && { label: "Confirm file storage to switch on uploads", href: "/admin/integrations#storage" },
         !setup[1].enabled && { label: "Optional: connect Google sign-in", href: "/admin/integrations" },
+        rates?.lastError && { label: `Exchange rates are not updating: ${rates.lastError}`, href: "/admin/payments/currency" },
+        priceReview > 0 && { label: `${priceReview} program fee(s) entered in another currency need converting to PKR`, href: "/admin/payments/currency" },
       ].filter((t): t is { label: string; href: string } => !!t)
     : [];
 
@@ -129,7 +135,7 @@ export default async function AdminOverview() {
             {leads.byService.length === 0 ? (
               <p className="text-sm text-muted">No inquiries in the last 30 days.</p>
             ) : (
-              <BarList label="Inquiries by service, last 30 days" items={leads.byService.map((r) => ({ label: serviceLabel(r.service), value: r.count }))} />
+              <BarList label="Inquiries by service, last 30 days" items={leads.byService.map((r) => ({ label: serviceLabel(r.service, labels), value: r.count }))} />
             )}
           </Panel>
         )}
@@ -143,7 +149,7 @@ export default async function AdminOverview() {
                   <li key={i.id} className="flex items-center justify-between gap-3 py-2">
                     <span className="min-w-0">
                       <Link href={`/admin/inquiries/${i.id}`} className="font-medium text-charcoal-900 underline-offset-4 hover:underline">{i.name}</Link>
-                      <span className="block truncate text-xs text-muted">{serviceLabel(i.service)} · {dateFmt.format(i.createdAt)}</span>
+                      <span className="block truncate text-xs text-muted">{serviceLabel(i.service, labels)} · {dateFmt.format(i.createdAt)}</span>
                     </span>
                     <StatusBadge tone={i.status === "NEW" ? "warn" : i.status === "QUALIFIED" ? "ok" : "off"}>{statusLabels[i.status]}</StatusBadge>
                   </li>

@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { describedBy, Field, FormAlert, inputClass } from "@/components/forms/Field";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/i18n/dictionaries/en";
+import { SUPPORTED_CURRENCIES } from "@/modules/currency/rules";
 
 type Labels = Dictionary["payments"];
 type ErrorKey = keyof Labels["errors"];
@@ -68,13 +69,28 @@ export function ApplicationPayForm(props: { methods: { value: string; label: str
       <Field label={t.payerName} name="payerName">
         <input id="payerName" name="payerName" maxLength={120} autoComplete="name" dir="auto" className={inputClass} />
       </Field>
+      <details className="glass-subtle rounded-2xl px-4 py-3">
+        <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">{t.abroadTitle}</summary>
+        <p className="mt-2 text-sm text-muted">{t.abroadHint}</p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <Field label={t.sentAmount} name="sentAmount" error={err("sentAmount")}>
+            <input id="sentAmount" name="sentAmount" inputMode="decimal" maxLength={20} dir="ltr" autoComplete="off" className={inputClass} {...aria("sentAmount")} />
+          </Field>
+          <Field label={t.sentCurrency} name="sentCurrency" error={err("sentCurrency")}>
+            <select id="sentCurrency" name="sentCurrency" defaultValue="" className={inputClass} {...aria("sentCurrency")}>
+              <option value="">—</option>
+              {Object.entries(SUPPORTED_CURRENCIES).filter(([c]) => c !== "PKR").map(([c, name]) => <option key={c} value={c}>{c} · {name}</option>)}
+            </select>
+          </Field>
+        </div>
+      </details>
       <Field label={t.receipt} name="receipt" hint={t.receiptHint} error={err("receipt")}>
         <input id="receipt" name="receipt" type="file" required accept="image/jpeg,image/png,image/webp,application/pdf" className={`${inputClass} file:me-3 file:rounded-lg file:border-0 file:bg-charcoal-900 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white`} {...aria("receipt", t.receiptHint)} />
       </Field>
       <Field label={t.note} name="note">
         <textarea id="note" name="note" rows={3} maxLength={1000} dir="auto" className={inputClass} />
       </Field>
-      {error && !["reference", "paidOn", "receipt"].includes(error.field ?? "") && <FormAlert>{t.errors[error.key]}</FormAlert>}
+      {error && !["reference", "paidOn", "receipt", "sentAmount", "sentCurrency"].includes(error.field ?? "") && <FormAlert>{t.errors[error.key]}</FormAlert>}
       <Button type="submit" className="w-full" disabled={busy}>{busy ? t.sending : t.submit}</Button>
     </form>
   );

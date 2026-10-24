@@ -56,6 +56,7 @@ export default async function BatchPage({ params, searchParams }: PageProps<"/[l
           <h2 id="students" className="text-lg font-semibold text-charcoal-900">Students ({students?.length ?? 0})</h2>
           <div className="flex flex-wrap gap-4 text-sm font-semibold">
             <Link href={`/admin/live-classes?batch=${batch.id}`} className="underline underline-offset-4">Schedule</Link>
+            {batch.attendanceEnabled && <Link href={`/admin/batches/${batch.id}/attendance`} className="underline underline-offset-4">Attendance</Link>}
             <Link href={`/admin/announcements?batch=${batch.id}`} className="underline underline-offset-4">Send a notice</Link>
             {can(user.role, "applications.view") && <Link href={`/admin/applications?tab=ALL&batch=${batch.id}`} className="underline underline-offset-4">Applications</Link>}
             {can(user.role, "students.export") && <a href={`/api/admin/batches/${batch.id}/export`} className="underline underline-offset-4">Export CSV</a>}
@@ -121,6 +122,8 @@ export default async function BatchPage({ params, searchParams }: PageProps<"/[l
               joiningInfo: batch.joiningInfo ?? "",
               internalNotes: batch.internalNotes ?? "",
               coordinatorId: batch.coordinatorId ?? "",
+              timeZone: batch.timeZone,
+              attendanceEnabled: batch.attendanceEnabled,
             }}
           />
         </section>

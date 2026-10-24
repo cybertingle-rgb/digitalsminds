@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { LinkButton } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { getServices } from "@/content/services";
 import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { siteServices } from "@/modules/catalog/service";
 import { homeText } from "@/modules/content/settings";
 
 export async function Hero({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -32,14 +32,14 @@ export async function Hero({ locale, dict }: { locale: Locale; dict: Dictionary 
           <div className="glass-blur rounded-[2rem] p-5 sm:p-7">
             <p className="text-xs font-semibold uppercase tracking-wider text-gold-700">{dict.home.servicesEyebrow}</p>
             <ul className="mt-4 space-y-2">
-              {getServices(dict).map((s, i) => (
+              {(await siteServices()).slice(0, 6).map((s, i) => (
                 <li key={s.slug}>
                   <Link
                     href={localizePath(`/services/${s.slug}`, locale)}
                     className="glow-card group flex items-center gap-3 rounded-2xl border border-white/70 bg-white/55 px-4 py-3.5 hover:bg-white/90"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-charcoal-900 text-sm font-bold text-sun-400" dir="ltr">
-                      0{i + 1}
+                      {String(i + 1).padStart(2, "0")}
                     </span>
                     <span className="min-w-0 flex-1 font-semibold text-charcoal-900">{s.title}</span>
                     <span aria-hidden="true" className="text-charcoal-600 transition group-hover:translate-x-0.5 rtl:rotate-180">→</span>

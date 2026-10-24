@@ -115,7 +115,8 @@ export async function setCoursePrice(courseId: string, input: z.infer<typeof pri
   if (input.paid && !input.pricePkr) throw new z.ZodError([{ code: "custom", path: ["pricePkr"], message: "Enter the fee in rupees", input: input.pricePkr }]);
   const course = await db().course.update({
     where: { id: courseId },
-    data: input.paid ? { accessType: "PAID", priceAmount: input.pricePkr! * 100, currency: "PKR" } : { accessType: "FREE", priceAmount: null, currency: null },
+    // A fee typed in PKR settles any pending review of an older, non-PKR price.
+    data: input.paid ? { accessType: "PAID", priceAmount: input.pricePkr! * 100, currency: "PKR", priceNeedsReview: false } : { accessType: "FREE", priceAmount: null, currency: null, priceNeedsReview: false },
   });
   await audit({ actorId: actor.id, action: "course.price", entityType: "Course", entityId: courseId, metadata: { title: course.title, paid: input.paid, pricePkr: input.paid ? input.pricePkr : null } });
 }

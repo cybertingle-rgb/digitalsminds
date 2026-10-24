@@ -7,6 +7,7 @@ import { getAnalyticsSetting } from "@/modules/content/settings";
 import { CAMPAIGN_HEAD_SCRIPT } from "@/components/analytics/campaign-script";
 import { AmbientBackground } from "@/components/effects/AmbientBackground";
 import { GlowTracker } from "@/components/effects/GlowTracker";
+import { NavigationProgress } from "@/components/effects/NavigationProgress";
 import { Preloader, PRELOADER_END_SCRIPT, PRELOADER_HEAD_SCRIPT } from "@/components/effects/Preloader";
 import { naskh } from "../fonts";
 import "../globals.css";
@@ -48,6 +49,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
       <body className="flex min-h-dvh flex-col">
         <Preloader label={getDictionary(lang).brand.name} />
         <script dangerouslySetInnerHTML={{ __html: PRELOADER_END_SCRIPT }} />
+        <NavigationProgress label={getDictionary(lang).a11y.loading} />
         <AmbientBackground />
         <GlowTracker />
         {children}

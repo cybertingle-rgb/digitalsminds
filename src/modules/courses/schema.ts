@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { serviceSlugs } from "@/content/services";
 
 const text = (max: number) => z.string().trim().max(max);
 const optional = (max: number) => text(max).optional().transform((v) => (v ? v : null));
@@ -50,7 +49,9 @@ export const courseDetailsInput = z.object({
   durationText: optional(160),
   format: z.enum(["ONLINE_LIVE", "IN_PERSON", "HYBRID"]),
   thumbnailId: z.string().max(64).optional().transform((v) => (v ? v : null)),
-  serviceSlug: z.enum([...serviceSlugs, ""] as [string, ...string[]]).optional().transform((v) => (v ? v : null)),
+  /** Related professional service (Service.slug), optional. */
+  serviceSlug: z.union([z.literal(""), slugSchema]).optional().transform((v) => (v ? v : null)),
+  categoryId: z.string().max(64).optional().transform((v) => (v ? v : null)),
   certificateEnabled: z.boolean(),
   seoTitle: optional(200),
   seoDescription: optional(320),

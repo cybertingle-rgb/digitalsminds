@@ -23,7 +23,7 @@ describe("inquiryInputSchema", () => {
 
   it.each([
     ["email", "not-an-email"],
-    ["service", "hacking"],
+    ["service", "Not a topic!"],
     ["message", "short"],
     ["name", "A"],
     ["phone", "call me maybe"],

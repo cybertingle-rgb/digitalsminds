@@ -1,22 +1,24 @@
 import Link from "next/link";
 import { Arrow } from "@/components/ui/Arrow";
-import { getServices } from "@/content/services";
 import { localizePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/get-dictionary";
+import { siteServices } from "@/modules/catalog/service";
 
 /** Division cards. `detailed` adds each division's "what's included" list (home page). */
-export function ServicesGrid({ locale, dict, detailed = false }: { locale: Locale; dict: Dictionary; detailed?: boolean }) {
+export async function ServicesGrid({ locale, dict, detailed = false }: { locale: Locale; dict: Dictionary; detailed?: boolean }) {
+  const services = await siteServices();
   return (
     <ul className={`grid gap-5 sm:grid-cols-2 ${detailed ? "lg:grid-cols-6" : "xl:grid-cols-3"}`}>
-      {getServices(dict).map((s, i) => (
-        <li key={s.slug} className={detailed ? (i < 2 ? "lg:col-span-3" : i === 4 ? "sm:col-span-2 lg:col-span-2" : "lg:col-span-2") : undefined}>
+      {services.map((s, i) => (
+        // Detailed: two wide cards, then rows of three; a last card left alone on a row spans it.
+        <li key={s.slug} className={detailed ? (i < 2 ? "lg:col-span-3" : (services.length - 2) % 3 === 1 && i === services.length - 1 ? "sm:col-span-2 lg:col-span-6" : "lg:col-span-2") : undefined}>
           <Link
             href={localizePath(`/services/${s.slug}`, locale)}
             className="glass glow-card group flex h-full flex-col rounded-3xl p-6 sm:p-7"
           >
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sun-200 to-sun-400 text-sm font-bold text-charcoal-900 shadow-[0_8px_20px_-8px_rgb(244_192_26/0.9)] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" dir="ltr">
-                0{i + 1}
+                {String(i + 1).padStart(2, "0")}
               </span>
               <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-sun-400/70 to-transparent rtl:bg-gradient-to-l" />
             </div>

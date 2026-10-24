@@ -15,6 +15,7 @@ import { canCoordinate } from "@/modules/batches/service";
 import { actionEmail } from "@/modules/email/templates";
 import { notify } from "@/modules/notifications/service";
 import { ACTIVE_STAGES, studentScope } from "@/modules/portal/service";
+import { DEFAULT_TIME_ZONE, zonedToUtc, zoneLabel } from "@/lib/timezone";
 
 /**
  * Batch schedules: live classes (Zoom / Google Meet / Teams), holidays and
@@ -61,6 +62,8 @@ export const liveClassInput = z
       title: v.title,
       description: v.description,
       date: v.date,
+      time: holiday ? "00:00" : v.time!,
+      // Pakistan time here; create/update re-read the date and time in the batch's own zone.
       startsAt: new Date(`${v.date}T${holiday ? "00:00" : v.time}:00${PK_OFFSET}`),
       durationMinutes: holiday ? 24 * 60 : Number(v.durationMinutes),
       meetingUrl: holiday ? null : (v.meetingUrl ?? null),
@@ -72,6 +75,11 @@ export type LiveClassInput = z.infer<typeof liveClassInput>;
 export function pkParts(d: Date) {
   const pk = new Date(d.getTime() + 5 * 3600_000).toISOString();
   return { date: pk.slice(0, 10), time: pk.slice(11, 16) };
+}
+
+/** The session's start in the batch's time zone. */
+export function startsAtIn(input: Pick<LiveClassInput, "date" | "time">, timeZone: string) {
+  return zonedToUtc(input.date, input.time, timeZone);
 }
 
 export const endsAt = (c: { startsAt: Date; durationMinutes: number }) => new Date(c.startsAt.getTime() + c.durationMinutes * 60_000);
@@ -98,8 +106,9 @@ function recipientsWhere(live: { batchId: string | null; courseId: string }): Pr
 
 export async function createLiveClass(input: LiveClassInput, actor: Actor) {
   await assertCanSchedule(actor, input.batchId);
-  const batch = await db().batch.findUnique({ where: { id: input.batchId }, select: { courseId: true, status: true, name: true } });
+  const batch = await db().batch.findUnique({ where: { id: input.batchId }, select: { courseId: true, status: true, name: true, timeZone: true } });
   if (!batch) throw new LiveClassError("Batch not found.", 404);
+  input = { ...input, startsAt: startsAtIn(input, batch.timeZone) };
   if (batch.status === "CANCELLED" || batch.status === "COMPLETED") throw new LiveClassError("This batch is completed or cancelled.");
   const earliest = input.kind === "HOLIDAY" ? Date.now() - 24 * 3600_000 : Date.now();
   if (input.startsAt.getTime() <= earliest) throw new z.ZodError([{ code: "custom", path: ["date"], message: "Choose a date in the future", input: input.date }]);
@@ -130,6 +139,8 @@ export async function updateLiveClass(id: string, input: LiveClassInput, actor: 
   await assertCanSchedule(actor, before.batchId);
   if (input.batchId !== before.batchId) throw new LiveClassError("A session can't be moved to another batch; cancel it and schedule a new one.");
   if (before.status === "CANCELLED") throw new LiveClassError("This session was cancelled.");
+  const batch = await db().batch.findUniqueOrThrow({ where: { id: before.batchId }, select: { timeZone: true } });
+  input = { ...input, startsAt: startsAtIn(input, batch.timeZone) };
   const moved = before.startsAt.getTime() !== input.startsAt.getTime();
   if (moved && input.startsAt.getTime() <= Date.now() && input.kind !== "HOLIDAY") {
     throw new z.ZodError([{ code: "custom", path: ["date"], message: "Choose a time in the future", input: input.date }]);
@@ -181,7 +192,7 @@ export async function staffLiveClasses(actor: Actor, when: "upcoming" | "past", 
     take: when === "upcoming" ? 200 : 50,
     include: {
       course: { select: { id: true, title: true } },
-      batch: { select: { id: true, name: true, code: true, meetingUrl: true, _count: { select: { enrollments: { where: { stage: { in: [...ACTIVE_STAGES] } } } } } } },
+      batch: { select: { id: true, name: true, code: true, meetingUrl: true, timeZone: true, attendanceEnabled: true, _count: { select: { enrollments: { where: { stage: { in: [...ACTIVE_STAGES] } } } } } } },
     },
   });
 }
@@ -191,7 +202,7 @@ export function schedulableBatches(actor: Actor) {
   return db().batch.findMany({
     where: { ...batchScope(actor), status: { notIn: ["CANCELLED", "COMPLETED", "DRAFT"] } },
     orderBy: { startDate: "asc" },
-    select: { id: true, name: true, code: true, meetingUrl: true, course: { select: { title: true } } },
+    select: { id: true, name: true, code: true, meetingUrl: true, timeZone: true, course: { select: { title: true } } },
   });
 }
 
@@ -210,7 +221,7 @@ export async function studentLiveClasses(userId: string) {
       OR: [...(scope.activeBatchIds.length ? [{ batchId: { in: scope.activeBatchIds } }] : []), { batchId: null, courseId: { in: scope.activeCourseIds } }],
     },
     orderBy: { startsAt: "asc" },
-    include: { course: { select: { title: true, titleUr: true, slug: true } }, batch: { select: { name: true, meetingUrl: true } } },
+    include: { course: { select: { title: true, titleUr: true, slug: true } }, batch: { select: { name: true, meetingUrl: true, timeZone: true, attendanceEnabled: true } } },
   });
   const withLink = rows.map((r) => ({ ...r, meetingUrl: joinUrl(r) }));
   const upcoming = withLink.filter((r) => endsAt(r).getTime() > now);
@@ -228,7 +239,7 @@ export function liveState(c: { startsAt: Date; durationMinutes: number; status: 
 
 /** A session the viewer may see: its batch's staff, or a current student of the batch. */
 export async function liveClassForViewer(id: string, viewer: Actor) {
-  const live = await db().liveClass.findUnique({ where: { id }, include: { course: { select: { title: true, slug: true, status: true } }, batch: { select: { meetingUrl: true } } } });
+  const live = await db().liveClass.findUnique({ where: { id }, include: { course: { select: { title: true, slug: true, status: true } }, batch: { select: { meetingUrl: true, timeZone: true } } } });
   if (!live) return null;
   const withLink = { ...live, meetingUrl: joinUrl(live) };
   if (live.batchId ? await canCoordinate(viewer, live.batchId) : can(viewer.role, "batches.manage")) return withLink;
@@ -276,17 +287,17 @@ export function liveClassIcs(c: { id: string; title: string; description: string
 // Messages to students (best effort)
 // ---------------------------------------------------------------------------
 
-function whenText(startsAt: Date, locale: Locale, dateOnly = false) {
+function whenText(startsAt: Date, locale: Locale, dateOnly = false, timeZone = DEFAULT_TIME_ZONE) {
   return dateOnly
-    ? new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeZone: "Asia/Karachi" }).format(startsAt)
-    : new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Karachi" }).format(startsAt) + " (PKT)";
+    ? new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeZone }).format(startsAt)
+    : `${new Intl.DateTimeFormat(localeMeta[locale].intl, { dateStyle: "full", timeStyle: "short", timeZone }).format(startsAt)} (${zoneLabel(timeZone, startsAt)})`;
 }
 
 type Kind = "scheduled" | "holiday" | "moved" | "cancelled" | "remindDay" | "remindHour";
 
 async function tellStudents(liveId: string, kind: Kind) {
   try {
-    const live = await db().liveClass.findUniqueOrThrow({ where: { id: liveId }, include: { course: { select: { title: true, titleUr: true } } } });
+    const live = await db().liveClass.findUniqueOrThrow({ where: { id: liveId }, include: { course: { select: { title: true, titleUr: true } }, batch: { select: { timeZone: true } } } });
     const students = await db().user.findMany({ where: recipientsWhere(live), select: { id: true, email: true, name: true, preferredLocale: true } });
     // New classes are announced in the portal only; changes, holidays and reminders also go by email.
     const email = kind !== "scheduled";
@@ -294,7 +305,7 @@ async function tellStudents(liveId: string, kind: Kind) {
       const locale: Locale = s.preferredLocale === "ur" ? "ur" : "en";
       const dict = getDictionary(locale);
       const t = dict.live;
-      const values = { title: live.title, course: live.course.title, when: whenText(live.startsAt, locale, live.kind === "HOLIDAY") };
+      const values = { title: live.title, course: live.course.title, when: whenText(live.startsAt, locale, live.kind === "HOLIDAY", live.batch?.timeZone) };
       const subject = format({ scheduled: t.msgScheduled, holiday: t.msgHoliday, moved: t.msgMoved, cancelled: t.msgCancelled, remindDay: t.msgRemindDay, remindHour: t.msgRemindHour }[kind], values);
       await notify(s.id, { type: "SCHEDULE", title: subject, body: kind === "cancelled" ? null : values.when, link: "/account/schedule" });
       if (!email) continue;

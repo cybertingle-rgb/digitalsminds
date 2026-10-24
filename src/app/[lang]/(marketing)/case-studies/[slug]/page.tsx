@@ -13,6 +13,7 @@ import { breadcrumbs } from "@/modules/seo/structured-data";
 import { RichText } from "@/modules/courses/richtext";
 import { serviceLabel } from "@/modules/inquiries/labels";
 import { mediaUrl } from "@/modules/media/service";
+import { inquiryTopicLabels } from "@/modules/catalog/service";
 
 type Props = PageProps<"/[lang]/case-studies/[slug]">;
 
@@ -34,7 +35,7 @@ export default async function CaseStudyPage({ params }: Props) {
   const c = await caseStudyBySlug(slug);
   if (!c) notFound();
   const dict = getDictionary(lang);
-  const h = await homeText(lang, dict);
+  const [h, labels] = await Promise.all([homeText(lang, dict), inquiryTopicLabels()]);
   const ur = lang === "ur" && !!c.bodyUr;
   return (
     <>
@@ -52,7 +53,7 @@ export default async function CaseStudyPage({ params }: Props) {
         <article className="mt-6 grid gap-10 lg:grid-cols-12">
           <header className="lg:col-span-5">
             <p className="text-sm font-semibold uppercase tracking-wider text-gold-700">
-              {[c.client, c.serviceSlug ? serviceLabel(c.serviceSlug) : null].filter(Boolean).join(" · ")}
+              {[c.client, c.serviceSlug ? serviceLabel(c.serviceSlug, labels) : null].filter(Boolean).join(" · ")}
             </p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-balance text-charcoal-900 sm:text-5xl" dir="auto">{(lang === "ur" && c.titleUr) || c.title}</h1>
             <p className="mt-5 text-lg text-charcoal-700" dir="auto">{(lang === "ur" && c.summaryUr) || c.summary}</p>

@@ -45,7 +45,7 @@ export function LiveClassForm({ id, batches, value = empty }: { id?: string; bat
         </Field>
         {!holiday && (
           <div className="grid grid-cols-2 gap-4 sm:col-span-2">
-            <Field label="Start time" name={p("time")} error={e("time")}>
+            <Field label="Start time (batch's time zone)" name={p("time")} error={e("time")}>
               <input id={p("time")} name="time" type="time" defaultValue={value.time} className={inputClass} {...aria(p("time"))} />
             </Field>
             <Field label="Length (minutes)" name={p("durationMinutes")} error={e("durationMinutes")}>

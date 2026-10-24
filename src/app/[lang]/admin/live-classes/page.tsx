@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 import { StatusBadge } from "@/components/admin/ui";
 import { can } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
-import { joinUrl, liveState, pkParts, schedulableBatches, staffLiveClasses } from "@/modules/live/service";
+import { joinUrl, liveState, schedulableBatches, staffLiveClasses } from "@/modules/live/service";
+import { DEFAULT_TIME_ZONE, zonedParts, zoneLabel } from "@/lib/timezone";
 import { CancelLiveClass, LiveClassForm } from "./LiveForms";
 
 export const metadata: Metadata = { title: "Schedule" };
 
-const fmt = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "Asia/Karachi" });
-const dayFmt = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Karachi" });
+const fmt = (tz: string) => new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: tz });
+const dayFmt = (tz: string) => new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: tz });
 const KIND = { CLASS: "Class", HOLIDAY: "Holiday", EVENT: "Event" } as const;
 
 export default async function ScheduleAdminPage({ searchParams }: PageProps<"/[lang]/admin/live-classes">) {
@@ -19,8 +20,12 @@ export default async function ScheduleAdminPage({ searchParams }: PageProps<"/[l
   const sp = await searchParams;
   const batchId = typeof sp.batch === "string" ? sp.batch.slice(0, 64) : undefined;
   const [batches, upcoming, past] = await Promise.all([schedulableBatches(user), staffLiveClasses(user, "upcoming", batchId), staffLiveClasses(user, "past", batchId)]);
-  const options = batches.map((b) => ({ id: b.id, label: `${b.name} (${b.code}) · ${b.course.title}`, hasLink: !!b.meetingUrl }));
-  const when = (c: { kind: string; startsAt: Date }) => (c.kind === "HOLIDAY" ? dayFmt.format(c.startsAt) : fmt.format(c.startsAt));
+  const options = batches.map((b) => ({ id: b.id, label: `${b.name} (${b.code}) · ${b.course.title} · times in ${b.timeZone.replace(/_/g, " ")}`, hasLink: !!b.meetingUrl }));
+  // Times are shown in each batch's own zone.
+  const when = (c: { kind: string; startsAt: Date; batch: { timeZone: string } | null }) => {
+    const tz = c.batch?.timeZone ?? DEFAULT_TIME_ZONE;
+    return c.kind === "HOLIDAY" ? dayFmt(tz).format(c.startsAt) : `${fmt(tz).format(c.startsAt)} ${zoneLabel(tz, c.startsAt)}`;
+  };
 
   return (
     <div className="max-w-5xl space-y-6">
@@ -52,7 +57,7 @@ export default async function ScheduleAdminPage({ searchParams }: PageProps<"/[l
           <ul className="space-y-3">
             {upcoming.map((c) => {
               const state = liveState(c);
-              const parts = pkParts(c.startsAt);
+              const parts = zonedParts(c.startsAt, c.batch?.timeZone ?? DEFAULT_TIME_ZONE);
               const link = joinUrl(c);
               return (
                 <li key={c.id} className="glass rounded-2xl p-5" aria-label={c.title}>
@@ -72,7 +77,7 @@ export default async function ScheduleAdminPage({ searchParams }: PageProps<"/[l
                         <div className="mt-3">
                           <LiveClassForm
                             id={c.id}
-                            batches={[{ id: c.batch.id, label: `${c.batch.name} (${c.batch.code})`, hasLink: !!c.batch.meetingUrl }]}
+                            batches={[{ id: c.batch.id, label: `${c.batch.name} (${c.batch.code}) · times in ${c.batch.timeZone.replace(/_/g, " ")}`, hasLink: !!c.batch.meetingUrl }]}
                             value={{ batchId: c.batch.id, kind: c.kind, title: c.title, description: c.description ?? "", date: parts.date, time: parts.time, durationMinutes: String(c.durationMinutes), meetingUrl: c.meetingUrl ?? "" }}
                           />
                         </div>

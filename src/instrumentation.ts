@@ -5,4 +5,6 @@ export async function register() {
   if (!process.env.DATABASE_URL) return;
   const { startReminderLoop } = await import("@/modules/live/scheduler");
   startReminderLoop();
+  const { startRateLoop } = await import("@/modules/currency/scheduler");
+  startRateLoop();
 }

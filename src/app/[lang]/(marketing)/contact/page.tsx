@@ -4,7 +4,8 @@ import { InquiryForm } from "@/components/forms/InquiryForm";
 import { ContactDetails } from "@/components/layout/ContactDetails";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getServices, isServiceSlug } from "@/content/services";
+import { extraInquiryTopics } from "@/content/service-defaults";
+import { siteServices } from "@/modules/catalog/service";
 import { hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import { editablePageMetadata } from "@/modules/content/metadata";
@@ -21,7 +22,10 @@ export default async function ContactPage({ params, searchParams }: PageProps<"/
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const requested = (await searchParams).service;
-  const defaultService = typeof requested === "string" && (isServiceSlug(requested) || requested === "ebay-course") ? requested : undefined;
+  const services = await siteServices();
+  // Old links to the eBay course enrollment form now ask about training.
+  const wanted = requested === "ebay-course" ? "training" : requested;
+  const defaultService = typeof wanted === "string" && (wanted in extraInquiryTopics || services.some((s) => s.slug === wanted)) ? wanted : undefined;
 
   return (
     <Section>
@@ -33,7 +37,7 @@ export default async function ContactPage({ params, searchParams }: PageProps<"/
         <div className="glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6 sm:p-8 lg:col-span-3">
           <InquiryForm
             strings={dict.form}
-            services={getServices(dict).map((s) => ({ slug: s.slug, title: s.title }))}
+            services={services.map((s) => ({ slug: s.slug, title: s.title }))}
             defaultService={defaultService}
           />
         </div>

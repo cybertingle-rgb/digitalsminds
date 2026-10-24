@@ -125,6 +125,7 @@ export type CourseDetails = {
   format: keyof typeof formatLabels;
   thumbnailId: string;
   serviceSlug: string;
+  categoryId: string;
   certificateEnabled: boolean;
   seoTitle: string;
   seoDescription: string;
@@ -134,7 +135,7 @@ export type ImageOption = { id: string; name: string; url: string };
 
 const formattingHint = "Blank line = new paragraph · start a line with “## ” for a heading · “- ” for a bullet · links are clickable.";
 
-export function DetailsForm({ course, images, services }: { course: CourseDetails; images: ImageOption[]; services: { slug: string; title: string }[] }) {
+export function DetailsForm({ course, images, services, categories }: { course: CourseDetails; images: ImageOption[]; services: { slug: string; title: string }[]; categories: { id: string; title: string }[] }) {
   const [state, onSubmit, pending] = useFormAction(saveDetailsAction.bind(null, course.id), idle);
   const [thumb, setThumb] = useState(course.thumbnailId);
   const thumbUrl = images.find((i) => i.id === thumb)?.url;
@@ -189,6 +190,15 @@ export function DetailsForm({ course, images, services }: { course: CourseDetail
 
       <fieldset className="space-y-5">
         <legend className="text-sm font-semibold uppercase tracking-wider text-muted">Program page</legend>
+        {f(
+          "categoryId",
+          "Category",
+          <select {...a("categoryId", true)} defaultValue={course.categoryId} className={inputClass}>
+            <option value="">No category</option>
+            {categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+          </select>,
+          "Groups the program on the Programs page; the category's notice (e.g. marketplace eligibility) is shown on the program page.",
+        )}
         <div className="grid gap-5 sm:grid-cols-3">
           {f("language", "Taught in", <select {...a("language")} defaultValue={course.language} className={inputClass}>{Object.entries(languageLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>)}
           {f("level", "Level", <select {...a("level")} defaultValue={course.level} className={inputClass}>{Object.entries(levelLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>)}

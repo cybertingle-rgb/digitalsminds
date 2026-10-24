@@ -76,6 +76,7 @@ export async function saveDetailsAction(courseId: string, _prev: CourseState, fd
       format: str(fd, "format"),
       thumbnailId: str(fd, "thumbnailId"),
       serviceSlug: str(fd, "serviceSlug"),
+      categoryId: str(fd, "categoryId"),
       certificateEnabled: fd.get("certificateEnabled") === "on",
       seoTitle: str(fd, "seoTitle"),
       seoDescription: str(fd, "seoDescription"),

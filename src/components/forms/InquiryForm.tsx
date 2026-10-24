@@ -105,7 +105,7 @@ export function InquiryForm({ strings, services, defaultService = "general" }: P
       <FormField label={strings.service} name="service" error={invalid.has("service") ? strings.errors.service : undefined}>
         <select id="service" name="service" defaultValue={defaultService} className={inputClass} {...aria("service")}>
           <option value="general">{strings.serviceGeneral}</option>
-          <option value="ebay-course">{strings.serviceEbayCourse}</option>
+          <option value="training">{strings.serviceTraining}</option>
           {services.map((s) => (
             <option key={s.slug} value={s.slug}>
               {s.title}
@@ -116,6 +116,7 @@ export function InquiryForm({ strings, services, defaultService = "general" }: P
       <FormField label={strings.message} name="message" error={invalid.has("message") ? strings.errors.message : undefined}>
         <textarea id="message" name="message" rows={6} required maxLength={5000} className={inputClass} {...aria("message")} />
       </FormField>
+      <p className="-mt-2 text-xs text-muted">{strings.noCredentials}</p>
 
       {/* Honeypot: hidden from people and assistive tech, catches naive bots.
           Clipped in place (sr-only) rather than moved off-screen, which would

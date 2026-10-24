@@ -32,6 +32,7 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
     ...(can(user.role, "support.manage.all") || can(user.role, "support.manage.own") ? [{ label: "Support", href: "/admin/support" }] : []),
     ...(can(user.role, "certificates.issue") ? [{ label: "Certificates", href: "/admin/certificates" }] : []),
     ...(can(user.role, "students.view") ? [{ label: "Students", href: "/admin/students" }] : []),
+    ...(can(user.role, "content.manage") ? [{ label: "Services", href: "/admin/services" }] : []),
     ...(can(user.role, "inquiries.manage") ? [{ label: "Inquiries", href: "/admin/inquiries" }] : []),
     ...(can(user.role, "media.manage.all") || can(user.role, "media.manage.own") ? [{ label: "Media", href: "/admin/media" }] : []),
     ...(can(user.role, "newsletter.view") ? [{ label: "Newsletter", href: "/admin/newsletter" }] : []),

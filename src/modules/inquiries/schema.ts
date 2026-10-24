@@ -1,8 +1,6 @@
 import { z } from "zod";
-import { serviceSlugs } from "@/content/services";
-
-/** "ebay-course": enrollment requests for the paid eBay course (featured on the homepage). */
-export const INQUIRY_SERVICE_OPTIONS = [...serviceSlugs, "ebay-course", "general"] as const;
+/** A service slug (Admin → Services) or one of the fixed topics ("general", "training"); the API route checks it exists. */
+export const inquiryTopicSchema = z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Please choose a service").max(100);
 
 const trimmed = (max: number, label: string) =>
   z.string().trim().max(max, `${label} must be at most ${max} characters`);
@@ -21,7 +19,7 @@ export const inquiryInputSchema = z.object({
     "Please enter a valid phone number",
   ),
   company: optionalTrimmed(160, "Company"),
-  service: z.enum(INQUIRY_SERVICE_OPTIONS, { error: "Please choose a service" }),
+  service: inquiryTopicSchema,
   message: trimmed(5000, "Message").min(10, "Please tell us a little more (at least 10 characters)"),
   source: optionalTrimmed(200, "Source"),
   /** Language of the page the form was sent from. */

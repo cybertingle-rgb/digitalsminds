@@ -262,6 +262,21 @@ model Course {
   currency           String?        @db.Char(3)
   certificateEnabled Boolean        @default(true)
 
+  /// Price review after the move to PKR base prices: the price as first entered,
+  /// and how it was converted. Set only for prices that were not already PKR.
+  originalPriceAmount Int?
+  originalCurrency    String?   @db.Char(3)
+  /// Units of PKR per 1 unit of the original currency used for the conversion.
+  priceConversionRate Decimal?  @db.Decimal(24, 10)
+  priceConvertedAt    DateTime?
+  priceSource         String?   @db.VarChar(200)
+  /// Price whose currency is not PKR and still needs a Super Admin to confirm it.
+  priceNeedsReview    Boolean   @default(false)
+
+  // Catalogue category
+  categoryId String?
+  category   ProgramCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
   // Training program details (shown on the public page)
   format       TrainingFormat @default(ONLINE_LIVE)
   /// e.g. "8 weeks, 3 live classes a week".
@@ -299,6 +314,7 @@ model Course {
 
   @@index([status, featured, sortOrder])
   @@index([language, status])
+  @@index([categoryId])
 }
 
 /// Instructors can manage only the courses they are assigned to.
@@ -417,6 +433,8 @@ model Enrollment {
   application EnrollmentApplication?
   events      EnrollmentEvent[]
   onboarding  OnboardingProgress[]
+
+  attendance Attendance[]
 
   @@unique([userId, courseId])
   @@index([batchId, stage])
@@ -791,6 +809,9 @@ model Payment {
   /// Transaction ID / reference the student copied from their bank or wallet.
   reference      String                 @db.VarChar(100)
   payerName      String?                @db.VarChar(120)
+  /// What a payer abroad says they sent, in minor units of sentCurrency (information only; amountReceived is what counts).
+  sentAmount     Int?
+  sentCurrency   String?                @db.Char(3)
   paidOn         DateTime?              @db.Date
   note           String?                @db.VarChar(1000)
   /// Receipt screenshot or PDF, stored privately (never in the Media library).
@@ -845,6 +866,8 @@ model LiveClass {
   reminderHourSentAt DateTime?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
+
+  attendance Attendance[]
 
   @@index([courseId, startsAt])
   @@index([status, startsAt])
@@ -904,6 +927,10 @@ model Batch {
   internalNotes       String?     @db.Text
   coordinatorId       String?     @db.VarChar(64)
   coordinator         User?       @relation("BatchCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+  /// IANA time zone the batch's class times are set and shown in, e.g. "Asia/Karachi".
+  timeZone            String      @default("Asia/Karachi") @db.VarChar(64)
+  /// Staff record attendance for this batch's classes (off unless switched on).
+  attendanceEnabled   Boolean     @default(false)
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
 
@@ -959,6 +986,14 @@ model EnrollmentApplication {
   /// Fee in paisa when the applicant applied (the program fee may change later).
   feeAmount        Int
   currency         String          @default("PKR") @db.Char(3)
+  /// Converted estimate the applicant was shown when applying (display only; the PKR fee is what is owed).
+  displayCurrency  String?         @db.Char(3)
+  /// In minor units of displayCurrency.
+  displayAmount    Int?
+  /// Units of displayCurrency per 1 PKR.
+  displayRate      Decimal?        @db.Decimal(24, 12)
+  displayRateAt    DateTime?
+  displayProvider  String?         @db.VarChar(100)
   stage            EnrollmentStage @default(APPLICATION_RECEIVED)
   /// SHA-256 of the private status-link token (the token itself is only emailed).
   tokenHash        String          @unique @db.Char(64)
@@ -1062,4 +1097,99 @@ model StudentDocument {
 
   @@index([courseId, published])
   @@index([batchId, published])
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue: program categories and professional services
+// ---------------------------------------------------------------------------
+
+/// A group of training programs and services, e.g. "E-commerce Marketplace Training".
+model ProgramCategory {
+  id        String   @id @default(cuid())
+  slug      String   @unique @db.VarChar(100)
+  title     String   @db.VarChar(160)
+  titleUr   String?  @db.VarChar(160)
+  summary   String?  @db.VarChar(500)
+  summaryUr String?  @db.VarChar(500)
+  /// Important notice shown on the category's program and service pages (eligibility, no guarantees).
+  notice    String?  @db.Text
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses  Course[]
+  services Service[]
+
+  @@index([active, sortOrder])
+}
+
+/// A professional service visitors can inquire about (no account needed).
+model Service {
+  id             String           @id @default(cuid())
+  slug           String           @unique @db.VarChar(100)
+  status         PublishStatus    @default(DRAFT)
+  title          String           @db.VarChar(160)
+  shortTitle     String?          @db.VarChar(80)
+  summary        String           @db.VarChar(500)
+  description    String?          @db.Text
+  /// What is included, as a JSON array of strings.
+  offerings      Json?
+  /// Who it suits, as a JSON array of strings.
+  idealFor       Json?
+  /// Scope and limits shown on the page (e.g. "approval is the marketplace's decision").
+  notice         String?          @db.Text
+  categoryId     String?
+  category       ProgramCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  sortOrder      Int              @default(0)
+  seoTitle       String?          @db.VarChar(200)
+  seoDescription String?          @db.VarChar(320)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([status, sortOrder])
+  @@index([categoryId])
+}
+
+// ---------------------------------------------------------------------------
+// Currency conversion for price display (PKR is the base currency)
+// ---------------------------------------------------------------------------
+
+/// Last known good exchange rate for one currency, from the configured provider.
+model CurrencyRate {
+  /// ISO 4217 code, e.g. "USD".
+  currency        String   @id @db.Char(3)
+  /// Units of this currency per 1 PKR.
+  perPkr          Decimal  @db.Decimal(24, 12)
+  provider        String   @db.VarChar(100)
+  /// When the provider says the rate was last updated.
+  sourceUpdatedAt DateTime
+  /// When this site fetched it.
+  fetchedAt       DateTime
+}
+
+// ---------------------------------------------------------------------------
+// Attendance (only for batches where it is switched on)
+// ---------------------------------------------------------------------------
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  ABSENT
+  EXCUSED
+}
+
+model Attendance {
+  id           String           @id @default(cuid())
+  liveClassId  String
+  liveClass    LiveClass        @relation(fields: [liveClassId], references: [id], onDelete: Cascade)
+  enrollmentId String
+  enrollment   Enrollment       @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  status       AttendanceStatus
+  note         String?          @db.VarChar(300)
+  markedById   String?          @db.VarChar(64)
+  markedAt     DateTime         @default(now())
+
+  @@unique([liveClassId, enrollmentId])
+  @@index([enrollmentId])
 }
