@@ -31,10 +31,10 @@ export async function POST(request: NextRequest) {
     const v = form.get(k);
     return typeof v === "string" ? v : undefined;
   };
-  const parsed = paymentInput.safeParse({ method: text("method"), reference: text("reference") ?? "", payerName: text("payerName"), paidOn: text("paidOn") ?? "", note: text("note"), sentAmount: text("sentAmount") ?? "", sentCurrency: text("sentCurrency") ?? "" });
+  const parsed = paymentInput.safeParse({ method: text("method"), reference: text("reference") ?? "", payerName: text("payerName"), paidOn: text("paidOn") ?? "", note: text("note") });
   if (!parsed.success) {
     const field = String(parsed.error.issues[0]?.path[0] ?? "");
-    return fail(422, ["reference", "paidOn", "method", "sentAmount", "sentCurrency"].includes(field) ? field : "generic", field);
+    return fail(422, ["reference", "paidOn", "method"].includes(field) ? field : "generic", field);
   }
   const file = form.get("receipt");
   if (!(file instanceof File) || file.size === 0) return fail(422, "receiptMissing", "receipt");

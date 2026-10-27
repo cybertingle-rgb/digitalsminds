@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Price } from "@/components/currency/Price";
+import { formatPkr } from "@/modules/payments/format";
 
 /** Catalogue / dashboard card with thumbnail. Text is passed in already localized. */
 export function CourseCard(props: {
@@ -9,7 +9,7 @@ export function CourseCard(props: {
   summary?: string;
   thumbnailUrl: string | null;
   meta: (string | null)[];
-  /** Fee in PKR paisa, shown with a converted estimate where available. */
+  /** Fee in PKR paisa. */
   fee?: number | null;
   courseLang: "en" | "ur";
   footer?: ReactNode;
@@ -34,7 +34,7 @@ export function CourseCard(props: {
         </h2>
         {props.summary && <p className="mt-2 line-clamp-3 text-sm text-muted" dir="auto">{props.summary}</p>}
         <p className="mt-auto flex flex-wrap gap-x-3 gap-y-1 pt-4 text-xs font-medium text-charcoal-700">
-          {props.fee ? <Price pkr={props.fee} className="text-charcoal-900" /> : null}
+          {props.fee ? <span className="text-charcoal-900" dir="ltr">{formatPkr(props.fee)}</span> : null}
           {props.meta.filter(Boolean).map((m) => <span key={m}>{m}</span>)}
         </p>
         {props.footer && <div className="relative z-10 mt-4">{props.footer}</div>}

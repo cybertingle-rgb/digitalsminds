@@ -47,7 +47,6 @@ application goes back to *Payment pending* and the applicant is emailed the reas
 | Onboarding checklists and documents | ✓ | ✓ | confirm staff steps (own batches) | tick own steps, download own |
 | Student records | ✓ (edit, suspend, delete) | view | | own profile |
 | Categories and services | ✓ | ✓ | | |
-| Currency settings, rate refresh, converting old prices | ✓ | | | |
 | Attendance (where switched on) | ✓ | ✓ | own batches | view own |
 | CSV exports (students, applications, batch roster) | ✓ | | | |
 
@@ -72,21 +71,12 @@ application goes back to *Payment pending* and the applicant is emailed the reas
 - **Admin → Services**: the professional services visitors ask about without an account (brand launch, LLC & marketplace readiness, account reinstatement, AI & automation, plus the original five). Each has a summary, description, what's included, who it suits, a notice, a category, an order and draft/published/archived. Published services appear on `/services`, `/services/<address>`, the home page, the footer and the contact form; inquiries land in **Inquiries** with the service name.
 - The contact form tells visitors not to send passwords or codes; the reinstatement service says the same and that reinstatement is the marketplace's decision.
 
-## International prices (display only)
+## Prices
 
-Fees are set, owed and paid in **PKR**. Visitors abroad also see an estimate in their own currency:
-
-| | |
-| --- | --- |
-| Which currency | The visitor's own choice ("Show prices in", remembered in their browser), else their country (from a CDN header such as Cloudflare's, if one is in front of the site, else the browser's time zone; never GPS), else PKR. |
-| Rates | ExchangeRate-API open access (`https://open.er-api.com/v6/latest/PKR`, updated daily, "Rates by ExchangeRate-API" shown), or ExchangeRate-API with your key, or rates you type in. Fetched inside the server every 12 hours (10-second timeout); the last good rates are kept if a fetch fails. |
-| Never stale | A rate older than 72 hours (configurable) is not shown; prices fall back to PKR. The provider's own update time is stored and shown. |
-| Rounding | Each currency's own minor unit (JPY 0, KWD 3, most 2), half up; amounts from 1,000 are shown without cents. |
-| Applications | When someone applies, the server records the estimate it would show them (currency, amount, rate, rate date, provider) next to the PKR fee. The fee owed never changes. |
-| Paying from abroad | The payment page says the full PKR amount must arrive. Payers abroad can note what they sent and in which currency; the Super Admin verifies the PKR received. |
-| Old prices | Any fee stored in another currency (or none) was flagged by the migration, not guessed. **Admin → Payments → Currency & rates → Prices to review**: convert it with the current rate (original amount, rate, date and source are kept) or set the PKR fee by hand. |
-
-**Admin → Payments → Currency & rates** (Super Admin): status (last success, last attempt, error), current rates, "Update rates now", currencies offered, update interval, maximum age, provider and API key (stored encrypted), manual rates. Failures also appear on the admin overview.
+All fees are shown, charged and paid in **PKR** only (owner's decision, 2026-10-27; the earlier currency conversion was
+removed). The eBay course fee is Rs 3,500 (set by migration `20261027000000_ebay_fee_3500_pkr`; change it any time on
+the program page). A fee stored in another currency before this (none known) is flagged: the admin overview asks a Super
+Admin to set the PKR fee on the program page.
 
 ## Time zones and attendance
 
@@ -95,7 +85,7 @@ Fees are set, owed and paid in **PKR**. Visitors abroad also see an estimate in 
 
 ## Configuration
 
-Nothing new to configure in Hostinger (exchange rates need outgoing HTTPS to `open.er-api.com`, which Hostinger allows; set `CURRENCY_REFRESH=off` to stop the scheduled updates). Requirements:
+Nothing new to configure in Hostinger. Requirements:
 
 - **Email** (Admin → Integrations → Email) must work: applicants receive their private link, payment updates and the set-password link by email.
 - **Payment details** must be entered, or applicants see "contact us" instead of the accounts.
@@ -111,7 +101,7 @@ Additive migration `20261022000000_phase15_enrollment_platform`: tables `Batch`,
 No data was changed or deleted.
 
 Additive migration `20261024000000_phase21_catalog_pricing_attendance`: tables `ProgramCategory` (six starting rows),
-`Service` (filled from the built-in text on first use), `CurrencyRate`, `Attendance`; new columns on `Course` (category,
+`Service` (filled from the built-in text on first use), `CurrencyRate` (unused since conversion was removed), `Attendance`; new columns on `Course` (category,
 original price and conversion record, review flag), `Batch` (time zone, attendance switch), `EnrollmentApplication`
 (price snapshot) and `Payment` (amount/currency sent from abroad). Data steps only add: existing non-PKR prices are copied
 to the "original" columns and flagged for review, and programs with "eBay" in their name or address are put in the

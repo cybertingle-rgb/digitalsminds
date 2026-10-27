@@ -38,9 +38,6 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/[lang]/
         </div>
         {can(user.role, "payments.manage") && (
           <div className="flex flex-wrap gap-2">
-            <Link href="/admin/payments/currency" className="rounded-xl border border-white/80 bg-white/60 px-4 py-2 text-sm font-semibold text-charcoal-900 shadow-sm hover:bg-white/90">
-              Currency &amp; rates
-            </Link>
             <Link href="/admin/payments/settings" className="rounded-xl border border-white/80 bg-white/60 px-4 py-2 text-sm font-semibold text-charcoal-900 shadow-sm hover:bg-white/90">
               Payment details
             </Link>

@@ -12,7 +12,7 @@ import { getStorageStatus } from "@/modules/media/storage-check";
 import { getGoogleStatus, getSmtpStatus } from "@/modules/settings/integrations";
 import { formatDay } from "@/modules/batches/rules";
 import { inquiryTopicLabels } from "@/modules/catalog/service";
-import { getRefreshStatus, pricesToReview } from "@/modules/currency/service";
+import { db } from "@/lib/db";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -49,15 +49,14 @@ export default async function AdminOverview() {
   const user = await requirePagePermission("admin.access", "/admin");
   const [{ leads, people, media, admissions, seats, support, certificatesReady, activity }, labels] = await Promise.all([dashboardStats(user), inquiryTopicLabels()]);
   const setup = can(user.role, "integrations.manage") ? await Promise.all([getSmtpStatus(), getGoogleStatus(), getStorageStatus()]) : null;
-  const rates = can(user.role, "payments.manage") ? await getRefreshStatus() : null;
-  const priceReview = can(user.role, "payments.manage") ? (await pricesToReview()).length : 0;
+  // Fees stored in another currency before PKR became the only currency.
+  const priceReview = can(user.role, "payments.manage") ? await db().course.count({ where: { priceNeedsReview: true } }) : 0;
   const todo = setup
     ? [
         !setup[0].verifiedAt && { label: "Set up email so students can verify accounts and reset passwords", href: "/admin/integrations" },
         !setup[2].uploadsEnabled && { label: "Confirm file storage to switch on uploads", href: "/admin/integrations#storage" },
         !setup[1].enabled && { label: "Optional: connect Google sign-in", href: "/admin/integrations" },
-        rates?.lastError && { label: `Exchange rates are not updating: ${rates.lastError}`, href: "/admin/payments/currency" },
-        priceReview > 0 && { label: `${priceReview} program fee(s) entered in another currency need converting to PKR`, href: "/admin/payments/currency" },
+        priceReview > 0 && { label: `${priceReview} program fee(s) were entered in another currency: set the PKR fee on the program page`, href: "/admin/courses" },
       ].filter((t): t is { label: string; href: string } => !!t)
     : [];
 

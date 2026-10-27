@@ -18,7 +18,6 @@ import { CLOSED_STAGES, looksLikeToken, STAGE_PATH, stageIndex } from "@/modules
 import { applicationByToken, confirmApplicationEmail, type ApplicantView } from "@/modules/admissions/service";
 import { formatDay } from "@/modules/batches/rules";
 import { availableMethods, bankQr, formatPkr, getPaymentDetails } from "@/modules/payments/service";
-import { formatMoney } from "@/modules/currency/rules";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Your application", robots: { index: false, follow: false } };
@@ -72,12 +71,6 @@ async function Status({ app, dict, lang }: { app: ApplicantView; dict: Dictionar
             <div><dt className="text-muted">{t.program}</dt><dd className="font-semibold text-charcoal-900" dir="auto">{app.course.title}</dd></div>
             <div><dt className="text-muted">{t.batch}</dt><dd className="text-charcoal-900">{app.batch.name}<span className="block text-muted">{format(t.starts, { date: formatDay(app.batch.startDate) })} · {app.batch.scheduleText}</span></dd></div>
             <div><dt className="text-muted">{t.fee}</dt><dd className="text-base font-semibold text-charcoal-900" dir="ltr">{formatPkr(app.feeAmount)}</dd></div>
-            {app.displayCurrency && app.displayAmount !== null && app.displayRateAt && (
-              <div>
-                <dt className="text-muted">{p.shownWhenApplied}</dt>
-                <dd className="text-charcoal-900" dir="ltr">≈ {formatMoney(app.displayAmount, app.displayCurrency)} <span className="text-xs text-muted">({dateFmt.format(app.displayRateAt)})</span></dd>
-              </div>
-            )}
           </dl>
         </section>
 
@@ -151,7 +144,6 @@ async function PaymentSection({ dict, amount }: { dict: Dictionary; amount: numb
       <section aria-labelledby="how-to-pay" className="glass space-y-5 rounded-3xl p-6">
         <h2 id="how-to-pay" className="text-lg font-bold text-charcoal-900">{t.howToPay}</h2>
         <p className="glass-subtle rounded-xl px-4 py-3 text-charcoal-900">{t.amountToSend}: <strong dir="ltr">{formatPkr(amount)}</strong></p>
-        <p className="text-sm text-charcoal-700">{t.payInPkr}</p>
         {methods.includes("BANK_TRANSFER") && (
           <div>
             <h3 className="font-semibold text-charcoal-900">{t.bank}</h3>

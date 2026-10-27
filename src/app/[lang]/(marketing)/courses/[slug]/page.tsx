@@ -16,9 +16,7 @@ import { RichText } from "@/modules/courses/richtext";
 import { db } from "@/lib/db";
 import { courseBySlug, listingText, objectivesOf } from "@/modules/learning/catalogue";
 import { mediaUrl } from "@/modules/media/service";
-import { CurrencySwitcher } from "@/components/currency/CurrencySwitcher";
-import { Price } from "@/components/currency/Price";
-import { coursePrice } from "@/modules/payments/service";
+import { coursePrice, formatPkr } from "@/modules/payments/service";
 import { absolute, breadcrumbs, orgRef } from "@/modules/seo/structured-data";
 import { zoneLabel, zoneName } from "@/lib/timezone";
 
@@ -98,7 +96,7 @@ export default async function CoursePage({ params }: Props) {
             <h1 className="text-3xl font-bold tracking-tight text-balance text-charcoal-900 sm:text-4xl" dir="auto">{text.title}</h1>
             <p className="mt-4 text-lg text-muted" dir="auto">{text.summary}</p>
             <ul className="mt-6 flex flex-wrap gap-2 text-sm">
-              {price && <li className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800"><Price pkr={price} /></li>}
+              {price && <li className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800" dir="ltr">{formatPkr(price)}</li>}
               {[t.formats[course.format], course.durationText, t.levels[course.level], t.languages[course.language], course.certificateEnabled ? t.certificate : null]
                 .filter(Boolean)
                 .map((m) => <li key={m} className="glass-subtle rounded-full px-3 py-1 font-medium text-charcoal-800">{m}</li>)}
@@ -185,9 +183,8 @@ export default async function CoursePage({ params }: Props) {
           <aside className="min-w-0 space-y-6">
             <div className="glass space-y-4 rounded-2xl p-6" aria-labelledby="fee-title">
               <h2 id="fee-title" className="text-sm font-semibold uppercase tracking-wider text-gold-700">{a.fee}</h2>
-              {price && <Price pkr={price} size="large" className="text-3xl font-bold text-charcoal-900" />}
+              {price && <p className="text-3xl font-bold text-charcoal-900" dir="ltr">{formatPkr(price)}</p>}
               <p className="text-sm text-muted">{a.feeNote}</p>
-              <CurrencySwitcher />
               {enrolled ? (
                 <>
                   <FormAlert tone="success">{a.enrolledNotice}</FormAlert>

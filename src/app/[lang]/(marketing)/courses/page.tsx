@@ -14,7 +14,6 @@ import { nextOpenBatchByCourse } from "@/modules/batches/service";
 import { listCategories } from "@/modules/catalog/service";
 import Link from "next/link";
 import { coursePrice } from "@/modules/payments/format";
-import { CurrencySwitcher } from "@/components/currency/CurrencySwitcher";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +59,6 @@ export default async function CoursesPage({ params, searchParams }: PageProps<"/
           ))}
         </nav>
       )}
-      <CurrencySwitcher className="mt-6" />
       {current?.notice && <p className="mt-6 max-w-3xl rounded-2xl border-s-4 border-sun-400 bg-white/60 px-5 py-4 text-sm text-charcoal-800">{current.notice}</p>}
       {courses.length === 0 ? (
         <div className="mt-10 glass-subtle rounded-2xl p-8 text-center">

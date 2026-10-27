@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { CookieConsent } from "@/components/analytics/CookieConsent";
-import { CurrencyProvider } from "@/components/currency/CurrencyContext";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SocialRail } from "@/components/effects/SocialLinks";
@@ -16,7 +15,7 @@ export default async function MarketingLayout({ children, params }: LayoutProps<
   const dict = getDictionary(lang);
   const { gaId } = await getAnalyticsSetting();
   return (
-    <CurrencyProvider labels={dict.currency} locale={lang}>
+    <>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2"
@@ -31,6 +30,6 @@ export default async function MarketingLayout({ children, params }: LayoutProps<
       <SocialRail label={dict.a11y.social} />
       <WhatsAppButton dict={dict} locale={lang} />
       <CookieConsent gaId={gaId} labels={dict.consent} privacyHref={localizePath("/privacy", lang)} />
-    </CurrencyProvider>
+    </>
   );
 }

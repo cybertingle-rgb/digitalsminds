@@ -10,7 +10,6 @@ import { formatDay } from "@/modules/batches/rules";
 import { publicBatches } from "@/modules/batches/service";
 import { courseBySlug } from "@/modules/learning/catalogue";
 import { coursePrice, formatPkr } from "@/modules/payments/service";
-import { Price } from "@/components/currency/Price";
 import { zoneName } from "@/lib/timezone";
 
 export const dynamic = "force-dynamic";
@@ -39,9 +38,8 @@ export default async function ApplyPage({ params, searchParams }: PageProps<"/[l
           <h1 className="text-3xl font-bold text-charcoal-900" dir="auto">{format(t.formTitle, { program: course.title })}</h1>
           <p className="mt-2 text-muted">{t.formIntro}</p>
           <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-sun-100 px-3 py-1 text-sm font-semibold text-charcoal-900">
-            {t.fee}: <Price pkr={price} />
+            {t.fee}: <span dir="ltr">{formatPkr(price)}</span>
           </p>
-          <p className="mt-2 text-xs text-muted">{dict.currency.paidInPkr}</p>
         </div>
         <div className="glass rounded-3xl p-6 sm:p-8">
           {open.length === 0 ? (
