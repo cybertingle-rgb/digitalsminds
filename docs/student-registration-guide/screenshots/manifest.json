@@ -1,0 +1,482 @@
+{
+  "capturedAt": "2026-11-07T21:50:29.348Z",
+  "base": "http://localhost:3000",
+  "screenshots": [
+    {
+      "name": "01-home",
+      "title": "Homepage",
+      "step": "Explore",
+      "url": "/",
+      "marks": [
+        {
+          "n": 1,
+          "target": "header nav a[href='/courses']"
+        },
+        {
+          "n": 2,
+          "target": "section[aria-labelledby=featured-title] a[href='/courses'] >> nth=1"
+        }
+      ]
+    },
+    {
+      "name": "02-programs",
+      "title": "Courses page",
+      "step": "Explore",
+      "url": "/courses",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main article"
+        }
+      ]
+    },
+    {
+      "name": "03-program-top",
+      "title": "Program page: overview, fee and batches",
+      "step": "Program",
+      "url": "/courses/ebay-training",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main h1"
+        },
+        {
+          "n": 2,
+          "target": "[aria-labelledby=fee-title]"
+        },
+        {
+          "n": 3,
+          "target": "#batches li"
+        }
+      ]
+    },
+    {
+      "name": "04-program-details",
+      "title": "Program page: what you'll learn and how enrollment works",
+      "step": "Program",
+      "url": "/courses/ebay-training",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#learn-title"
+        },
+        {
+          "n": 2,
+          "target": "#pre-title"
+        },
+        {
+          "n": 3,
+          "target": "#how-title"
+        }
+      ]
+    },
+    {
+      "name": "05-apply-form",
+      "title": "Application form: your details",
+      "step": "Apply",
+      "url": "/courses/ebay-training/apply?batch=cmw6xo7mv000z3r7daq0il1by",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#batchId"
+        },
+        {
+          "n": 2,
+          "target": "#name"
+        },
+        {
+          "n": 3,
+          "target": "#email"
+        },
+        {
+          "n": 4,
+          "target": "#phone"
+        },
+        {
+          "n": 5,
+          "target": "#cnic"
+        }
+      ]
+    },
+    {
+      "name": "06-apply-terms-error",
+      "title": "Application form: CV, terms and the send button",
+      "step": "Apply",
+      "url": "/courses/ebay-training/apply?batch=cmw6xo7mv000z3r7daq0il1by",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#cv"
+        },
+        {
+          "n": 2,
+          "target": "#acceptTerms >> xpath=.."
+        },
+        {
+          "n": 3,
+          "target": "main form button[type=submit]"
+        }
+      ]
+    },
+    {
+      "name": "07-application-sent",
+      "title": "Application sent",
+      "step": "Apply",
+      "url": "/courses/ebay-training/apply?batch=cmw6xo7mv000z3r7daq0il1by",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main h2:has-text('Check your email')"
+        }
+      ]
+    },
+    {
+      "name": "08-email-confirm",
+      "title": "Email: confirm your application",
+      "step": "Email",
+      "url": "about:blank",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#mail a >> nth=0"
+        }
+      ]
+    },
+    {
+      "name": "09-status-payment-pending",
+      "title": "Your application: payment pending",
+      "step": "Pay",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "section[aria-labelledby=summary]"
+        },
+        {
+          "n": 2,
+          "target": "section[aria-labelledby=stage]"
+        },
+        {
+          "n": 3,
+          "target": "main aside ol"
+        }
+      ]
+    },
+    {
+      "name": "10-how-to-pay",
+      "title": "How to pay",
+      "step": "Pay",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#how-to-pay + p"
+        },
+        {
+          "n": 2,
+          "target": "#how-to-pay ~ div >> nth=0"
+        }
+      ]
+    },
+    {
+      "name": "11-payment-form",
+      "title": "Send your payment details",
+      "step": "Pay",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "input[name=method][value=JAZZCASH] >> xpath=.."
+        },
+        {
+          "n": 2,
+          "target": "#reference"
+        },
+        {
+          "n": 3,
+          "target": "#paidOn"
+        },
+        {
+          "n": 4,
+          "target": "#receipt"
+        },
+        {
+          "n": 5,
+          "target": "form[enctype='multipart/form-data'] button[type=submit]"
+        }
+      ]
+    },
+    {
+      "name": "12-status-payment-submitted",
+      "title": "Payment submitted: waiting for verification",
+      "step": "Verify",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "section[aria-labelledby=stage]"
+        }
+      ]
+    },
+    {
+      "name": "13-email-payment-received",
+      "title": "Email: payment details received",
+      "step": "Email",
+      "url": "about:blank",
+      "marks": []
+    },
+    {
+      "name": "14-status-payment-not-verified",
+      "title": "If a payment can't be verified",
+      "step": "Verify",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "section[aria-labelledby=stage]"
+        },
+        {
+          "n": 2,
+          "target": "section[aria-labelledby=pay-form]"
+        }
+      ]
+    },
+    {
+      "name": "15-status-enrollment-confirmed",
+      "title": "Enrollment confirmed",
+      "step": "Activate",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "section[aria-labelledby=stage]"
+        }
+      ]
+    },
+    {
+      "name": "16-email-welcome",
+      "title": "Email: you're enrolled — set your password",
+      "step": "Email",
+      "url": "about:blank",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#mail a >> nth=0"
+        }
+      ]
+    },
+    {
+      "name": "17-set-password",
+      "title": "Set your password",
+      "step": "Activate",
+      "url": "/reset-password?token=dae0a190318640c9a3a05e6c5fd48e6b7377810b28354aed80004afd7fbaa21b",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#password"
+        },
+        {
+          "n": 2,
+          "target": "#confirmPassword"
+        },
+        {
+          "n": 3,
+          "target": "main form button[type=submit]"
+        }
+      ]
+    },
+    {
+      "name": "18-login",
+      "title": "Log in to the student portal",
+      "step": "Log in",
+      "url": "/login?reset=1",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#email"
+        },
+        {
+          "n": 2,
+          "target": "#password"
+        },
+        {
+          "n": 3,
+          "target": "main form button[type=submit]"
+        },
+        {
+          "n": 4,
+          "target": "main a[href*='forgot-password']"
+        }
+      ]
+    },
+    {
+      "name": "19-dashboard",
+      "title": "Your dashboard",
+      "step": "Portal",
+      "url": "/account",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main aside nav"
+        },
+        {
+          "n": 2,
+          "target": "main h2:has-text('eBay Training') >> xpath=ancestor::*[contains(@class,'rounded-3xl')][1]"
+        },
+        {
+          "n": 3,
+          "target": "section[aria-labelledby=next-live]"
+        }
+      ]
+    },
+    {
+      "name": "20-onboarding",
+      "title": "Onboarding checklist",
+      "step": "Portal",
+      "url": "/account/onboarding",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main li:has-text('Read the program handbook')"
+        },
+        {
+          "n": 2,
+          "target": "main li:has-text('Test your camera')"
+        },
+        {
+          "n": 3,
+          "target": "main li:has-text('Profile details checked')"
+        }
+      ]
+    },
+    {
+      "name": "21-my-program",
+      "title": "My program: batch and joining details",
+      "step": "Batch",
+      "url": "/account/program",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main article section >> nth=0"
+        },
+        {
+          "n": 2,
+          "target": "main h3:has-text('How to join your classes') >> xpath=.."
+        }
+      ]
+    },
+    {
+      "name": "22-schedule",
+      "title": "Schedule and joining live sessions",
+      "step": "Live",
+      "url": "/account/schedule",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main a:has-text('Join class')"
+        },
+        {
+          "n": 2,
+          "target": "main a:has-text('Add to calendar') >> nth=0"
+        },
+        {
+          "n": 3,
+          "target": "#upcoming-live + ul li >> nth=1"
+        }
+      ]
+    },
+    {
+      "name": "23-documents",
+      "title": "Documents",
+      "step": "Portal",
+      "url": "/account/documents",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main a:has-text('Download')"
+        }
+      ]
+    },
+    {
+      "name": "24-notices",
+      "title": "Notices",
+      "step": "Updates",
+      "url": "/account/notices",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main :text('Welcome to Batch November 1') >> xpath=ancestor::*[contains(@class,'rounded')][1]"
+        }
+      ]
+    },
+    {
+      "name": "25-notifications",
+      "title": "Notifications",
+      "step": "Updates",
+      "url": "/account/notifications",
+      "marks": []
+    },
+    {
+      "name": "26-support-new",
+      "title": "Support: send a request",
+      "step": "Help",
+      "url": "/account/support",
+      "marks": [
+        {
+          "n": 1,
+          "target": "#subject"
+        },
+        {
+          "n": 2,
+          "target": "#message"
+        },
+        {
+          "n": 3,
+          "target": "main form button[type=submit]"
+        }
+      ]
+    },
+    {
+      "name": "27-support-reply",
+      "title": "Support: the team's reply",
+      "step": "Help",
+      "url": "/account/support/cmw6xsojd002b3r7djyika6cf",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main :text('Digitals Minds team') >> nth=0"
+        },
+        {
+          "n": 2,
+          "target": "#body"
+        }
+      ]
+    },
+    {
+      "name": "28-profile",
+      "title": "Your profile",
+      "step": "Portal",
+      "url": "/account/profile",
+      "marks": []
+    },
+    {
+      "name": "29-find-application",
+      "title": "Find your application",
+      "step": "Help",
+      "url": "/application",
+      "marks": [
+        {
+          "n": 1,
+          "target": "main form"
+        }
+      ]
+    },
+    {
+      "name": "30-phone-schedule",
+      "title": "The portal on a phone",
+      "step": "Portal",
+      "url": "/account/schedule",
+      "marks": []
+    }
+  ]
+}

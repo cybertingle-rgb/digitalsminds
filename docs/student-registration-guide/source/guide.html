@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Digitals Minds — Student Registration & Onboarding Guide</title>
+<!--
+  Editable source of Digitals_Minds_Student_Registration_Guide.pdf.
+  Each <section class="slide"> is one 16:9 page (1280 × 720 px). Screenshots come from
+  ../screenshots/annotated (captured from the real site by capture.mjs). Build with build.mjs.
+-->
+<style>
+  @font-face { font-family: "Inter"; src: url("fonts/Inter-Regular.ttf"); font-weight: 400; }
+  @font-face { font-family: "Inter"; src: url("fonts/Inter-Medium.ttf"); font-weight: 500; }
+  @font-face { font-family: "Inter"; src: url("fonts/Inter-SemiBold.ttf"); font-weight: 600; }
+  @font-face { font-family: "Inter"; src: url("fonts/Inter-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Inter"; src: url("fonts/Inter-ExtraBold.ttf"); font-weight: 800; }
+  @font-face { font-family: "Inter Display"; src: url("fonts/InterDisplay-SemiBold.ttf"); font-weight: 600; }
+  @font-face { font-family: "Inter Display"; src: url("fonts/InterDisplay-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Inter Display"; src: url("fonts/InterDisplay-ExtraBold.ttf"); font-weight: 800; }
+
+  :root {
+    --ink: #2b323c;
+    --ink-2: #3a424d;
+    --muted: #5d6673;
+    --line: #e7e2d4;
+    --sun: #fdcf31;
+    --sun-soft: #fff4c7;
+    --cream: #fffdf6;
+    --paper: #ffffff;
+    --ok: #1f7a4d;
+    --warn: #9a4b00;
+  }
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Inter", sans-serif; color: var(--ink); background: #d9d6cc; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { position: relative; width: 1280px; height: 720px; overflow: hidden; background: var(--cream); page-break-after: always; break-after: page; margin: 0 auto; }
+  @media screen { .slide { margin: 24px auto; box-shadow: 0 10px 40px rgba(0,0,0,.18); } }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+
+  /* Soft brand glow in the corner of content pages */
+  .slide.content::before { content: ""; position: absolute; right: -180px; top: -220px; width: 560px; height: 560px; border-radius: 50%; background: radial-gradient(circle, rgba(253,207,49,.28), rgba(253,207,49,0) 70%); }
+
+  /* Header and footer */
+  .top { position: absolute; left: 56px; right: 56px; top: 30px; height: 40px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+  .top img { height: 34px; width: auto; }
+  .label { font: 600 11px/1 "Inter"; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); background: var(--sun-soft); border: 1px solid #f3dd85; border-radius: 999px; padding: 8px 14px; }
+  .foot { position: absolute; left: 56px; right: 56px; bottom: 22px; display: flex; align-items: center; justify-content: space-between; font: 500 11px/1 "Inter"; color: var(--muted); z-index: 2; }
+  .foot .tag { color: var(--ink); font-weight: 600; letter-spacing: .04em; }
+  .foot .pg { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; border-radius: 999px; background: var(--ink); color: var(--sun); font-weight: 700; padding: 0 9px; }
+
+  /* Body grid */
+  .body { position: absolute; left: 56px; right: 56px; top: 96px; bottom: 64px; display: grid; gap: 36px; z-index: 1; }
+  .split { grid-template-columns: 392px 1fr; }
+  .split.wide-text { grid-template-columns: 470px 1fr; }
+  .col { min-width: 0; display: flex; flex-direction: column; }
+
+  .kicker { font: 700 12px/1 "Inter"; letter-spacing: .14em; text-transform: uppercase; color: #8a6a00; margin: 4px 0 10px; }
+  h1, h2 { font-family: "Inter Display", "Inter"; margin: 0; letter-spacing: -.01em; }
+  h2 { font-size: 31px; line-height: 1.12; font-weight: 800; }
+  .lead { font-size: 14.5px; line-height: 1.55; color: var(--ink-2); margin: 12px 0 0; }
+  .where { margin-top: 14px; font-size: 12.5px; color: var(--muted); }
+  .where b { color: var(--ink); font-weight: 600; }
+  .where code { font: 600 12px "Inter"; background: #f2eee2; border-radius: 6px; padding: 2px 6px; color: var(--ink); }
+
+  ol.steps { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 9px; }
+  ol.steps li { display: grid; grid-template-columns: 26px 1fr; gap: 11px; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+  ol.steps li .n { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--sun); font: 700 12.5px/26px "Inter"; text-align: center; box-shadow: 0 0 0 2px var(--sun); }
+  ol.steps li b { color: var(--ink); font-weight: 600; }
+
+  .note { margin-top: auto; border-radius: 14px; padding: 12px 14px 12px 16px; font-size: 12.5px; line-height: 1.5; color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--sun); }
+  .note b { color: var(--ink); }
+  .note.warn { border-left-color: #e08a00; background: #fffaf0; }
+  .note.info { border-left-color: var(--ink); }
+  .note + .note { margin-top: 10px; }
+
+  /* Screenshot frames */
+  .shot { position: relative; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 18px 48px -18px rgba(43,50,60,.42), 0 0 0 1px rgba(43,50,60,.08); }
+  .shot img { display: block; width: 100%; height: auto; }
+  /* Screenshots always show their full width; a frame shorter than the image trims only the bottom. */
+  .shot { align-self: start; max-height: 100%; }
+  .shot .cap { position: absolute; left: 12px; bottom: 12px; font: 600 11px/1 "Inter"; color: var(--ink); background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; }
+  .bar { height: 26px; background: linear-gradient(#f4f2ec, #eceae3); display: flex; align-items: center; gap: 6px; padding: 0 12px; border-bottom: 1px solid #e3e0d6; }
+  .bar i { width: 9px; height: 9px; border-radius: 50%; background: #d6d2c6; display: block; }
+  .bar span { margin-left: 10px; font: 500 10.5px/1 "Inter"; color: #7b818a; background: #fff; border-radius: 6px; padding: 4px 10px; }
+  .frame { display: flex; flex-direction: column; }
+  .frame .img { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+  .frame .img img { width: 100%; height: auto; display: block; }
+  .stack { display: grid; gap: 18px; min-height: 0; }
+  /* An email cropped just below its button (ratio = email width / crop height in CSS px). */
+  .mail { aspect-ratio: var(--ar); justify-self: center; }
+
+  /* Cover and closing */
+  .dark { background: var(--ink); color: #fff; }
+  .dark .foot { color: #aeb4bd; }
+  .cover-glow { position: absolute; border-radius: 50%; filter: blur(2px); }
+  .chip { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 9px 16px; font: 600 13px/1 "Inter"; letter-spacing: .06em; }
+  .chip.sun { background: var(--sun); color: var(--ink); }
+  .chip.line { border: 1px solid rgba(255,255,255,.25); color: #fff; }
+
+  /* Journey & tables */
+  .journey { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-top: 26px; }
+  .stage { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px 12px 44px; min-height: 238px; }
+  .stage .num { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--sun); font: 700 13px/30px "Inter"; text-align: center; }
+  .stage h4 { margin: 12px 0 6px; font: 700 13.5px/1.25 "Inter"; color: var(--ink); }
+  .stage p { margin: 0; font-size: 11.5px; line-height: 1.45; color: var(--muted); }
+  .stage .who { position: absolute; left: 12px; bottom: 12px; font: 600 10px/1 "Inter"; letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; }
+  .who.you { background: var(--sun-soft); color: #7a5b00; }
+  .who.team { background: #e8ebf0; color: var(--ink); }
+  .who.auto { background: #e5f4ec; color: var(--ok); }
+  .stage.key { border: 2px solid var(--sun); box-shadow: 0 10px 30px -16px rgba(253,207,49,.9); }
+
+  table.states { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 22px; font-size: 13px; background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  table.states th { text-align: left; font: 700 11px/1 "Inter"; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: #faf7ee; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+  table.states td { padding: 12px 16px; border-bottom: 1px solid #f0ece0; vertical-align: top; line-height: 1.45; color: var(--ink-2); }
+  table.states tr:last-child td { border-bottom: 0; }
+  table.states td:first-child { font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .pill { display: inline-block; font: 700 11px/1 "Inter"; padding: 6px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill.no { background: #fdeceb; color: #a3261c; }
+  .pill.yes { background: #e5f4ec; color: var(--ok); }
+
+  .cards { display: grid; gap: 14px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+  .card h4 { margin: 0 0 6px; font: 700 14px/1.3 "Inter"; color: var(--ink); }
+  .card p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-2); }
+  .faq { grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+  .faq .card { padding: 13px 16px; }
+  .faq .card h4 { font-size: 13.5px; }
+  .faq .card p { font-size: 12px; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================== 1. Cover -->
+<section class="slide dark">
+  <div class="cover-glow" style="right:-220px;top:-260px;width:780px;height:780px;background:radial-gradient(circle,rgba(253,207,49,.42),rgba(253,207,49,0) 66%)"></div>
+  <div class="cover-glow" style="left:-260px;bottom:-320px;width:640px;height:640px;background:radial-gradient(circle,rgba(253,207,49,.16),rgba(253,207,49,0) 70%)"></div>
+  <div style="position:absolute;left:84px;top:78px"><img src="brand/logo-on-dark.png" alt="Digitals Minds" style="height:96px;width:auto;display:block"></div>
+  <div style="position:absolute;left:84px;top:236px;width:640px">
+    <div class="chip sun">STUDENT GUIDE · 2026</div>
+    <h1 style="font-size:58px;line-height:1.04;font-weight:800;margin-top:22px;letter-spacing:-.02em">Student Registration<br>&amp; Onboarding Guide</h1>
+    <p style="font-size:18px;line-height:1.5;color:#d7dbe1;margin:20px 0 0;max-width:560px">How to choose a program, apply, pay the enrollment fee, get verified and start using your Digitals Minds student portal.</p>
+    <div style="display:flex;gap:10px;margin-top:30px"><span class="chip line">Learn | Grow | Earn.</span><span class="chip line"><a href="https://digitalsminds.com" style="text-decoration:none">digitalsminds.com</a></span></div>
+  </div>
+  <div style="position:absolute;right:70px;top:150px;width:470px;height:440px">
+    <div class="shot" style="position:absolute;right:0;top:0;width:430px;height:270px;transform:rotate(2.5deg)"><img src="../screenshots/raw/03-program-top.png" alt=""></div>
+    <div class="shot" style="position:absolute;left:0;bottom:0;width:380px;height:236px;transform:rotate(-3deg)"><img src="../screenshots/raw/21-my-program.png" alt=""></div>
+  </div>
+  <div class="foot"><span>Official Digitals Minds student publication</span><span>For prospective and newly enrolled students</span></div>
+</section>
+
+<!-- ============================================================== 2. Welcome -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Welcome</span></div>
+  <div class="body split wide-text">
+    <div class="col">
+      <div class="kicker">Welcome to Digitals Minds</div>
+      <h2>Live online training, in batches, with a real team behind you</h2>
+      <p class="lead">Digitals Minds runs practical training programs, such as e-commerce and marketplace training, that are taught <b>live online</b> by our team. You join a <b>batch</b>, a group of students who start together and follow the same class schedule.</p>
+      <p class="lead">The website is where you apply and pay. Your <b>student portal</b> is where you find your batch details, class schedule, joining links, onboarding steps, documents, notices and support.</p>
+      <div class="note info" style="margin-top:22px"><b>Good to know:</b> classes happen live (for example on Zoom or Google Meet). The portal doesn't contain recorded lessons, videos or quizzes. It organises everything around your live classes.</div>
+    </div>
+    <div class="cards" style="align-content:start;margin-top:6px">
+      <div class="card"><h4>In this guide</h4><p>Every step a new student takes, in order, with screenshots of the real website and portal.</p></div>
+      <div class="card"><h4>1 · Choose and apply</h4><p>Explore programs, read the fee and batch details, and send your application. No account needed yet.</p></div>
+      <div class="card"><h4>2 · Pay and send your details</h4><p>Pay the fee yourself using the accounts on your private application page, then send us your transaction ID and receipt.</p></div>
+      <div class="card"><h4>3 · Verification and activation</h4><p>Our team checks the money has arrived. Only then is your seat confirmed and your student account created.</p></div>
+      <div class="card"><h4>4 · Your student portal</h4><p>Set your password, log in, complete onboarding and join your live classes.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">2</span></div>
+</section>
+
+<!-- ============================================================== 3. Journey -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">How it works</span></div>
+  <div class="body" style="grid-template-rows:auto 1fr">
+    <div>
+      <div class="kicker">The enrollment journey</div>
+      <h2>Eight stages from application to active student</h2>
+      <p class="lead" style="max-width:900px">You can follow each stage on your private application page and, later, on the timeline in your student portal. Stages marked <b>Our team</b> are done by Digitals Minds staff after a manual check.</p>
+      <div class="journey">
+        <div class="stage"><div class="num">1</div><h4>Application received</h4><p>You applied for a batch. Open the link we email you to confirm your address.</p><span class="who you">You</span></div>
+        <div class="stage"><div class="num">2</div><h4>Payment pending</h4><p>Your email is confirmed. Pay the fee and send your payment details.</p><span class="who you">You</span></div>
+        <div class="stage"><div class="num">3</div><h4>Payment submitted</h4><p>We have your transaction ID and receipt. This is not an approval yet.</p><span class="who you">You</span></div>
+        <div class="stage key"><div class="num">4</div><h4>Payment verified</h4><p>Our team found the full payment in the account statement.</p><span class="who team">Our team</span></div>
+        <div class="stage key"><div class="num">5</div><h4>Enrollment confirmed</h4><p>Your seat is reserved and your student account is created. You get a set-password email.</p><span class="who team">Our team</span></div>
+        <div class="stage"><div class="num">6</div><h4>Onboarding</h4><p>Starts when you first open your portal. Complete your checklist.</p><span class="who you">You</span></div>
+        <div class="stage"><div class="num">7</div><h4>Active student</h4><p>All required onboarding steps are done. Join your classes.</p><span class="who auto">Automatic</span></div>
+        <div class="stage"><div class="num">8</div><h4>Completed</h4><p>Our team marks the program completed when you finish it.</p><span class="who team">Our team</span></div>
+      </div>
+    </div>
+    <div class="note warn" style="margin-top:22px;align-self:end"><b>Payment submitted ≠ payment approved.</b> Sending a screenshot or transaction ID does not confirm your seat. Your enrollment is confirmed, and your account created, only after our team has verified that the full fee arrived. Some onboarding steps (for example "Profile details checked") are also confirmed by our team.</div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">3</span></div>
+</section>
+
+<!-- ============================================================== 4. Statuses -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Statuses explained</span></div>
+  <div class="body" style="display:block">
+    <div class="kicker">What each status means for you</div>
+    <h2>Five moments that are easy to confuse</h2>
+    <table class="states">
+      <thead><tr><th style="width:210px">Status</th><th>What it means</th><th style="width:250px">What happens next</th><th style="width:130px">Seat confirmed?</th></tr></thead>
+      <tbody>
+        <tr><td>Application submitted</td><td>Your details and CV reached us and you got a reference such as <b>DM-XXXX-XXXX</b>. No account exists yet.</td><td>Open the link in the email "Confirm your application…".</td><td><span class="pill no">Not yet</span></td></tr>
+        <tr><td>Payment submitted</td><td>You sent your payment method, transaction ID, date and receipt. Our team still has to check the money arrived.</td><td>Wait for our email. You don't need to send it again.</td><td><span class="pill no">Not yet</span></td></tr>
+        <tr><td>Payment verified</td><td>A Super Admin checked the account statement and confirmed the full fee was received.</td><td>Happens together with the next step.</td><td><span class="pill yes">Yes</span></td></tr>
+        <tr><td>Enrollment confirmed</td><td>Your seat in the batch is reserved. Your status page shows "Enrollment confirmed".</td><td>Check your email for "You're enrolled in …".</td><td><span class="pill yes">Yes</span></td></tr>
+        <tr><td>Account activated</td><td>You set your password with the emailed link (valid for 7 days) and can log in to the student portal.</td><td>Log in, then start your onboarding steps.</td><td><span class="pill yes">Yes</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:18px">If a payment can't be verified, your application goes back to <b>Payment pending</b>, the reason is shown on your application page, and we email you a fresh link to send the correct details.</div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">4</span></div>
+</section>
+
+<!-- ============================================================== 5. Homepage -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 1 · Explore</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 1</div>
+      <h2>Visit the website and open the courses</h2>
+      <p class="lead">Go to <a href="https://digitalsminds.com"><b>digitalsminds.com</b></a>. You can browse every public page without an account.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Click <b>Courses</b> in the top menu to see all training programs and their batches.</span></li>
+        <li><span class="n">2</span><span>Or use the button on the featured program on the homepage. It also leads to the courses.</span></li>
+      </ol>
+      <p class="where">Also useful: <b>Services</b> (professional services you can enquire about), <b>Contact</b> (questions before you apply) and <b>Student portal</b> (log in once you're enrolled).</p>
+      <div class="note">There's no "sign up" form. Your student account is created for you after your payment is verified.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com</span></div><div class="img"><img src="../screenshots/annotated/01-home.png" alt="Digitals Minds homepage"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">5</span></div>
+</section>
+
+<!-- ============================================================== 6. Courses -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 2 · Choose a program</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 2</div>
+      <h2>Pick the program you want</h2>
+      <p class="lead">The <b>Courses</b> page lists every published program, grouped by category (for example <i>E-commerce Marketplace Training</i>).</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Each card shows the <b>fee in PKR</b>, the format (for example <i>Live online classes</i>) and when the <b>next batch</b> starts. Click the card to open the program.</span></li>
+      </ol>
+      <p class="where">Page: <code>digitalsminds.com/courses</code></p>
+      <div class="note">All fees are in Pakistani rupees (PKR). The program, fee and dates in this guide are <b>examples</b>; always check the live program page.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/courses</span></div><div class="img"><img src="../screenshots/annotated/02-programs.png" alt="Courses page"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">6</span></div>
+</section>
+
+<!-- ============================================================== 7. Program details -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 3 · Program details</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 3</div>
+      <h2>Read the program page: fee and batches</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span>The program name, category and summary, with quick facts such as fee, format, level and language.</span></li>
+        <li><span class="n">2</span><span><b>Enrollment fee</b>: the full amount in PKR. It is paid in full before your enrollment is confirmed.</span></li>
+        <li><span class="n">3</span><span><b>Batches and schedules</b>: each batch shows its class days and times (with the time zone), start date, application deadline and <b>seats left</b>. Click <b>Apply for this batch</b> on the batch you want.</span></li>
+      </ol>
+      <div class="note warn">A batch that is <b>Full</b> or past its deadline no longer takes applications. Choose another batch, or contact us.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/courses/ebay-training</span></div><div class="img"><img src="../screenshots/annotated/03-program-top.png" alt="Program page"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">7</span></div>
+</section>
+
+<!-- ============================================================== 8. Program details 2 -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 3 · Program details</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 3 (continued)</div>
+      <h2>Check what you'll learn and the requirements</h2>
+      <p class="lead">Scroll down the same page before you apply.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>Learning objectives</b>: what the program covers.</span></li>
+        <li><span class="n">2</span><span><b>Eligibility and requirements</b>: who can join and what you need, such as a laptop and a stable internet connection. Some categories also show an <b>Important to know</b> box (for example, that marketplace approval depends on each platform's policies).</span></li>
+        <li><span class="n">3</span><span><b>How enrollment works</b>: the four-step summary of applying, paying and verification.</span></li>
+      </ol>
+      <div class="note">By applying you accept the <a href="https://digitalsminds.com/terms"><b>Terms &amp; Conditions</b></a> and the <a href="https://digitalsminds.com/refund-policy"><b>Refund Policy</b></a>: fees are non-refundable once paid.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/courses/ebay-training</span></div><div class="img"><img src="../screenshots/annotated/04-program-details.png" alt="Program details"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">8</span></div>
+</section>
+
+<!-- ============================================================== 9. Apply form -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 4 · Apply</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 4</div>
+      <h2>Fill in the application form</h2>
+      <p class="lead">The <b>Apply for [program]</b> page opens with your batch already chosen.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>Batch</b>: check it's the one you want (you can change it here).</span></li>
+        <li><span class="n">2</span><span><b>Full name</b>, exactly as on your CNIC.</span></li>
+        <li><span class="n">3</span><span><b>Email</b>: your student account will use this address, so use one you check often.</span></li>
+        <li><span class="n">4</span><span><b>Phone / WhatsApp number</b> and <b>City</b>.</span></li>
+        <li><span class="n">5</span><span><b>CNIC number</b>: 13 digits, e.g. 35202-1234567-1. Only our enrollment staff can see it.</span></li>
+      </ol>
+      <p class="where">You can also add an optional message for our team.</p>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/courses/ebay-training/apply</span></div><div class="img"><img src="../screenshots/annotated/05-apply-form.png" alt="Application form"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">9</span></div>
+</section>
+
+<!-- ============================================================== 10. Apply form 2 -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 4 · Apply</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 4 (continued)</div>
+      <h2>Attach your CV, accept the terms and send</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>CV / résumé</b>: a PDF or Word (.docx) file, up to 5 MB.</span></li>
+        <li><span class="n">2</span><span>Tick the box to agree to the <b>Terms &amp; Conditions</b> and the <b>Refund Policy</b>. If you forget, the form shows "Please accept the Terms and Refund Policy."</span></li>
+        <li><span class="n">3</span><span>Click <b>Send application</b>.</span></li>
+      </ol>
+      <div class="note warn">You can apply only once per batch with the same email. If you've already applied, use the link in our email, or ask for a new one on the application page.</div>
+      <div class="note">Fields with a problem are highlighted with a short message, e.g. "Enter your 13-digit CNIC number."</div>
+    </div>
+    <div class="shot frame" style="align-self:center"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/courses/ebay-training/apply</span></div><div class="img"><img src="../screenshots/annotated/06-apply-terms-error.png" alt="CV, terms and send button"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">10</span></div>
+</section>
+
+<!-- ============================================================== 11. Check email -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 5 · Confirm your email</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 5</div>
+      <h2>Check your email and open your application</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span>After sending, you see <b>Check your email</b> with your <b>reference number</b> (DM-XXXX-XXXX). Status: <b>Application received</b>.</span></li>
+        <li><span class="n">2</span><span>Open the email <b>"Confirm your application for [program]"</b> and click <b>Open my application</b>. This confirms your email address and opens your private application page.</span></li>
+      </ol>
+      <div class="note"><b>Your reference</b>: quote it when you contact us, and use it with your email on the <b>Find your application</b> page if you lose the link.</div>
+      <div class="note warn"><b>Keep this email.</b> Its link is your private way back to your application. Don't share it. Can't find the email? Check your spam folder.</div>
+    </div>
+    <div class="stack" style="align-content:start">
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>Application sent</span></div><div class="img"><img src="../screenshots/annotated/07-application-sent.png" alt="Check your email"></div></div>
+      <div class="shot mail" style="--ar:760/445;width:72%"><img src="../screenshots/annotated/08-email-confirm.png" alt="Confirmation email"></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">11</span></div>
+</section>
+
+<!-- ============================================================== 12. Payment pending -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 6 · Your application</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 6</div>
+      <h2>Your private application page</h2>
+      <p class="lead">The link opens <b>Your application</b>. Status: <b>Payment pending</b>.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Your <b>reference</b>, program, batch and the <b>enrollment fee</b> you need to pay.</span></li>
+        <li><span class="n">2</span><span>The current stage and what to do next.</span></li>
+        <li><span class="n">3</span><span>The stage tracker, which fills in as your application moves forward.</span></li>
+      </ol>
+      <p class="where">Further down: <b>How to pay</b> and <b>Your payment details</b> (next two pages).</p>
+      <div class="note">This page is private and no login is needed: your browser remembers the link. On another device, open the email link again.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application</span></div><div class="img"><img src="../screenshots/annotated/09-status-payment-pending.png" alt="Payment pending"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">12</span></div>
+</section>
+
+<!-- ============================================================== 13. How to pay -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 7 · Pay the fee</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 7</div>
+      <h2>Follow the payment instructions</h2>
+      <p class="lead">You pay the fee yourself, from your own bank or wallet app, using the accounts in <b>How to pay</b>.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>Amount to send</b>: send exactly this amount, in full, in PKR.</span></li>
+        <li><span class="n">2</span><span>The accounts you can pay to: <b>Bank transfer</b>, <b>JazzCash</b> or <b>EasyPaisa</b>, with the account title and number (bank transfer may also show a QR code to scan). Only the methods we offer are listed.</span></li>
+      </ol>
+      <div class="note warn"><b>Only pay to the accounts shown on your own application page.</b> The account details in this guide are <b>examples</b>, not real accounts. Keep your transaction ID and a screenshot or PDF of the receipt.</div>
+    </div>
+    <div class="shot frame" style="align-self:center"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application · How to pay</span></div><div class="img"><img src="../screenshots/annotated/10-how-to-pay.png" alt="How to pay"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">13</span></div>
+</section>
+
+<!-- ============================================================== 14. Payment form -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 8 · Send payment details</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 8</div>
+      <h2>Send us your payment details</h2>
+      <p class="lead">After paying, fill in <b>Your payment details</b> on the same page.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>How did you pay?</b> Choose the method you used.</span></li>
+        <li><span class="n">2</span><span><b>Transaction ID / reference number</b>, copied from your bank or wallet confirmation message.</span></li>
+        <li><span class="n">3</span><span><b>Date you paid</b>. You can also add the name on the account you paid from and a message.</span></li>
+        <li><span class="n">4</span><span><b>Receipt</b>: a screenshot or PDF (JPG, PNG, WebP or PDF, up to 8 MB).</span></li>
+        <li><span class="n">5</span><span>Click <b>Send payment details</b>.</span></li>
+      </ol>
+      <div class="note warn">Each transaction ID can be used only once. If a payment didn't go through and you paid again, send the <b>new</b> transaction's ID.</div>
+    </div>
+    <div class="shot frame" style="align-self:center"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application · Your payment details</span></div><div class="img"><img src="../screenshots/annotated/11-payment-form.png" alt="Payment details form"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">14</span></div>
+</section>
+
+<!-- ============================================================== 15. Payment submitted -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 9 · Verification</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 9</div>
+      <h2>Payment submitted: our team checks it</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Your status changes to <b>Payment submitted</b>: "We're checking your payment. We'll email you as soon as it's verified." Your payment shows <b>Payment being checked</b>.</span></li>
+      </ol>
+      <p class="lead">You also get an email, <b>"We received your payment details for [program]"</b>.</p>
+      <p class="lead">A Super Admin then compares your details with the actual account statement. This is a <b>manual check</b>, not automatic.</p>
+      <div class="note warn"><b>This is not an approval yet.</b> Your seat is not confirmed and no student account exists until the payment is verified. You don't need to send your details again while you wait.</div>
+    </div>
+    <div class="stack" style="align-content:start">
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application</span></div><div class="img"><img src="../screenshots/annotated/12-status-payment-submitted.png" alt="Payment submitted"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">15</span></div>
+</section>
+
+<!-- ============================================================== 16. Not verified -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">If something's wrong</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">If a payment can't be verified</div>
+      <h2>Fix the details and send them again</h2>
+      <p class="lead">If our team can't find your payment (for example, a wrong transaction ID), they mark it <b>not verified</b> with a reason.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Your application goes back to <b>Payment pending</b> and shows the reason: "We couldn't verify your last payment: …".</span></li>
+        <li><span class="n">2</span><span>Check your payment, then send the correct details again in <b>Your payment details</b>.</span></li>
+      </ol>
+      <div class="note">We also email you <b>"We couldn't verify your payment"</b> with a <b>new link</b> to your application. Earlier links stop working, so use the newest email.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application</span></div><div class="img"><img src="../screenshots/annotated/14-status-payment-not-verified.png" alt="Payment not verified"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">16</span></div>
+</section>
+
+<!-- ============================================================== 17. Enrollment confirmed -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 10 · Enrollment confirmed</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 10</div>
+      <h2>Payment verified: your seat is confirmed</h2>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Your application page shows <b>Enrollment confirmed</b>, your payment is marked <b>Paid</b>, and a <b>Log in to the student portal</b> button appears.</span></li>
+      </ol>
+      <p class="lead">At the same moment your <b>student account</b> is created, and we email you a link to activate it (next page).</p>
+      <div class="note">This is the step that depends on our team: an enrollment is confirmed only after a person has checked that the full fee arrived.</div>
+    </div>
+    <div class="stack" style="align-content:start">
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application</span></div><div class="img"><img src="../screenshots/annotated/15-status-enrollment-confirmed.png" alt="Enrollment confirmed"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">17</span></div>
+</section>
+
+<!-- ============================================================== 17b. Welcome email -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 11 · Activate your account</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 11</div>
+      <h2>Open your welcome email</h2>
+      <p class="lead">You receive <b>"You're enrolled in [program]"</b>. It confirms your payment and your seat, and contains the link to activate your student account.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Click <b>Set my password</b>. The link is valid for <b>7 days</b>.</span></li>
+      </ol>
+      <div class="note">If you studied with us before, the email says <b>Log in</b> instead, and you use your existing password.</div>
+      <div class="note warn">The link only works for you: don't forward it. If it has expired, use <b>Forgot your password?</b> on the login page with the same email.</div>
+    </div>
+    <div class="shot mail" style="--ar:760/470;width:100%"><img src="../screenshots/annotated/16-email-welcome.png" alt="Welcome email"></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">18</span></div>
+</section>
+
+<!-- ============================================================== 18. Set password + login -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 12 · Set password &amp; log in</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 12</div>
+      <h2>Set your password, then log in</h2>
+      <p class="lead"><b>Choose a new password</b> (from the email link):</p>
+      <ol class="steps" style="gap:6px">
+        <li><span class="n">1</span><span>Type a password of at least 10 characters.</span></li>
+        <li><span class="n">2</span><span>Type it again to confirm.</span></li>
+        <li><span class="n">3</span><span>Click <b>Save new password</b>. You're taken to the login page.</span></li>
+      </ol>
+      <p class="lead" style="margin-top:14px"><b>Log in to your account</b> (also via <b>Student portal</b> in the top menu):</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Your <b>email</b> (the one you applied with).</span></li>
+        <li><span class="n">2</span><span>Your new <b>password</b>.</span></li>
+        <li><span class="n">3</span><span>Click <b>Log in</b>. You arrive at your dashboard.</span></li>
+        <li><span class="n">4</span><span>Forgot it later? <b>Forgot your password?</b> emails you a reset link.</span></li>
+      </ol>
+    </div>
+    <div class="stack" style="align-content:start;justify-items:center">
+      <div class="shot frame" style="width:86%"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/reset-password</span></div><div class="img"><img src="../screenshots/annotated/17-set-password.png" alt="Set your password"></div></div>
+      <div class="shot frame" style="width:86%"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/login</span></div><div class="img"><img src="../screenshots/annotated/18-login.png" alt="Log in"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">19</span></div>
+</section>
+
+<!-- ============================================================== 19. Dashboard -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 13 · Student portal</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 13</div>
+      <h2>Your dashboard</h2>
+      <p class="lead">After logging in you land on the <b>Dashboard</b>. Your first visit moves your enrollment to <b>Onboarding</b>.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>Portal menu</b>: Dashboard, My program, Schedule, Onboarding, Documents, Notices, Certificates, Notifications (with a "new" count), Support and Profile. On a phone it appears as tabs at the top.</span></li>
+        <li><span class="n">2</span><span><b>Enrollment status</b>: your program, batch, stage and onboarding progress.</span></li>
+        <li><span class="n">3</span><span><b>Next on your schedule</b>, with <b>Join class</b> and <b>Add to calendar</b>.</span></li>
+      </ol>
+      <p class="where">Below: <b>Latest notices</b> and <b>Quick links</b> (Schedule, Documents, Contact the administration, Profile).</p>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account</span></div><div class="img"><img src="../screenshots/annotated/19-dashboard.png" alt="Dashboard"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">20</span></div>
+</section>
+
+<!-- ============================================================== 20. Onboarding -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 14 · Onboarding</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 14</div>
+      <h2>Complete your onboarding checklist</h2>
+      <p class="lead">Open <b>Onboarding</b>. The steps are set by our team for your program or batch, so yours may differ from this example.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>A finished step: you ticked <b>Mark as done</b>.</span></li>
+        <li><span class="n">2</span><span>A step still to do. Read its instructions, do it, then tick <b>Mark as done</b>.</span></li>
+        <li><span class="n">3</span><span>Steps marked <b>Confirmed by our team</b> are ticked by our staff, not by you.</span></li>
+      </ol>
+      <div class="note">The counter shows "X of Y required steps done". When every required step is done, you automatically become an <b>Active student</b>. Steps marked <b>Optional</b> don't count.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/onboarding</span></div><div class="img"><img src="../screenshots/annotated/20-onboarding.png" alt="Onboarding"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">21</span></div>
+</section>
+
+<!-- ============================================================== 21. My program -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 15 · Your batch</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 15</div>
+      <h2>Find your batch information</h2>
+      <p class="lead">Open <b>My program</b>.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Your stage (here <b>Active student</b>), <b>batch</b> name and code, <b>dates</b>, <b>class times</b>, <b>format</b> and your <b>application reference</b>.</span></li>
+        <li><span class="n">2</span><span><b>How to join your classes</b>: joining instructions from our team and the <b>Open class link</b> button for your batch's meeting room.</span></li>
+      </ol>
+      <p class="where">Also here: your <b>Payments</b> (with receipt) and the <b>Timeline</b> of every stage with its date.</p>
+      <div class="note warn">Joining details are shown only to current students of the batch. Please don't share your class link.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/program</span></div><div class="img"><img src="../screenshots/annotated/21-my-program.png" alt="My program"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">22</span></div>
+</section>
+
+<!-- ============================================================== 22. Schedule -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 16 · Live classes</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 16</div>
+      <h2>Check your schedule and join live sessions</h2>
+      <p class="lead">Open <b>Schedule</b> to see your batch's classes, events and holidays.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>Join class</b> switches on 15 minutes before the start. A session that is running shows <b>Live now</b>.</span></li>
+        <li><span class="n">2</span><span><b>Add to calendar</b> saves the session to your phone or computer calendar.</span></li>
+        <li><span class="n">3</span><span>Upcoming classes show their day, time and length. Before the 15-minute window the Join button is greyed out.</span></li>
+      </ol>
+      <div class="note">Times are in your batch's time zone (e.g. PKT). If you're abroad, your own time is shown underneath. We also email reminders <b>1 day</b> and <b>1 hour</b> before each class, and tell you about changes, holidays and cancellations.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/schedule</span></div><div class="img"><img src="../screenshots/annotated/22-schedule.png" alt="Schedule"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">23</span></div>
+</section>
+
+<!-- ============================================================== 23. Documents & notices -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 17 · Stay updated</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 17</div>
+      <h2>Documents and notices</h2>
+      <p class="lead"><b>Documents</b>: forms, policies and onboarding material shared with your program or batch.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Click <b>Download</b> to save a document.</span></li>
+      </ol>
+      <p class="lead" style="margin-top:16px"><b>Notices</b>: announcements from our team about your batch, schedule changes, holidays and other updates.</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Each notice shows who it's for (e.g. your batch), the date and the message. Important notices may also be emailed.</span></li>
+      </ol>
+    </div>
+    <div class="stack" style="grid-template-rows:1fr 1fr">
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/documents</span></div><div class="img"><img src="../screenshots/annotated/23-documents.png" alt="Documents"></div></div>
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/notices</span></div><div class="img"><img src="../screenshots/annotated/24-notices.png" alt="Notices"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">24</span></div>
+</section>
+
+<!-- ============================================================== 24. Notifications -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 17 · Stay updated</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 17 (continued)</div>
+      <h2>Notifications</h2>
+      <p class="lead"><b>Notifications</b> collects every update in one list: new classes on your schedule, schedule changes, notices and enrollment updates.</p>
+      <p class="lead">The menu shows how many are new (e.g. <b>5 new</b>). Click <b>Open</b> on a notification to go to the page it's about.</p>
+      <div class="note">Check your portal regularly, especially in the days before your batch starts.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/notifications</span></div><div class="img"><img src="../screenshots/annotated/25-notifications.png" alt="Notifications"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">25</span></div>
+</section>
+
+<!-- ============================================================== 25. Support -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Step 18 · Get help</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Step 18</div>
+      <h2>Contact support from your portal</h2>
+      <p class="lead">Open <b>Support</b> and fill in <b>New request</b>:</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span><b>Subject</b>, a short title for your question (you can also pick the related course).</span></li>
+        <li><span class="n">2</span><span><b>Message</b>: explain what you need.</span></li>
+        <li><span class="n">3</span><span>Click <b>Send</b>.</span></li>
+      </ol>
+      <p class="lead" style="margin-top:12px">Our team replies in the same conversation and by email. When the status says <b>Waiting for your reply</b>, answer in the <b>Your reply</b> box.</p>
+      <div class="note warn">Never send passwords or one-time codes to anyone, including us.</div>
+    </div>
+    <div class="stack" style="grid-template-rows:1fr 1fr">
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/support</span></div><div class="img"><img src="../screenshots/annotated/26-support-new.png" alt="New support request"></div></div>
+      <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/support/…</span></div><div class="img"><img src="../screenshots/annotated/27-support-reply.png" alt="Support conversation"></div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">26</span></div>
+</section>
+
+<!-- ============================================================== 26. Profile + phone -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Your profile</span></div>
+  <div class="body" style="grid-template-columns:392px 1fr 250px">
+    <div class="col">
+      <div class="kicker">Profile and mobile</div>
+      <h2>Keep your details up to date</h2>
+      <p class="lead">In <b>Profile</b> you can update your <b>full name</b>, <b>phone / WhatsApp</b> number and <b>city</b>, then click <b>Save profile</b>. Your email address is shown for reference.</p>
+      <p class="lead">If your phone number or city is missing, the dashboard asks you to complete your profile so our team can reach you about your batch.</p>
+      <div class="note">The website and portal work on phones too. The portal menu becomes swipeable tabs at the top.</div>
+    </div>
+    <div class="shot frame"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/account/profile</span></div><div class="img"><img src="../screenshots/annotated/28-profile.png" alt="Profile"></div></div>
+    <div class="shot" style="border-radius:30px;border:8px solid #1f242b"><img src="../screenshots/annotated/30-phone-schedule.png" alt="Portal on a phone"></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">27</span></div>
+</section>
+
+<!-- ============================================================== 27. Find application -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">Lost your link?</span></div>
+  <div class="body split">
+    <div class="col">
+      <div class="kicker">Lost your application email?</div>
+      <h2>Ask for a new application link</h2>
+      <p class="lead">Before your account exists, your application page is reached only through the emailed link. If you lost it, or it says it has expired:</p>
+      <ol class="steps">
+        <li><span class="n">1</span><span>Go to <a href="https://digitalsminds.com/application"><b>digitalsminds.com/application</b></a> (<b>Find your application</b>). Enter the <b>email</b> you applied with and your <b>reference</b> (DM-XXXX-XXXX), then click <b>Email me a new link</b>.</span></li>
+      </ol>
+      <div class="note">For your privacy, the page doesn't say whether an application exists. If the details match, a new link arrives by email and earlier links stop working.</div>
+    </div>
+    <div class="shot frame" style="align-self:center"><div class="bar"><i></i><i></i><i></i><span>digitalsminds.com/application</span></div><div class="img"><img src="../screenshots/annotated/29-find-application.png" alt="Find your application"></div></div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">28</span></div>
+</section>
+
+<!-- ============================================================== 28. FAQ -->
+<section class="slide content">
+  <div class="top"><img src="brand/logo.png" alt="Digitals Minds"><span class="label">FAQ</span></div>
+  <div class="body" style="grid-template-rows:auto 1fr;gap:16px">
+    <div><div class="kicker">Frequently asked questions</div><h2>Answers based on how the platform works</h2></div>
+    <div class="cards faq" style="display:grid">
+      <div class="card"><h4>Do I need an account to apply?</h4><p>No. You apply as a visitor. Your student account is created only after your payment is verified.</p></div>
+      <div class="card"><h4>How long does verification take?</h4><p>Our team checks each payment by hand against the account statement. You'll get an email as soon as it's verified; there's no automatic approval.</p></div>
+      <div class="card"><h4>Can I pay in instalments?</h4><p>The fee is paid in full, in PKR, before your enrollment is confirmed. Fees are non-refundable once paid (see the Refund Policy).</p></div>
+      <div class="card"><h4>Which payment methods can I use?</h4><p>The ones listed under <i>How to pay</i> on your application page: bank transfer, JazzCash or EasyPaisa, when offered.</p></div>
+      <div class="card"><h4>I didn't receive an email.</h4><p>Check your spam folder. Then use <i>Find your application</i> with your email and reference to get a new link.</p></div>
+      <div class="card"><h4>My payment wasn't verified.</h4><p>The reason is shown on your application page and emailed to you with a fresh link. Check the details and send them again.</p></div>
+      <div class="card"><h4>The batch I want is full.</h4><p>A full batch stops taking applications. Choose another open batch, or contact us about the next one.</p></div>
+      <div class="card"><h4>When can I join a class?</h4><p>From your Schedule page: <i>Join class</i> switches on 15 minutes before the start. Reminders are emailed 1 day and 1 hour before.</p></div>
+      <div class="card"><h4>Are lessons available as videos?</h4><p>No. Programs are taught live online; the portal doesn't host recorded lessons.</p></div>
+      <div class="card"><h4>Who can see my CNIC and CV?</h4><p>Only our enrollment staff. They are never shown publicly.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Student Registration &amp; Onboarding Guide</span><span class="tag">Learn | Grow | Earn.</span><span class="pg">29</span></div>
+</section>
+
+<!-- ============================================================== 29. Closing -->
+<section class="slide dark">
+  <div class="cover-glow" style="left:50%;bottom:-520px;width:1100px;height:900px;margin-left:-550px;background:radial-gradient(circle,rgba(253,207,49,.34),rgba(253,207,49,0) 62%)"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+    <img src="brand/logo-on-dark.png" alt="Digitals Minds" style="height:118px;width:auto">
+    <div class="chip sun" style="margin-top:26px">Learn | Grow | Earn.</div>
+    <h1 style="font-size:46px;line-height:1.1;font-weight:800;margin-top:22px;letter-spacing:-.02em">Welcome to Digitals Minds</h1>
+    <p style="font-size:17px;line-height:1.55;color:#d7dbe1;max-width:720px;margin:14px 0 0">We're glad you're joining us. Complete your onboarding, keep an eye on your schedule and notices, and reach out whenever you need help.</p>
+    <div style="display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;justify-content:center">
+      <span class="chip line">Website · <a href="https://digitalsminds.com" style="text-decoration:none">digitalsminds.com</a></span>
+      <span class="chip line">Email · <a href="mailto:info@digitalsminds.com" style="text-decoration:none">info@digitalsminds.com</a></span>
+      <span class="chip line">Student portal · <a href="https://digitalsminds.com/login" style="text-decoration:none">digitalsminds.com/login</a></span>
+    </div>
+    <p style="font-size:13px;color:#aeb4bd;margin-top:22px">Office: 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan</p>
+  </div>
+  <div class="foot"><span>Screenshots show the real website with fictional example data.</span><span class="pg">30</span></div>
+</section>
+
+</body>
+</html>

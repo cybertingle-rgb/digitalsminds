@@ -111,6 +111,8 @@ export async function ensureServices() {
     });
     await db().siteSetting.upsert({ where: { key: SEEDED_KEY }, create: { key: SEEDED_KEY, value: { at: new Date().toISOString() } }, update: {} });
   } catch (err) {
+    // Two first visits at once both try to record the flag; the loser's duplicate is harmless.
+    if ((err as { code?: string })?.code === "P2002") return;
     console.warn("[catalog] could not add the starting services:", err instanceof Error ? err.message : err);
   }
 }
