@@ -74,4 +74,4 @@ Never point the capture at production: it creates an owner account, programs and
 - A new student-facing feature: add a `shot(...)` in `capture.mjs` and a slide in `guide.html` (copy
   an existing slide). Page numbers are plain text in each slide's footer; keep them in order.
 
-Last captured: November 2026 (eBay Training example, fee Rs 3,500).
+Last captured: November 2026 (eBay Training example, fee Rs 1,500).

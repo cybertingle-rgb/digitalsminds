@@ -90,7 +90,7 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 | 81 | Time zones | Each batch has a time zone (default Asia/Karachi); class times are entered and shown in it, students abroad also see their own time |
 | 82 | Attendance | Optional per batch (off by default, matching decision 7): coordinators/managers mark present/late/absent/excused after a class; students see their own record and summary |
 | 83 | Preloader | First visit per session: official logo in an orbit of nine SVG learning/business icons with sparks, 1.1-2.8 s, still with reduced motion; page changes show a slim progress bar instead |
-| 84 | eBay fee | Rs 3,500 (owner, 2026-10-27), set by migration; applications made before keep the fee they were given |
+| 84 | eBay fee | Rs 1,500 (owner, 2026-11-08; was Rs 3,500 from 2026-10-27), set by migration; applications made before keep the fee they were given |
 
 ## Open items (waiting on owner)
 

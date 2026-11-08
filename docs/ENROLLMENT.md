@@ -74,7 +74,7 @@ application goes back to *Payment pending* and the applicant is emailed the reas
 ## Prices
 
 All fees are shown, charged and paid in **PKR** only (owner's decision, 2026-10-27; the earlier currency conversion was
-removed). The eBay course fee is Rs 3,500 (set by migration `20261027000000_ebay_fee_3500_pkr`; change it any time on
+removed). The eBay course fee is Rs 1,500 (set by migration `20261108000000_ebay_fee_1500_pkr`; change it any time on
 the program page). A fee stored in another currency before this (none known) is flagged: the admin overview asks a Super
 Admin to set the PKR fee on the program page.
 

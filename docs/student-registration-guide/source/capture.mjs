@@ -208,7 +208,7 @@ await owner.fill("#summary", "Learn to start and run an eBay store, in live onli
 await owner.getByRole("button", { name: "Create program" }).click();
 await owner.waitForURL(/\/admin\/courses\/[^/]+$/);
 await hydrated(owner);
-await owner.fill("#pricePkr", "3500");
+await owner.fill("#pricePkr", "1500");
 await owner.getByRole("button", { name: "Save fee" }).click();
 await owner.getByText(/saved/i).first().waitFor();
 await owner.reload();
@@ -440,7 +440,7 @@ await owner.getByRole("link", { name: STUDENT.name }).click();
 await owner.waitForURL(/\/admin\/applications\/[^/]+$/);
 await hydrated(owner, "main button");
 await owner.getByRole("button", { name: "Verify payment…" }).click();
-await owner.fill("#amountReceived", "3500");
+await owner.fill("#amountReceived", "1500");
 const m3 = mailFiles().length;
 await owner.getByRole("button", { name: /the money arrived: verify/ }).click();
 await owner.getByText("Payment verified.", { exact: false }).waitFor();
