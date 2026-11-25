@@ -36,7 +36,7 @@ export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dicti
           </div>
           <div className="relative grid gap-10 p-6 text-sm sm:grid-cols-2 sm:p-10 lg:grid-cols-12">
             <div className="lg:col-span-4">
-              <BrandLogo locale={locale} alt={dict.brand.logoAlt} homeLabel={dict.a11y.homeLink} className="h-14 w-auto" />
+              <BrandLogo locale={locale} alt={dict.brand.logoAlt} homeLabel={dict.a11y.homeLink} className="h-9 w-auto" />
               <p className="mt-4 flex w-fit items-center gap-2 rounded-full bg-charcoal-900 px-3 py-1 text-xs font-semibold tracking-wide text-white">
                 <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-sun-400" />
                 {dict.brand.tagline}

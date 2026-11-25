@@ -128,12 +128,19 @@ run("phase 10 (integration)", async () => {
     await expect(certs.issueCertificate(notDone.id, cm)).rejects.toThrow(/hasn't been marked as completed/);
 
     const cert = await certs.issueCertificate(mine[0]!.id, cm);
-    expect(cert.code).toMatch(/^DM-[2-9A-HJKMNP-Z]{4}-[2-9A-HJKMNP-Z]{4}$/);
+    expect(cert.code).toMatch(/^WDS-[2-9A-HJKMNP-Z]{4}-[2-9A-HJKMNP-Z]{4}$/);
     expect(cert.recipientName).toBe("Student One");
     await expect(certs.issueCertificate(mine[0]!.id, cm)).rejects.toThrow(/already issued/);
     expect((await certs.readyToIssue()).some((e) => e.userId === id("s1"))).toBe(false);
     expect(certs.normaliseCode(cert.code.toLowerCase().replace(/-/g, " "))).toBe(cert.code);
     expect(certs.normaliseCode("DM-OOOO-1111")).toBeNull();
+    // Certificates issued before the rebrand keep their DM- codes and still verify, with or without the prefix.
+    expect(certs.normaliseCode("dm 7kq4 xz2m")).toBe("DM-7KQ4-XZ2M");
+    expect(certs.normaliseCode("7KQ4XZ2M")).toBe("WDS-7KQ4-XZ2M");
+    const legacy = await db().certificate.update({ where: { id: cert.id }, data: { code: `DM-${cert.code.slice(4)}` } });
+    expect((await certs.certificateByCode(certs.normaliseCode(legacy.code.slice(3))!))?.id).toBe(cert.id);
+    expect((await certs.certificateByCode(legacy.code))?.id).toBe(cert.id);
+    await db().certificate.update({ where: { id: cert.id }, data: { code: cert.code } });
 
     await certs.revokeCertificate(cert.id, cm);
     expect((await certs.certificateByCode(cert.code))?.revokedAt).toBeInstanceOf(Date);

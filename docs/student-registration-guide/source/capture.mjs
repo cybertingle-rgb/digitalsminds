@@ -1,4 +1,4 @@
-// Captures the real Digitals Minds student journey for the registration guide.
+// Captures the real WEDOSELL student journey for the registration guide.
 //
 // It needs a running copy of the site on a FRESH, disposable database (never production),
 // a local mail catcher (tools/mail-catcher.py) and the one-time setup code. It sets the site
@@ -39,7 +39,7 @@ const OWNER = { email: "info@digitalsminds.com", password: "Guide-owner-pass-202
 const STUDENT = { name: "Ayesha Khan", email: "ayesha.khan@example.com", phone: "0300 1234567", city: "Lahore", cnic: "35202-1234567-1", password: "Ayesha-guide-2026" };
 const SECOND = { name: "Bilal Ahmed", email: "bilal.ahmed@example.com", phone: "0321 7654321", city: "Karachi", cnic: "42101-7654321-3" };
 const PROGRAM = "eBay Training";
-const BATCH = "Batch November 1";
+const BATCH = "Batch December 1";
 const PDF = (name) => ({ name, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n") });
 const PNG = { name: "jazzcash-receipt.png", mimeType: "image/png", buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==", "base64") };
 
@@ -111,10 +111,10 @@ async function shot(page, name, { area = "top", pad = 28, height, marks = [], ti
     layer.style.cssText = "position:absolute;left:0;top:0;width:0;height:0;z-index:2147483647;pointer-events:none";
     for (const it of items) {
       const box = document.createElement("div");
-      box.style.cssText = `position:absolute;left:${it.x - 6}px;top:${it.y - 6}px;width:${it.w + 12}px;height:${it.h + 12}px;border:3px solid #fdcf31;border-radius:14px;box-shadow:0 0 0 4px rgba(253,207,49,.25),0 6px 24px rgba(43,50,60,.18)`;
+      box.style.cssText = `position:absolute;left:${it.x - 6}px;top:${it.y - 6}px;width:${it.w + 12}px;height:${it.h + 12}px;border:3px solid #ff741f;border-radius:14px;box-shadow:0 0 0 4px rgba(255,116,31,.25),0 6px 24px rgba(0,0,0,.18)`;
       const dot = document.createElement("div");
       dot.textContent = String(it.n);
-      dot.style.cssText = `position:absolute;left:${it.x - 20}px;top:${it.y - 20}px;width:30px;height:30px;border-radius:50%;background:#2b323c;color:#fdcf31;font:700 15px/30px Inter,system-ui,sans-serif;text-align:center;box-shadow:0 0 0 3px #fdcf31,0 4px 12px rgba(0,0,0,.25)`;
+      dot.style.cssText = `position:absolute;left:${it.x - 20}px;top:${it.y - 20}px;width:30px;height:30px;border-radius:50%;background:#111111;color:#ff741f;font:700 15px/30px Inter,system-ui,sans-serif;text-align:center;box-shadow:0 0 0 3px #ff741f,0 4px 12px rgba(0,0,0,.25)`;
       layer.append(box, dot);
     }
     document.body.append(layer);
@@ -150,10 +150,15 @@ async function emailShot(name, m, { title, step, marks = [] }) {
   const masked = m.html
     .replace(/(https?:\/\/[^"<\s]*?)(\?t=|\?token=)[A-Za-z0-9_-]+/g, (_, base, q) => `${base.replace(/^https?:\/\/localhost:\d+/, "https://digitalsminds.com")}${q}••••••••••••`)
     .replace(/http:\/\/localhost:\d+/g, "https://digitalsminds.com");
+  // Images in the email (the logo) come from the local site, so they match the build being captured.
+  await page.route(/^https:\/\/digitalsminds\.com\/(brand|media)\//, async (route) => {
+    const res = await page.request.get(route.request().url().replace("https://digitalsminds.com", B));
+    await route.fulfill({ response: res });
+  });
   await page.setContent(
-    `<!doctype html><meta charset="utf-8"><body style="margin:0;background:#eef0f3;font-family:Inter,system-ui,sans-serif">
-      <div style="padding:22px 28px 10px;color:#2b323c">
-        <div style="font-size:13px;color:#6b7280">From: Digitals Minds &lt;noreply@digitalsminds.com&gt; · To: ${m.to.replace(/</g, "&lt;")}</div>
+    `<!doctype html><meta charset="utf-8"><body style="margin:0;background:#efefef;font-family:Inter,system-ui,sans-serif">
+      <div style="padding:22px 28px 10px;color:#111111">
+        <div style="font-size:13px;color:#5c5c5c">From: WEDOSELL &lt;noreply@digitalsminds.com&gt; · To: ${m.to.replace(/</g, "&lt;")}</div>
         <div id="subject" style="font-size:20px;font-weight:700;margin-top:6px">${m.subject.replace(/</g, "&lt;")}</div>
       </div>
       <div id="mail">${masked}</div></body>`,
@@ -168,7 +173,7 @@ async function emailShot(name, m, { title, step, marks = [] }) {
 const owner = await open();
 await owner.goto(`${B}/setup`);
 await hydrated(owner);
-await owner.fill("#name", "Digitals Minds Admin");
+await owner.fill("#name", "WEDOSELL Admin");
 await owner.fill("#password", OWNER.password);
 await owner.fill("#confirmPassword", OWNER.password);
 await owner.fill("#code", CODE);
@@ -189,14 +194,14 @@ await emailBox.getByText("Saved and connected").waitFor();
 await owner.goto(`${B}/admin/payments/settings`);
 await hydrated(owner);
 await owner.fill("#bankName", "Meezan Bank");
-await owner.fill("#bankAccountTitle", "Digitals Minds");
+await owner.fill("#bankAccountTitle", "WEDOSELL");
 await owner.fill("#bankAccountNumber", "PK00 MEZN 0000 0000 0000 0000");
 await owner.selectOption("#bankQrId", "none");
-await owner.fill("#jazzcashTitle", "Digitals Minds");
+await owner.fill("#jazzcashTitle", "WEDOSELL");
 await owner.fill("#jazzcashNumber", "0300 0000000");
-await owner.fill("#easypaisaTitle", "Digitals Minds");
+await owner.fill("#easypaisaTitle", "WEDOSELL");
 await owner.fill("#easypaisaNumber", "0345 0000000");
-await owner.fill("#instructions", "Write your application reference (e.g. DM-XXXX-XXXX) in the payment description if your app allows it.");
+await owner.fill("#instructions", "Write your application reference (e.g. WDS-XXXX-XXXX) in the payment description if your app allows it.");
 await owner.getByRole("button", { name: "Save payment details" }).click();
 await owner.getByText("Payment details saved").waitFor();
 
@@ -204,7 +209,7 @@ await owner.getByText("Payment details saved").waitFor();
 await owner.goto(`${B}/admin/courses/new`);
 await hydrated(owner);
 await owner.fill("#title", PROGRAM);
-await owner.fill("#summary", "Learn to start and run an eBay store, in live online classes with the Digitals Minds team.");
+await owner.fill("#summary", "Learn to start and run an eBay store, in live online classes with the WEDOSELL team.");
 await owner.getByRole("button", { name: "Create program" }).click();
 await owner.waitForURL(/\/admin\/courses\/[^/]+$/);
 await hydrated(owner);
@@ -215,7 +220,7 @@ await owner.reload();
 await hydrated(owner);
 await owner.fill("#slug", "ebay-training");
 await owner.selectOption("#categoryId", { label: "E-commerce Marketplace Training" });
-await owner.fill("#description", "A practical, live online program for people who want to start selling on eBay. Classes are taught live by the Digitals Minds team; you join from home and ask questions as you go.");
+await owner.fill("#description", "A practical, live online program for people who want to start selling on eBay. Classes are taught live by the WEDOSELL team; you join from home and ask questions as you go.");
 await owner.fill("#objectives", "Understand how selling on eBay works\nPrepare your seller account and store\nResearch products and set prices\nCreate clear, effective listings");
 await owner.fill("#prerequisites", "A laptop or computer and a stable internet connection.");
 await owner.getByRole("button", { name: "Save details" }).click();
@@ -229,8 +234,8 @@ await owner.selectOption("#courseId", { label: PROGRAM });
 await owner.selectOption("#status", "OPEN");
 await owner.fill("#name", BATCH);
 await owner.fill("#code", "EBAY-NOV1");
-await owner.fill("#startDate", "2026-11-16");
-await owner.fill("#applicationDeadline", "2026-11-14");
+await owner.fill("#startDate", "2026-12-14");
+await owner.fill("#applicationDeadline", "2026-12-12");
 await owner.fill("#scheduleText", "Mon, Wed, Fri · 8:00–10:00 pm");
 await owner.fill("#capacity", "30");
 await owner.fill("#meetingUrl", "https://meet.google.com/abc-defg-hij");
@@ -501,11 +506,11 @@ const addSession = async (kind, title, when, minutes, description) => {
   await hydrated(owner);
 };
 await addSession("EVENT", "Welcome orientation", pkt(10), 45, "Meet the team and your batch, and see how live classes work.");
-await addSession("CLASS", "Class 1: How selling on eBay works", { date: "2026-11-16", time: "20:00" }, 120);
-await addSession("CLASS", "Class 2: Setting up your seller account", { date: "2026-11-18", time: "20:00" }, 120);
+await addSession("CLASS", "Class 1: How selling on eBay works", { date: "2026-12-14", time: "20:00" }, 120);
+await addSession("CLASS", "Class 2: Setting up your seller account", { date: "2026-12-16", time: "20:00" }, 120);
 await owner.goto(`${B}/admin/announcements?batch=${batchId}`);
 await hydrated(owner);
-await owner.fill("#title", "Welcome to Batch November 1");
+await owner.fill("#title", "Welcome to Batch December 1");
 await owner.fill("#body", "Welcome to the batch! Please complete your onboarding steps and join the welcome orientation from your Schedule page.");
 await owner.getByRole("button", { name: "Post announcement" }).click();
 await owner.getByText(/Posted to/).waitFor();
@@ -570,7 +575,7 @@ await shot(student, "22-schedule", {
 await student.goto(`${B}/account/documents`);
 await shot(student, "23-documents", { title: "Documents", step: "Portal", height: 720, marks: [["main a:has-text('Download')", 1]] });
 await student.goto(`${B}/account/notices`);
-await shot(student, "24-notices", { title: "Notices", step: "Updates", height: 760, marks: [["main :text('Welcome to Batch November 1') >> xpath=ancestor::*[contains(@class,'rounded')][1]", 1]] });
+await shot(student, "24-notices", { title: "Notices", step: "Updates", height: 760, marks: [["main :text('Welcome to Batch December 1') >> xpath=ancestor::*[contains(@class,'rounded')][1]", 1]] });
 await student.goto(`${B}/account/notifications`);
 await shot(student, "25-notifications", { title: "Notifications", step: "Updates", height: 900 });
 
@@ -589,7 +594,7 @@ await owner.fill("#body", "Hi Ayesha, that's fine. You can join from your Schedu
 await owner.getByRole("button", { name: "Send reply" }).click();
 await owner.waitForTimeout(1500);
 await student.goto(ticketUrl);
-await shot(student, "27-support-reply", { title: "Support: the team's reply", step: "Help", height: 980, marks: [["main :text('Digitals Minds team') >> nth=0", 1], ["#body", 2]] });
+await shot(student, "27-support-reply", { title: "Support: the team's reply", step: "Help", height: 980, marks: [["main :text('WEDOSELL team') >> nth=0", 1], ["#body", 2]] });
 
 await student.goto(`${B}/account/profile`);
 await shot(student, "28-profile", { title: "Your profile", step: "Portal", height: 900 });

@@ -11,11 +11,11 @@
 
 export const LEGAL_EFFECTIVE_DATE = "2026-10-22";
 
-const contact = `Digitals Minds
+const contact = `WEDOSELL
 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan
 Email: info@digitalsminds.com`;
 
-const privacy = `This Privacy Policy explains what personal information Digitals Minds ("we", "us") collects through digitalsminds.com, how we use it, who we share it with and the choices you have. By using the website you agree to this policy.
+const privacy = `This Privacy Policy explains what personal information WEDOSELL ("we", "us") collects through our website, how we use it, who we share it with and the choices you have. By using the website you agree to this policy.
 
 ## Who we are
 ${contact}
@@ -111,13 +111,13 @@ We may update this policy. The "last updated" date at the top of this page shows
 Questions or requests about your personal information:
 ${contact}`;
 
-const terms = `These Terms & Conditions ("Terms") apply to your use of digitalsminds.com, including applying for and enrolling in our courses and training programs, and your student account. By using the website you agree to these Terms. If you do not agree, please do not use the website.
+const terms = `These Terms & Conditions ("Terms") apply to your use of our website, including applying for and enrolling in our courses and training programs, and your student account. By using the website you agree to these Terms. If you do not agree, please do not use the website.
 
 ## About us
 ${contact}
 
 ## Our services
-Digitals Minds offers business growth services through five divisions: Digital Marketing & Growth, Product Sourcing & Logistics, Media & Content Production, Startup & Brand Setup, and Web & E-Commerce. Information on the website is general. Sending an inquiry does not create a contract; any project is agreed separately in writing (for example a proposal or quotation), and that agreement governs the work.
+WEDOSELL offers business growth services through five divisions: Digital Marketing & Growth, Product Sourcing & Logistics, Media & Content Production, Startup & Brand Setup, and Web & E-Commerce. Information on the website is general. Sending an inquiry does not create a contract; any project is agreed separately in writing (for example a proposal or quotation), and that agreement governs the work.
 
 ## Your account
 - Give accurate information when you apply and keep it up to date.
@@ -145,7 +145,7 @@ You agree not to:
 - send spam or abusive messages through our forms or support requests
 
 ## Intellectual property
-The website, our courses, logos, text, images and videos belong to Digitals Minds or are used with permission. You may not copy, sell or reuse them without our written permission, except for viewing and personal learning as these Terms allow.
+The website, our courses, logos, text, images and videos belong to WEDOSELL or are used with permission. You may not copy, sell or reuse them without our written permission, except for viewing and personal learning as these Terms allow.
 
 ## Third-party services
 Some features rely on other services, such as Google sign-in, and Zoom, Google Meet or Microsoft Teams for live classes. Their own terms and privacy policies also apply, and we are not responsible for their availability.
@@ -154,7 +154,7 @@ Some features rely on other services, such as Google sign-in, and Zoom, Google M
 Our content and courses are provided for education and general information. Business results depend on many factors, and we do not guarantee any particular outcome. The website is provided "as is" and may sometimes be unavailable.
 
 ## Limitation of liability
-To the extent the law allows, Digitals Minds is not liable for indirect or consequential loss, or for loss of profit, business or data, arising from your use of the website. Nothing in these Terms limits liability that cannot be limited by law.
+To the extent the law allows, WEDOSELL is not liable for indirect or consequential loss, or for loss of profit, business or data, arising from your use of the website. Nothing in these Terms limits liability that cannot be limited by law.
 
 ## Communications
 We send service emails related to your application, enrollment, batch and account. We send newsletters only if you subscribe and confirm, and you can unsubscribe at any time.
@@ -171,7 +171,7 @@ These Terms are governed by the laws of Pakistan. The courts at Faisalabad have 
 ## Contact us
 ${contact}`;
 
-const refund = `This Refund Policy applies to enrollment fees for Digitals Minds courses and training programs, paid through digitalsminds.com.
+const refund = `This Refund Policy applies to enrollment fees for WEDOSELL courses and training programs, paid through our website.
 
 ## Enrollment fees are non-refundable
 The enrollment fee is paid in full before your enrollment is confirmed. Once paid, the fee is non-refundable. This applies whether or not you attend the classes, and if you withdraw or are withdrawn from a program.
@@ -180,7 +180,7 @@ The enrollment fee is paid in full before your enrollment is confirmed. Once pai
 Please read the program page carefully before you apply and pay: the fee, the requirements, the format (live online classes), and the batch dates and class times. If anything is unclear, contact us before you pay.
 
 ## If we cancel or postpone a batch
-If Digitals Minds cancels or postpones a batch you have paid for, or a batch fills up before your payment is verified, we will offer you a place in another batch of the same program. Your fee carries over to that batch.
+If WEDOSELL cancels or postpones a batch you have paid for, or a batch fills up before your payment is verified, we will offer you a place in another batch of the same program. Your fee carries over to that batch.
 
 ## Payments we cannot verify
 Your place is confirmed only after our team has checked that the full fee arrived in our account. If we cannot verify a payment, we will tell you why so you can correct the details. This is not a refund: if no money reached us, there is nothing to refund.

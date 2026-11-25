@@ -1,4 +1,4 @@
-// Builds ../Digitals_Minds_Student_Registration_Guide.pdf from guide.html (16:9 pages, 1280 × 720 px).
+// Builds ../WEDOSELL_Student_Registration_Guide.pdf from guide.html (16:9 pages, 1280 × 720 px).
 //   node build.mjs
 // Needs Playwright with Chromium (set PLAYWRIGHT_MODULE if it isn't installed in this folder).
 import fs from "node:fs";
@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? "playwright");
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(HERE, "../Digitals_Minds_Student_Registration_Guide.pdf");
+const OUT = path.resolve(HERE, "../WEDOSELL_Student_Registration_Guide.pdf");
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });

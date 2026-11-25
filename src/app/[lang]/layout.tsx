@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
 // Editable website content (Admin → Website) is re-read at least every minute; saving refreshes it at once.
 export const revalidate = 60;
 
-export const viewport: Viewport = { themeColor: "#2b323c" };
+export const viewport: Viewport = { themeColor: "#000000" };
 
 export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;

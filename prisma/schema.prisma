@@ -1,4 +1,4 @@
-// Digitals Minds database schema (MySQL / MariaDB).
+// WEDOSELL database schema (MySQL / MariaDB).
 // Every change here must ship with a migration: `npm run db:migrate -- --name <change>`.
 // Conventions:
 // - Bilingual CMS text: English column + optional `...Ur` column (falls back to English).
@@ -58,7 +58,7 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // Digitals Minds profile fields
+  // WEDOSELL profile fields
   role            Role       @default(STUDENT)
   status          UserStatus @default(ACTIVE)
   /// Google account the student watches restricted Drive videos with.
@@ -584,7 +584,7 @@ model Post {
   coverImage     MediaAsset?   @relation(fields: [coverImageId], references: [id], onDelete: SetNull)
   authorId       String?       @db.VarChar(64)
   author         User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  /// Display name if different from the author account (e.g. "Digitals Minds Team").
+  /// Display name if different from the author account (e.g. "WEDOSELL Team").
   authorName     String?       @db.VarChar(120)
   seoTitle       String?       @db.VarChar(200)
   seoDescription String?       @db.VarChar(320)
@@ -964,7 +964,7 @@ enum EnrollmentStage {
 /// A visitor's application for a batch, before (and leading to) a student account.
 model EnrollmentApplication {
   id               String          @id @default(cuid())
-  /// Human-friendly reference shown to the applicant, e.g. "DM-7KQ4-XZ2M".
+  /// Human-friendly reference shown to the applicant, e.g. "WDS-7KQ4-XZ2M" (older ones start with "DM-").
   reference        String          @unique @db.VarChar(20)
   courseId         String
   course           Course          @relation(fields: [courseId], references: [id], onDelete: Restrict)

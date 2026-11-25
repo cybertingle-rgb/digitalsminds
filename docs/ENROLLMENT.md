@@ -1,6 +1,6 @@
 # Enrollment platform: how it works
 
-Digitals Minds runs paid courses and training programs in **batches**. The website does not teach
+WEDOSELL runs paid courses and training programs in **batches**. The website does not teach
 courses online (no lessons, videos or progress tracking). It handles the student journey from discovering a
 program to paying, enrolling, joining a batch, onboarding and ongoing administration.
 

@@ -44,8 +44,8 @@ export default async function CertificatePage({ params }: PageProps<"/[lang]/cer
           </div>
 
           {/* A4 landscape proportions; prints edge to edge. */}
-          <article className="dm-certificate relative mx-auto aspect-[297/210] w-full overflow-hidden rounded-3xl bg-white shadow-[0_30px_80px_-30px_rgb(43_50_60/0.45)] print:rounded-none print:shadow-none">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(60%_50%_at_0%_0%,rgb(253_207_49/0.35),transparent_70%),radial-gradient(50%_50%_at_100%_100%,rgb(253_207_49/0.3),transparent_70%)]" />
+          <article className="dm-certificate relative mx-auto aspect-[297/210] w-full overflow-hidden rounded-3xl bg-white shadow-[0_30px_80px_-30px_rgb(17_17_17/0.45)] print:rounded-none print:shadow-none">
+            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(60%_50%_at_0%_0%,rgb(255_116_31/0.35),transparent_70%),radial-gradient(50%_50%_at_100%_100%,rgb(255_116_31/0.3),transparent_70%)]" />
             <div aria-hidden="true" className="absolute inset-[3%] rounded-2xl border-2 border-sun-400" />
             <div aria-hidden="true" className="absolute inset-[4.2%] rounded-xl border border-charcoal-900/15" />
             <div className="relative flex h-full flex-col items-center justify-between px-[8%] py-[6%] text-center">

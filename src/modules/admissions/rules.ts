@@ -31,10 +31,10 @@ export function stageIndex(stage: EnrollmentStage) {
 /** Crockford-style alphabet: no 0/O, 1/I/L or U, so references are easy to read out on the phone. */
 const REF_ALPHABET = "23456789ABCDEFGHJKMNPQRSTVWXYZ";
 
-/** "DM-7KQ4-XZ2M". */
+/** "WDS-7KQ4-XZ2M" (applications made before the rebrand keep their "DM-" references). */
 export function newReference() {
   const pick = () => Array.from({ length: 4 }, () => REF_ALPHABET[randomInt(REF_ALPHABET.length)]).join("");
-  return `DM-${pick()}-${pick()}`;
+  return `WDS-${pick()}-${pick()}`;
 }
 
 export function normaliseReference(v: string) {

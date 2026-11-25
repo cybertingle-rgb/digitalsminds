@@ -261,7 +261,7 @@ export function liveClassIcs(c: { id: string; title: string; description: string
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Digitals Minds//Class schedule//EN",
+    "PRODID:-//WEDOSELL//Class schedule//EN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${c.id}@digitalsminds.com`,

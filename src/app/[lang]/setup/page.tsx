@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
-import { siteConfig } from "@/config/site";
+import { brand, siteConfig } from "@/config/site";
 import { getLogos } from "@/modules/content/settings";
 import { isAuthConfigured } from "@/lib/env";
 import { isSetupComplete, setupCodeConfigured } from "@/modules/auth/setup";
@@ -19,7 +19,7 @@ export default async function SetupPage({ params }: PageProps<"/[lang]/setup">) 
   return (
     <main className="flex min-h-dvh items-center justify-center px-4 py-12">
       <div className="w-full max-w-md glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6 sm:p-8">
-        <Image src={logo.src} alt="Digitals Minds" width={logo.width} height={logo.height} className="h-14 w-auto" priority />
+        <Image src={logo.src} alt={brand.name} width={logo.width} height={logo.height} className="h-9 w-auto" priority />
         <h1 className="mt-6 text-2xl font-bold text-charcoal-900">Create the Super Admin account</h1>
         <p className="mt-2 text-sm text-muted">
           This page works once. After the account is created it disappears. You can then set up email and Google sign-in from the admin panel.

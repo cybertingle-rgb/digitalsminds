@@ -2,7 +2,7 @@ import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
 /**
- * Urdu text, supplied by Digitals Minds.
+ * Urdu text, supplied by WEDOSELL.
  *
  * Mirror the structure of en.ts and translate values only (keep keys and
  * {placeholders} unchanged). Anything left out falls back to English.

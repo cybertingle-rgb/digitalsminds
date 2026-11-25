@@ -18,7 +18,7 @@ describe("actionEmail", () => {
     expect(mail.html).toContain("&lt;script&gt;");
     expect(mail.html).toContain("token=abc&amp;callbackURL");
     expect(mail.text).toContain("https://digitalsminds.com/api/auth/verify-email?token=abc&callbackURL=/login");
-    expect(mail.subject).toBe("Verify your email for Digitals Minds");
+    expect(mail.subject).toBe("Verify your email for WEDOSELL");
   });
 
   it("never lays emails out right-to-left (Urdu interface removed)", () => {

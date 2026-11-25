@@ -626,7 +626,7 @@ async function alertSuperAdmins(applicationId: string, values: { name: string; p
   for (const a of admins) {
     await sendBestEffort("admin alert", {
       to: a.email,
-      name: "Digitals Minds team",
+      name: "WEDOSELL team",
       subject: format(t.emailAlertSubject, values),
       intro: format(t.emailAlertIntro, values),
       buttonLabel: t.emailAlertButton,

@@ -37,7 +37,7 @@ export async function sendLeadAlert(id: string, input: InquiryInput) {
         dict,
         locale: "en",
         to: setting.email,
-        name: "Digitals Minds team",
+        name: "WEDOSELL team",
         subject: `New inquiry: ${topic} from ${input.name}`,
         intro: `${input.name} (${input.email}) sent an inquiry about ${topic}: “${excerpt}”`,
         buttonLabel: "Open the inquiry",

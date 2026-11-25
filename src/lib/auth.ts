@@ -62,7 +62,7 @@ async function sendAuthEmail(kind: "verify" | "reset", user: { email: string; na
 
 function createAuth(google: GoogleCredentials) {
   return betterAuth({
-    appName: "Digitals Minds",
+    appName: "WEDOSELL",
     baseURL: siteConfig.url,
     secret: authSecret(),
     trustedOrigins: [siteConfig.url],

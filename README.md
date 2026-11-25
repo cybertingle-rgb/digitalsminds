@@ -1,8 +1,8 @@
-# Digitals Minds Web App
+# WEDOSELL Web App
 
-**Learn | Grow | Earn**: A Complete Business Growth & Brand Development Initiative.
+****: A Complete Business Growth & Brand Development Initiative.
 
-The public website and future platform for Digitals Minds, covering the five
+The public website and future platform for WEDOSELL, covering the five
 divisions: Digital Marketing & Growth, Product Sourcing & Logistics, Media &
 Content Production, Startup & Brand Setup, and Web & E-Commerce.
 
@@ -114,7 +114,7 @@ No testimonials, client logos or statistics are included. Add them only from ver
 
 ## Programs, batches and enrollment
 
-Digitals Minds is a **paid enrollment and student administration platform** (no online lessons). Full guide:
+WEDOSELL is a **paid enrollment and student administration platform** (no online lessons). Full guide:
 [docs/ENROLLMENT.md](docs/ENROLLMENT.md).
 
 - **Admin → Programs**: courses/training programs with description, objectives, eligibility, format, duration and the
@@ -144,7 +144,7 @@ Digitals Minds is a **paid enrollment and student administration platform** (no 
 
 ## Website content (no redeploy needed)
 
-**Admin → Website** (Super Admin, Content Manager): Homepage text (hero, "Why Digitals Minds", call-to-action; English and
+**Admin → Website** (Super Admin, Content Manager): Homepage text (hero, "Why WEDOSELL", call-to-action; English and
 Urdu), Blog (draft / publish / schedule, cover and in-article images), FAQs, Testimonials and Case studies (publishing needs
 recorded permission), Legal pages (Privacy, Terms; linked in the footer once published), Search & sharing (title,
 description, share image per page), Contact & social links, and Logo (Super Admin). Changes go live straight away.

@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-11-08T09:10:19.072Z",
+  "capturedAt": "2026-11-25T19:37:04.673Z",
   "base": "http://localhost:3000",
   "screenshots": [
     {
@@ -74,7 +74,7 @@
       "name": "05-apply-form",
       "title": "Application form: your details",
       "step": "Apply",
-      "url": "/courses/ebay-training/apply?batch=cmw7lwxyq000zii7d7h2wty7a",
+      "url": "/courses/ebay-training/apply?batch=cmwwit4lo000z4h7dh8bozidp",
       "marks": [
         {
           "n": 1,
@@ -102,7 +102,7 @@
       "name": "06-apply-terms-error",
       "title": "Application form: CV, terms and the send button",
       "step": "Apply",
-      "url": "/courses/ebay-training/apply?batch=cmw7lwxyq000zii7d7h2wty7a",
+      "url": "/courses/ebay-training/apply?batch=cmwwit4lo000z4h7dh8bozidp",
       "marks": [
         {
           "n": 1,
@@ -122,7 +122,7 @@
       "name": "07-application-sent",
       "title": "Application sent",
       "step": "Apply",
-      "url": "/courses/ebay-training/apply?batch=cmw7lwxyq000zii7d7h2wty7a",
+      "url": "/courses/ebay-training/apply?batch=cmwwit4lo000z4h7dh8bozidp",
       "marks": [
         {
           "n": 1,
@@ -269,7 +269,7 @@
       "name": "17-set-password",
       "title": "Set your password",
       "step": "Activate",
-      "url": "/reset-password?token=54c0a882cb174665ab09eafed38f9d1851a625f6b2d84e5a8b347dc607932ba2",
+      "url": "/reset-password?token=8bffc18c0b50496d8edb78718c7755344329f53886f74b9eaacea26bdf4ef165",
       "marks": [
         {
           "n": 1,
@@ -405,7 +405,7 @@
       "marks": [
         {
           "n": 1,
-          "target": "main :text('Welcome to Batch November 1') >> xpath=ancestor::*[contains(@class,'rounded')][1]"
+          "target": "main :text('Welcome to Batch December 1') >> xpath=ancestor::*[contains(@class,'rounded')][1]"
         }
       ]
     },
@@ -440,11 +440,11 @@
       "name": "27-support-reply",
       "title": "Support: the team's reply",
       "step": "Help",
-      "url": "/account/support/cmw7m1fm3002bii7dfg27sbme",
+      "url": "/account/support/cmwwix6x3002b4h7dqr9mlvie",
       "marks": [
         {
           "n": 1,
-          "target": "main :text('Digitals Minds team') >> nth=0"
+          "target": "main :text('WEDOSELL team') >> nth=0"
         },
         {
           "n": 2,

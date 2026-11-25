@@ -7,10 +7,11 @@ import { LogoutButton } from "@/components/auth/LogoutButton";
 import { getLogos } from "@/modules/content/settings";
 import { can, roleLabels } from "@/modules/auth/permissions";
 import { requirePagePermission } from "@/modules/auth/session";
+import { brand } from "@/config/site";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: { default: "Admin", template: "%s | Admin | Digitals Minds" },
+  title: { default: "Admin", template: `%s | Admin | ${brand.name}` },
   robots: { index: false, follow: false },
 };
 
@@ -50,7 +51,7 @@ export default async function AdminLayout({ children, params }: LayoutProps<"/[l
         <div className="glass-blur rounded-3xl md:sticky md:top-3 md:flex md:max-h-[calc(100dvh-1.5rem)] md:flex-col md:overflow-y-auto">
           <div className="flex items-center justify-between gap-4 p-4 md:block md:p-5">
             <Link href="/admin" aria-label="Admin home">
-              <Image src={logo.src} alt="Digitals Minds" width={logo.width} height={logo.height} className="h-11 w-auto" />
+              <Image src={logo.src} alt={brand.name} width={logo.width} height={logo.height} className="h-7 w-auto" />
             </Link>
             <p className="inline-flex items-center gap-1.5 rounded-full bg-charcoal-900 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-sun-400 md:mt-3">
               <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-sun-400" />

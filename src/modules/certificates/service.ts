@@ -26,15 +26,34 @@ type Actor = Pick<CurrentUser, "id" | "role">;
 const ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 export function newCertificateCode() {
   const pick = (n: number) => Array.from({ length: n }, () => ALPHABET[randomInt(ALPHABET.length)]).join("");
-  return `DM-${pick(4)}-${pick(4)}`;
+  return `${CERT_PREFIX}-${pick(4)}-${pick(4)}`;
 }
 
-/** Normalises what people type: case, spaces, missing dashes. */
+/** New certificates start with WDS (WEDOSELL); those issued before the rebrand keep DM. */
+export const CERT_PREFIX = "WDS";
+const LEGACY_PREFIX = "DM";
+
+/**
+ * Normalises what people type: case, spaces, missing dashes. Keeps the prefix they typed
+ * (WDS, or DM for certificates issued before the rebrand); without one, assumes WDS
+ * (certificateByCode also tries the DM form).
+ */
 export function normaliseCode(input: string): string | null {
   const raw = input.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  const body = raw.startsWith("DM") ? raw.slice(2) : raw;
+  let prefix = CERT_PREFIX;
+  let body = raw;
+  if (raw.length === 11 && raw.startsWith(CERT_PREFIX)) body = raw.slice(3);
+  else if (raw.length === 10 && raw.startsWith(LEGACY_PREFIX)) {
+    prefix = LEGACY_PREFIX;
+    body = raw.slice(2);
+  }
   if (!/^[2-9A-HJKMNP-Z]{8}$/.test(body)) return null;
-  return `DM-${body.slice(0, 4)}-${body.slice(4)}`;
+  return `${prefix}-${body.slice(0, 4)}-${body.slice(4)}`;
+}
+
+/** The same certificate body under the other prefix (WDS <-> DM). */
+function otherPrefix(code: string) {
+  return code.startsWith(`${CERT_PREFIX}-`) ? `${LEGACY_PREFIX}-${code.slice(4)}` : `${CERT_PREFIX}-${code.slice(3)}`;
 }
 
 function assertCanIssue(actor: Actor) {
@@ -110,8 +129,10 @@ export async function issuedCertificates(q?: string) {
   });
 }
 
-export function certificateByCode(code: string) {
-  return db().certificate.findUnique({ where: { code }, include: { course: { select: { language: true } } } });
+/** Finds a certificate by its normalised code, also under the other prefix (WDS <-> DM). */
+export async function certificateByCode(code: string) {
+  const include = { course: { select: { language: true } } } as const;
+  return (await db().certificate.findUnique({ where: { code }, include })) ?? db().certificate.findUnique({ where: { code: otherPrefix(code) }, include });
 }
 
 export function studentCertificates(userId: string) {

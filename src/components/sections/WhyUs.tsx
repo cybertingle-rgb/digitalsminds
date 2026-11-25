@@ -23,7 +23,7 @@ export async function WhyUs({ locale, dict }: { locale: Locale; dict: Dictionary
         <ul className="grid gap-5 sm:grid-cols-2 lg:col-span-8">
           {h.why.map((w, i) => (
             <li key={w.title} className="glass glow-card rounded-3xl p-6 sm:p-7">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-white to-sun-100 text-charcoal-900 ring-1 ring-white shadow-[0_8px_20px_-10px_rgb(244_192_26/0.9)]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-white to-sun-100 text-charcoal-900 ring-1 ring-white shadow-[0_8px_20px_-10px_rgb(232_98_16/0.9)]">
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d={icons[i % icons.length]} />
                 </svg>

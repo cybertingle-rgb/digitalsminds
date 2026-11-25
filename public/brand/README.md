@@ -1,6 +1,6 @@
 # Official brand assets
 
-These are web versions of the official Digitals Minds logos supplied by the owner.
+These are web versions of the official WEDOSELL logos supplied by the owner.
 The originals are kept unmodified in `assets/brand/originals/`. Do not substitute a
 recreated or AI-generated logo.
 

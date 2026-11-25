@@ -1,8 +1,9 @@
 import type { CSSProperties, ReactNode } from "react";
+import { siteConfig } from "@/config/site";
 import { getLogos } from "@/modules/content/settings";
 
 /**
- * Brand preloader, shown once per browser session: the official logo inside
+ * Brand preloader, shown once per browser session: the official WEDOSELL mark inside
  * a slowly turning orbit of learning and business icons (books, notebook,
  * pen, pencil, notes, lightbulb, graduation cap, chart, ruler) that emerge
  * from the logo, with a few rising sparks.
@@ -17,8 +18,8 @@ export const PRELOADER_HEAD_SCRIPT = `try{if(!sessionStorage.getItem("dm-seen"))
 
 export const PRELOADER_END_SCRIPT = `(function(){var d=document.documentElement;if(!d.classList.contains("dm-preloading"))return;var t0=Date.now(),done=false;function end(){if(done)return;done=true;var el=document.getElementById("dm-preloader");if(el)el.classList.add("dm-done");setTimeout(function(){d.classList.remove("dm-preloading")},650)}function soon(){setTimeout(end,Math.max(0,1100-(Date.now()-t0)))}if(document.readyState==="complete")soon();else window.addEventListener("load",soon);setTimeout(end,2800)})();`;
 
-const INK = "#2b323c";
-const SUN = "#fdcf31";
+const INK = "#111111";
+const SUN = "#ff741f";
 
 /** 24×24 line icons in the brand's charcoal with a yellow accent. */
 const ICONS: { name: string; svg: ReactNode }[] = [
@@ -114,13 +115,14 @@ const SPARKS = 7;
 
 export async function Preloader({ label }: { label: string }) {
   const logo = (await getLogos()).light;
+  const mark = siteConfig.logo.mark;
   return (
-    <div id="dm-preloader" role="status" aria-label={label} className="fixed inset-0 z-[100] items-center justify-center overflow-hidden bg-[#fffdf5]">
-      {/* Soft sunlight behind the logo */}
-      <div aria-hidden="true" className="dm-pl-glow absolute h-[80vmin] w-[80vmin] rounded-full bg-[radial-gradient(circle,rgb(253_207_49/0.38),rgb(255_243_196/0.2)_42%,rgb(255_253_245/0)_70%)]" />
+    <div id="dm-preloader" role="status" aria-label={label} className="fixed inset-0 z-[100] items-center justify-center overflow-hidden bg-[#f7f7f7]">
+      {/* Soft orange glow behind the mark */}
+      <div aria-hidden="true" className="dm-pl-glow absolute h-[80vmin] w-[80vmin] rounded-full bg-[radial-gradient(circle,rgb(255_116_31/0.22),rgb(255_230_212/0.18)_42%,rgb(247_247_247/0)_70%)]" />
 
       <div aria-hidden="true" className="dm-pl-stage relative">
-        {/* Orbit paths: a fine dashed track and a turning yellow arc */}
+        {/* Orbit paths: a fine dashed track and a turning orange arc */}
         <svg className="dm-pl-track absolute inset-0 h-full w-full" viewBox="0 0 200 200" fill="none">
           <circle cx="100" cy="100" r="96" stroke={INK} strokeOpacity=".14" strokeWidth=".6" strokeDasharray="1.5 4" />
         </svg>
@@ -139,7 +141,7 @@ export async function Preloader({ label }: { label: string }) {
         <div className="dm-pl-orbit absolute inset-0">
           {ICONS.map((icon, i) => (
             <span key={icon.name} className="dm-pl-slot absolute left-1/2 top-1/2" style={{ "--a": `${(360 / ICONS.length) * i}deg`, "--i": i } as CSSProperties}>
-              <span className="dm-pl-icon flex items-center justify-center rounded-2xl bg-white/90 shadow-[0_6px_18px_-6px_rgb(43_50_60/0.35)] ring-1 ring-white">
+              <span className="dm-pl-icon flex items-center justify-center rounded-2xl bg-white/90 shadow-[0_6px_18px_-6px_rgb(17_17_17/0.35)] ring-1 ring-white">
                 <svg viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-[55%] w-[55%]">
                   {icon.svg}
                 </svg>
@@ -153,12 +155,15 @@ export async function Preloader({ label }: { label: string }) {
           <span key={i} className="dm-pl-spark absolute left-1/2 top-1/2 h-1.5 w-1.5 rounded-full bg-sun-400" style={{ "--s": `${(360 / SPARKS) * i + 20}deg`, "--i": i } as CSSProperties} />
         ))}
 
-        {/* The official logo */}
-        <div className="absolute inset-[26%] flex items-center justify-center rounded-full bg-white/80 shadow-[0_10px_40px_-12px_rgb(43_50_60/0.35),inset_0_0_0_1px_rgb(255_255_255)]">
+        {/* The official WEDOSELL mark (orange on black), clipped to a circle */}
+        <div className="absolute inset-[28%] overflow-hidden rounded-full bg-black shadow-[0_14px_40px_-12px_rgb(17_17_17/0.45),0_0_0_4px_rgb(255_255_255/0.9)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo.src} alt="" width={logo.width} height={logo.height} className="dm-pl-logo h-auto w-[78%]" />
+          <img src={mark.src} alt="" width={mark.width} height={mark.height} className="dm-pl-logo h-full w-full object-cover" />
         </div>
       </div>
+      {/* The official wordmark under the orbit */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={logo.src} alt="" width={logo.width} height={logo.height} className="absolute bottom-[9vh] h-7 w-auto sm:h-9" />
     </div>
   );
 }

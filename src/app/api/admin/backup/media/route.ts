@@ -14,6 +14,6 @@ export async function GET() {
   if (!user || !can(user.role, "backups.download")) return new Response("Not found", { status: 404 });
   await audit({ actorId: user.id, action: "backup.media", entityType: "Backup" });
   return new Response(gzipStream(tarArchive(uploadRoot())), {
-    headers: downloadHeaders(`digitalsminds-media-${pkDay()}.tar.gz`, "application/gzip"),
+    headers: downloadHeaders(`wedosell-media-${pkDay()}.tar.gz`, "application/gzip"),
   });
 }

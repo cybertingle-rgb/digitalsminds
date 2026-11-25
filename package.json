@@ -1,8 +1,8 @@
 {
-  "name": "digitalsminds-web",
+  "name": "wedosell-web",
   "version": "0.1.0",
   "private": true,
-  "description": "Digitals Minds web app: Learn | Grow | Earn",
+  "description": "WEDOSELL web app: e-commerce & business growth training platform",
   "engines": {
     "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },

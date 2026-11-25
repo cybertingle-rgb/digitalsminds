@@ -1,7 +1,7 @@
 # Student Registration & Onboarding Guide
 
 A 30-page, 16:9 PDF for prospective and newly enrolled students:
-**`Digitals_Minds_Student_Registration_Guide.pdf`**.
+**`WEDOSELL_Student_Registration_Guide.pdf`**.
 
 It walks through the real journey, in order: website → program → application → email confirmation →
 payment instructions → payment details → verification → enrollment confirmed → set password → log in →
@@ -10,7 +10,7 @@ support → profile, plus "lost your link", FAQ and contact pages.
 
 | Path | What it is |
 | --- | --- |
-| `Digitals_Minds_Student_Registration_Guide.pdf` | The guide (fonts embedded, links clickable) |
+| `WEDOSELL_Student_Registration_Guide.pdf` | The guide (fonts embedded, links clickable) |
 | `source/guide.html` | Editable source: one `<section class="slide">` per page, 1280 × 720 px |
 | `source/build.mjs` | Prints `guide.html` to the PDF |
 | `source/capture.mjs` | Takes every screenshot from a running copy of the site |

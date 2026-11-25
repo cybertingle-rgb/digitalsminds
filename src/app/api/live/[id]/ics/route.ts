@@ -12,7 +12,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/api/live/[id
   return new Response(liveClassIcs(live), {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": `attachment; filename="digitalsminds-live-class.ics"`,
+      "Content-Disposition": `attachment; filename="wedosell-live-class.ics"`,
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
     },

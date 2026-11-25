@@ -75,7 +75,7 @@ export async function publicPosts(): Promise<PublicPost[]> {
       title: r.title,
       excerpt: r.excerpt,
       publishedAt: (r.publishedAt ?? r.createdAt).toISOString().slice(0, 10),
-      author: r.authorName || r.author?.name || "Digitals Minds Team",
+      author: r.authorName || r.author?.name || "WEDOSELL Team",
       tags: tagsOf(r.tags),
       body: r.body,
       cover: r.coverImage?.visibility === "PUBLIC" ? { url: mediaUrl(r.coverImage), alt: r.coverImage.altText ?? "", width: r.coverImage.width ?? undefined, height: r.coverImage.height ?? undefined } : null,

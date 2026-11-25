@@ -22,7 +22,7 @@ export function CourseCard(props: {
           <img src={props.thumbnailUrl} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
         ) : (
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-charcoal-800 to-charcoal-900">
-            <span className="absolute bottom-3 start-4 text-sm font-semibold text-sun-400">Digitals Minds</span>
+            <span className="absolute bottom-3 start-4 text-sm font-semibold text-sun-400">WEDOSELL</span>
           </div>
         )}
       </div>

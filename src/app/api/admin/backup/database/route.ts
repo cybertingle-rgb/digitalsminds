@@ -14,6 +14,6 @@ export async function GET() {
   if (!user || !can(user.role, "backups.download")) return new Response("Not found", { status: 404 });
   await audit({ actorId: user.id, action: "backup.database", entityType: "Backup" });
   return new Response(gzipStream(sqlDump({ createdAt: new Date(), site: siteConfig.url })), {
-    headers: downloadHeaders(`digitalsminds-database-${pkDay()}.sql.gz`, "application/gzip"),
+    headers: downloadHeaders(`wedosell-database-${pkDay()}.sql.gz`, "application/gzip"),
   });
 }

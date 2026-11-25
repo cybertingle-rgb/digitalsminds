@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     return typeof v === "string" ? v : "";
   };
   // Honeypot: bots fill every field. Pretend success, store nothing.
-  if (text("website")) return NextResponse.json({ ok: true, reference: "DM-0000-0000", email: "" }, { status: 201 });
+  if (text("website")) return NextResponse.json({ ok: true, reference: "WDS-0000-0000", email: "" }, { status: 201 });
 
   const parsed = applicationInput.safeParse({
     batchId: text("batchId"),

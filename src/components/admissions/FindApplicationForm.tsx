@@ -36,7 +36,7 @@ export function FindApplicationForm({ labels: t, errors }: { labels: Dictionary[
           <input id="find-email" name="email" type="email" required maxLength={254} autoComplete="email" dir="ltr" className={inputClass} />
         </Field>
         <Field label={t.reference} name="find-reference">
-          <input id="find-reference" name="reference" required maxLength={20} autoComplete="off" dir="ltr" placeholder="DM-XXXX-XXXX" className={`${inputClass} uppercase`} />
+          <input id="find-reference" name="reference" required maxLength={20} autoComplete="off" dir="ltr" placeholder="WDS-XXXX-XXXX" className={`${inputClass} uppercase`} />
         </Field>
       </div>
       {result === "tooMany" && <FormAlert>{errors.tooManyAttempts}</FormAlert>}

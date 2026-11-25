@@ -1,38 +1,57 @@
 @import "tailwindcss";
 
 /*
- * Digitals Minds brand tokens, taken from the official logo:
- *   charcoal #2B323C (logo background) · #373643 (logo lettering) · yellow #FDCF31.
- * Accessibility: yellow is for backgrounds and accents only. Never use it
- * as text on white (1.5:1). Small accent text on white uses gold-700 (6.3:1).
+ * WEDOSELL design tokens, taken from the official logo (see brand in src/config/site.ts):
+ *   orange #FF741F (primary) · black #000000 (secondary) · background #F7F7F7.
+ * The `sun-*` scale is the orange brand scale and `charcoal-*` the neutral/black scale
+ * (names kept so every component picks up the new palette).
+ * Accessibility: orange is for buttons, highlights and accents, with black text
+ * (8.4:1). Never use orange as body text on white; small accent text uses
+ * gold-700 (#A84304, 5.9:1 on white).
  */
 @theme {
-  --color-charcoal-50: #f6f7f9;
-  --color-charcoal-100: #eceef1;
-  --color-charcoal-200: #d7dbe1;
-  --color-charcoal-300: #b4bac4;
-  --color-charcoal-600: #5f6675;
-  --color-charcoal-700: #4a5160;
-  --color-charcoal-800: #373643;
-  --color-charcoal-900: #2b323c;
-  --color-charcoal-950: #1f242c;
+  --color-charcoal-50: #f7f7f7;
+  --color-charcoal-100: #efefef;
+  --color-charcoal-200: #e2e2e2;
+  --color-charcoal-300: #c4c4c4;
+  --color-charcoal-500: #8a8a8a;
+  --color-charcoal-600: #5c5c5c;
+  --color-charcoal-700: #3d3d3d;
+  --color-charcoal-800: #232323;
+  --color-charcoal-900: #111111;
+  --color-charcoal-950: #000000;
 
-  --color-sun-50: #fffaeb;
-  --color-sun-100: #fff3c4;
-  --color-sun-200: #fee88f;
-  --color-sun-400: #fdcf31;
-  --color-sun-500: #f4c01a;
-  --color-gold-700: #7a5b00;
+  --color-sun-50: #fff4ec;
+  --color-sun-100: #ffe6d4;
+  --color-sun-200: #ffcaa3;
+  --color-sun-300: #ffa05f;
+  --color-sun-400: #ff741f;
+  --color-sun-500: #f0640e;
+  --color-sun-600: #cf5005;
+  --color-gold-700: #a84304;
 
-  --color-ink: #2b323c;
-  --color-muted: #5f6675;
+  /* Semantic aliases */
+  --color-brand: #ff741f;
+  --color-brand-strong: #cf5005;
+  --color-ink: #111111;
+  --color-muted: #5c5c5c;
   --color-surface: #ffffff;
-  --color-surface-alt: #f6f7f9;
-  /* Page canvas behind the glass panels (warm off-white). */
-  --color-canvas: #f5f5f1;
-  --color-line: #e3e6ea;
+  --color-surface-alt: #f2f2f2;
+  /* Page canvas (brand background). */
+  --color-canvas: #f7f7f7;
+  --color-line: #e5e5e5;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+  --color-disabled: #a3a3a3;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  --brand-primary: #ff741f;
+  --brand-secondary: #000000;
+  --brand-background: #f7f7f7;
 }
 
 @layer base {
@@ -54,10 +73,10 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(42rem 32rem at 6% -8%, rgb(253 207 49 / 0.32), transparent 62%),
-      radial-gradient(38rem 30rem at 102% 6%, rgb(43 50 60 / 0.11), transparent 60%),
-      radial-gradient(44rem 34rem at 78% 108%, rgb(253 207 49 / 0.2), transparent 62%),
-      radial-gradient(34rem 26rem at -6% 78%, rgb(55 54 67 / 0.09), transparent 60%);
+      radial-gradient(42rem 32rem at 6% -8%, rgb(255 116 31 / 0.12), transparent 62%),
+      radial-gradient(38rem 30rem at 102% 6%, rgb(0 0 0 / 0.05), transparent 60%),
+      radial-gradient(44rem 34rem at 78% 108%, rgb(255 116 31 / 0.08), transparent 62%),
+      radial-gradient(34rem 26rem at -6% 78%, rgb(0 0 0 / 0.04), transparent 60%);
   }
   /* Urdu: Naskh for Arabic-script text, system font for any Latin text. */
   html:lang(ur) body,
@@ -74,61 +93,60 @@
 }
 
 /*
- * Glass surfaces: white and light-yellow frosted glass over slowly drifting
+ * Glass surfaces: clean white frosted panels over slowly drifting
  * brand glows (see AmbientBackground). Phones get a lighter blur.
  */
 @utility glass {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.62), rgb(255 247 214 / 0.38));
-  border: 1px solid rgb(255 255 255 / 0.75);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.82), rgb(255 255 255 / 0.66));
+  border: 1px solid rgb(0 0 0 / 0.06);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.85),
-    inset 0 -1px 0 rgb(253 207 49 / 0.14),
-    0 14px 40px -20px rgb(43 50 60 / 0.28);
+    0 14px 40px -20px rgb(17 17 17 / 0.28);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 @utility glass-subtle {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.5), rgb(255 247 214 / 0.3));
-  border: 1px solid rgb(255 255 255 / 0.65);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.5));
+  border: 1px solid rgb(0 0 0 / 0.05);
 }
 @utility glass-strong {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.86), rgb(255 250 230 / 0.74));
-  border: 1px solid rgb(255 255 255 / 0.9);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.94), rgb(255 255 255 / 0.86));
+  border: 1px solid rgb(0 0 0 / 0.06);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
-    0 18px 48px -22px rgb(43 50 60 / 0.32);
+    0 18px 48px -22px rgb(17 17 17 / 0.32);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 @utility glass-blur {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.72), rgb(255 247 214 / 0.5));
-  border: 1px solid rgb(255 255 255 / 0.85);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.86), rgb(255 255 255 / 0.72));
+  border: 1px solid rgb(0 0 0 / 0.06);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
-    0 16px 40px -20px rgb(43 50 60 / 0.3),
-    0 0 0 1px rgb(253 207 49 / 0.08);
+    0 16px 40px -20px rgb(17 17 17 / 0.3),
+    0 0 0 1px rgb(255 116 31 / 0.08);
   -webkit-backdrop-filter: blur(22px) saturate(170%);
   backdrop-filter: blur(22px) saturate(170%);
 }
-/* Yellow glass for calls to action (charcoal text). */
+/* Warm orange-tinted panel for calls to action (black text). */
 @utility glass-sun {
   color: var(--color-charcoal-900);
   background:
     radial-gradient(28rem 16rem at 100% 0%, rgb(255 255 255 / 0.7), transparent 60%),
-    linear-gradient(135deg, rgb(255 243 196 / 0.85), rgb(253 207 49 / 0.6));
+    linear-gradient(135deg, rgb(255 230 212 / 0.85), rgb(255 116 31 / 0.6));
   border: 1px solid rgb(255 255 255 / 0.8);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
-    0 24px 60px -24px rgb(244 192 26 / 0.65);
+    0 24px 60px -24px rgb(232 98 16 / 0.65);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(170%);
   backdrop-filter: blur(var(--glass-blur)) saturate(170%);
 }
 /* Small dark accents (badges). */
 @utility glass-ink {
   color: #fff;
-  background: linear-gradient(135deg, rgb(43 50 60 / 0.92), rgb(31 36 44 / 0.88));
+  background: linear-gradient(135deg, rgb(17 17 17 / 0.92), rgb(0 0 0 / 0.88));
   border: 1px solid rgb(255 255 255 / 0.12);
-  box-shadow: 0 10px 24px -14px rgb(31 36 44 / 0.7);
+  box-shadow: 0 10px 24px -14px rgb(0 0 0 / 0.7);
 }
 
 :root {
@@ -141,7 +159,7 @@
 }
 
 /*
- * Interactive glass card: lifts, glows yellow and shows a soft spotlight that
+ * Interactive glass card: lifts, gains an orange edge and shows a soft spotlight that
  * follows the pointer (--mx/--my set by GlowTracker).
  */
 @utility glow-card {
@@ -159,17 +177,16 @@
     z-index: -1;
     opacity: 0;
     transition: opacity 0.35s ease;
-    background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 0%), rgb(253 207 49 / 0.35), transparent 60%);
+    background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 0%), rgb(255 116 31 / 0.12), transparent 60%);
   }
   &:hover,
   &:focus-within {
     transform: translateY(-4px);
-    border-color: rgb(253 207 49 / 0.75);
+    border-color: rgb(255 116 31 / 0.55);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.9),
-      0 0 0 1px rgb(253 207 49 / 0.35),
-      0 22px 50px -18px rgb(244 192 26 / 0.6),
-      0 0 40px -8px rgb(253 207 49 / 0.45);
+      0 0 0 1px rgb(255 116 31 / 0.25),
+      0 22px 50px -22px rgb(17 17 17 / 0.28);
   }
   &:hover::before,
   &:focus-within::before {
@@ -177,7 +194,7 @@
   }
 }
 
-/* A line of yellow light that runs around the border on hover. */
+/* A line of orange light that runs around the border on hover. */
 @property --run-angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -193,7 +210,7 @@
     padding: 1.5px;
     pointer-events: none;
     opacity: 0;
-    background: conic-gradient(from var(--run-angle), transparent 0 65%, rgb(253 207 49) 80%, rgb(255 255 255) 85%, rgb(253 207 49) 90%, transparent 100%);
+    background: conic-gradient(from var(--run-angle), transparent 0 65%, rgb(255 116 31) 80%, rgb(255 255 255) 85%, rgb(255 116 31) 90%, transparent 100%);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
@@ -219,7 +236,7 @@
     border-radius: inherit;
     padding: 2px;
     pointer-events: none;
-    background: conic-gradient(from var(--run-angle), transparent 0 60%, rgb(253 207 49) 78%, rgb(255 255 255) 84%, rgb(253 207 49) 90%, transparent 100%);
+    background: conic-gradient(from var(--run-angle), transparent 0 60%, rgb(255 116 31) 78%, rgb(255 255 255) 84%, rgb(255 116 31) 90%, transparent 100%);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
@@ -312,7 +329,6 @@
   animation-delay: calc(var(--i) * 370ms + 500ms);
 }
 .dm-pl-logo {
-  filter: drop-shadow(0 0 14px rgb(253 207 49 / 0.55));
   animation: dm-pl-pulse 2.6s ease-in-out infinite;
 }
 @keyframes dm-pl-spin {

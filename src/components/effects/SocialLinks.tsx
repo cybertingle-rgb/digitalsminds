@@ -44,7 +44,7 @@ export function SocialRail({ label }: { label: string }) {
               target="_blank"
               rel="noopener noreferrer me"
               aria-label={socialLabels[l.platform]}
-              className="glass-blur border-run group flex h-11 w-11 items-center justify-end overflow-hidden rounded-full text-charcoal-900 transition-[width,box-shadow,background] duration-300 ease-out hover:w-40 hover:shadow-[0_0_0_1px_rgb(253_207_49/0.4),0_12px_30px_-8px_rgb(253_207_49/0.8)] focus-visible:w-40"
+              className="glass-blur border-run group flex h-11 w-11 items-center justify-end overflow-hidden rounded-full text-charcoal-900 transition-[width,box-shadow,background] duration-300 ease-out hover:w-40 hover:shadow-[0_0_0_1px_rgb(255_116_31/0.4),0_12px_30px_-8px_rgb(255_116_31/0.8)] focus-visible:w-40"
             >
               <span className="whitespace-nowrap ps-4 text-sm font-semibold opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
                 {socialLabels[l.platform]}
@@ -73,7 +73,7 @@ export function SocialRow({ label }: { label: string }) {
             target="_blank"
             rel="noopener noreferrer me"
             aria-label={socialLabels[l.platform]}
-            className="border-run flex h-11 w-11 items-center justify-center rounded-full bg-white/70 text-charcoal-900 ring-1 ring-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-sun-400 hover:shadow-[0_10px_24px_-8px_rgb(244_192_26/0.9)]"
+            className="border-run flex h-11 w-11 items-center justify-center rounded-full bg-white/70 text-charcoal-900 ring-1 ring-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-sun-400 hover:shadow-[0_10px_24px_-8px_rgb(232_98_16/0.9)]"
           >
             <SocialIcon platform={l.platform} />
           </a>

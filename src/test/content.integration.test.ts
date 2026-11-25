@@ -68,8 +68,8 @@ run("content management (integration)", async () => {
     expect((await settings.contactDetails("en", dict)).whatsapp).toBe("923001234567");
     expect(settings.whatsappDigits("+92 300 1234567")).toBe("923001234567");
     expect(settings.whatsappDigits("12")).toBeNull();
-    await settings.saveSetting("site.seo", settings.seoInput.parse({ about: { title: "About Digitals Minds", titleUr: "", description: "", descriptionUr: "", imageId: "" } }), actor);
-    expect(await settings.seoFor("about", "en")).toMatchObject({ title: "About Digitals Minds" });
+    await settings.saveSetting("site.seo", settings.seoInput.parse({ about: { title: "About WEDOSELL", titleUr: "", description: "", descriptionUr: "", imageId: "" } }), actor);
+    expect(await settings.seoFor("about", "en")).toMatchObject({ title: "About WEDOSELL" });
     expect(await settings.seoFor("home", "en")).toEqual({});
   });
 
@@ -118,7 +118,7 @@ run("content management (integration)", async () => {
   it("moves the blog to the database without losing the built-in post", async () => {
     if (hadPosts > 0) return;
     const before = await blog.publicPosts();
-    expect(before.map((p) => p.slug)).toContain("welcome-to-digitals-minds");
+    expect(before.map((p) => p.slug)).toContain("welcome-to-wedosell");
     expect(before[0]!.body).toContain("## Five divisions, one team");
     const n = await blog.importBuiltInPosts(actor);
     expect(n).toBeGreaterThan(0);

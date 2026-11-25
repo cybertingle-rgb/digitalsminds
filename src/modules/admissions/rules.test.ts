@@ -12,7 +12,7 @@ describe("admissions rules", () => {
   });
 
   it("makes readable, unambiguous references", () => {
-    for (let i = 0; i < 200; i++) expect(newReference()).toMatch(/^DM-[2-9A-HJKMNP-TV-Z]{4}-[2-9A-HJKMNP-TV-Z]{4}$/);
+    for (let i = 0; i < 200; i++) expect(newReference()).toMatch(/^WDS-[2-9A-HJKMNP-TV-Z]{4}-[2-9A-HJKMNP-TV-Z]{4}$/);
     expect(normaliseReference(" dm-7kq4-xz2m ")).toBe("DM-7KQ4-XZ2M");
   });
 

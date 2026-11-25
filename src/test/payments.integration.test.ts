@@ -69,7 +69,7 @@ run("paid courses (integration)", async () => {
     await pay.setCoursePrice(course, pay.priceInput.parse({ paid: true, pricePkr: "15,000" }), sa);
     expect(await db().course.findUniqueOrThrow({ where: { id: course } })).toMatchObject({ accessType: "PAID", priceAmount: 1_500_000, currency: "PKR" });
     await expect(pay.savePaymentDetails({ bankAccountNumber: "123" }, cm)).rejects.toThrow(/Super Admins/);
-    await pay.savePaymentDetails({ bankName: "Meezan", bankAccountTitle: "Digitals Minds", bankAccountNumber: "PK00TEST0000000000000000" }, sa);
+    await pay.savePaymentDetails({ bankName: "Meezan", bankAccountTitle: "WEDOSELL", bankAccountNumber: "PK00TEST0000000000000000" }, sa);
     expect(pay.availableMethods(await pay.getPaymentDetails())).toEqual(["BANK_TRANSFER"]);
     // The built-in bank QR code alone offers bank transfer; "none" turns it off.
     expect(pay.availableMethods({ jazzcashNumber: "03000000000" })).toEqual(["BANK_TRANSFER", "JAZZCASH"]);

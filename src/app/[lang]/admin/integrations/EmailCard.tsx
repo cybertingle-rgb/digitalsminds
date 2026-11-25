@@ -74,7 +74,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
           <input id="password" name="password" type="password" autoComplete="new-password" required={!status.secretReadable} className={inputClass} placeholder={status.secretReadable ? "••••••••••••" : ""} aria-invalid={!!f.password} />
         </Field>
         <Field label="Sender name" name="fromName" error={f.fromName}>
-          <input id="fromName" name="fromName" required defaultValue={status.fromName ?? "Digitals Minds"} className={inputClass} aria-invalid={!!f.fromName} />
+          <input id="fromName" name="fromName" required defaultValue={status.fromName ?? "WEDOSELL"} className={inputClass} aria-invalid={!!f.fromName} />
         </Field>
         <Field label="Sender email" name="fromEmail" error={f.fromEmail}>
           <input id="fromEmail" name="fromEmail" type="email" dir="ltr" required defaultValue={status.fromEmail ?? "noreply@digitalsminds.com"} className={inputClass} aria-invalid={!!f.fromEmail} />

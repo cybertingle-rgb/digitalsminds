@@ -129,7 +129,7 @@ export function HomeForm({ value, defaults }: { value: Home; defaults: HomeDefau
         <Pair state={state} name="heroTitle" label="Headline" en={value.heroTitle} ur={value.heroTitleUr} placeholder={defaults.heroTitle} max={200} />
         <Pair state={state} name="heroText" label="Introduction" en={value.heroText} ur={value.heroTextUr} placeholder={defaults.heroText} rows={3} max={600} />
       </Group>
-      <Group title="Why Digitals Minds" hint="Four short points.">
+      <Group title="Why WEDOSELL" hint="Four short points.">
         <Pair state={state} name="whyTitle" label="Section title" en={value.whyTitle} ur={value.whyTitleUr} placeholder={defaults.whyTitle} max={200} />
         {defaults.why.map((d, i) => (
           <div key={i} className="space-y-3 border-t border-charcoal-200/50 pt-4">

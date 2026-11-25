@@ -130,9 +130,9 @@ export async function sendTestEmailAction(): Promise<ActionState> {
     await sendMail(
       {
         to: user.email,
-        subject: "Digitals Minds test email",
-        text: "Email sending from the Digitals Minds website is working.",
-        html: "<p>Email sending from the Digitals Minds website is working.</p>",
+        subject: "WEDOSELL test email",
+        text: "Email sending from the WEDOSELL website is working.",
+        html: "<p>Email sending from the WEDOSELL website is working.</p>",
       },
       cfg,
     );

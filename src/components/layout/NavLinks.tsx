@@ -32,8 +32,8 @@ export function NavLinks({ items, homeHref, onNavigate, vertical = false }: Prop
                   ? `px-4 py-3 text-base ${active ? "bg-gradient-to-r from-sun-100 to-white text-charcoal-900 shadow-[inset_3px_0_0_var(--color-sun-400)] rtl:shadow-[inset_-3px_0_0_var(--color-sun-400)]" : "text-charcoal-700 hover:bg-sun-50"}`
                   : `px-4 py-2.5 text-[15px] after:absolute after:inset-x-4 after:bottom-1 after:h-0.5 after:origin-center after:rounded-full after:bg-sun-400 after:transition-transform after:duration-300 ${
                       active
-                        ? "bg-gradient-to-b from-white to-sun-50 text-charcoal-900 shadow-[0_0_0_1px_rgb(253_207_49/0.45),0_10px_26px_-10px_rgb(244_192_26/0.85)] after:scale-x-100"
-                        : "text-charcoal-700 after:scale-x-0 hover:-translate-y-px hover:bg-white/80 hover:text-charcoal-900 hover:shadow-[0_0_0_1px_rgb(253_207_49/0.3),0_10px_30px_-8px_rgb(253_207_49/0.75)] hover:after:scale-x-100"
+                        ? "bg-gradient-to-b from-white to-sun-50 text-charcoal-900 shadow-[0_0_0_1px_rgb(255_116_31/0.45),0_10px_26px_-10px_rgb(232_98_16/0.85)] after:scale-x-100"
+                        : "text-charcoal-700 after:scale-x-0 hover:-translate-y-px hover:bg-white/80 hover:text-charcoal-900 hover:shadow-[0_0_0_1px_rgb(255_116_31/0.3),0_10px_30px_-8px_rgb(255_116_31/0.75)] hover:after:scale-x-100"
                     }`
               }`}
             >

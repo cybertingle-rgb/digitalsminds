@@ -38,7 +38,7 @@ export default async function VerifyPage({ params, searchParams }: PageProps<"/[
         <form className="mt-6 space-y-4">
           <div>
             <label htmlFor="code" className="block text-sm font-medium text-charcoal-900">{t.verifyLabel}</label>
-            <input id="code" name="code" defaultValue={typed} required dir="ltr" placeholder="DM-XXXX-XXXX" autoComplete="off" className={`${inputClass} uppercase tracking-wider`} aria-invalid={missing || undefined} />
+            <input id="code" name="code" defaultValue={typed} required dir="ltr" placeholder="WDS-XXXX-XXXX" autoComplete="off" className={`${inputClass} uppercase tracking-wider`} aria-invalid={missing || undefined} />
           </div>
           {missing && <FormAlert>{t.notFound}</FormAlert>}
           <Button type="submit" className="w-full">{t.verifyButton}</Button>

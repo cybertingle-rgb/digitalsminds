@@ -17,7 +17,7 @@ export async function ServicesGrid({ locale, dict, detailed = false }: { locale:
             className="glass glow-card group flex h-full flex-col rounded-3xl p-6 sm:p-7"
           >
             <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sun-200 to-sun-400 text-sm font-bold text-charcoal-900 shadow-[0_8px_20px_-8px_rgb(244_192_26/0.9)] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" dir="ltr">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sun-200 to-sun-400 text-sm font-bold text-charcoal-900 shadow-[0_8px_20px_-8px_rgb(232_98_16/0.9)] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110" dir="ltr">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-sun-400/70 to-transparent rtl:bg-gradient-to-l" />

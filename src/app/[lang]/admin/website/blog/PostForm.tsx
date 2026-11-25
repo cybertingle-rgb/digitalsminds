@@ -79,7 +79,7 @@ export function PostForm({ post, images }: { post: PostValues; images: ImageOpti
             <input {...a("tags")} defaultValue={post.tags} maxLength={300} placeholder="Marketing, E-commerce" className={inputClass} />
           </Field>
           <Field label="Author name shown" name="authorName">
-            <input {...a("authorName")} defaultValue={post.authorName} maxLength={120} placeholder="Digitals Minds Team" className={inputClass} />
+            <input {...a("authorName")} defaultValue={post.authorName} maxLength={120} placeholder="WEDOSELL Team" className={inputClass} />
           </Field>
         </div>
       </div>

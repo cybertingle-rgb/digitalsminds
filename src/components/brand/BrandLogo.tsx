@@ -7,13 +7,13 @@ type Props = {
   locale: Locale;
   alt: string;
   homeLabel: string;
-  /** "light" = dark lettering for light backgrounds; "dark" = official dark-background logo. */
+  /** "light" = black lettering for light backgrounds; "dark" = white lettering for dark backgrounds. */
   variant?: "light" | "dark";
   className?: string;
   priority?: boolean;
 };
 
-/** Digitals Minds logo: the official file, or the replacement uploaded in Admin → Website → Logo. */
+/** WEDOSELL logo: the official file, or the replacement uploaded in Admin → Website → Logo. */
 export async function BrandLogo({ locale, alt, homeLabel, variant = "light", className = "h-12 w-auto", priority }: Props) {
   const logo = (await getLogos())[variant];
   return (

@@ -24,17 +24,17 @@ export type Post = {
 
 const posts: Post[] = [
   {
-    slug: "welcome-to-digitals-minds",
+    slug: "welcome-to-wedosell",
     lang: "en",
-    title: "Welcome to Digitals Minds: Learn | Grow | Earn",
-    excerpt: "An introduction to Digitals Minds and the five divisions behind our business growth and brand development initiative.",
+    title: "Welcome to WEDOSELL",
+    excerpt: "An introduction to WEDOSELL and the five divisions behind our business growth and brand development initiative.",
     publishedAt: "2026-10-19",
-    author: "Digitals Minds Team",
+    author: "WEDOSELL Team",
     tags: ["Announcements"],
     body: [
       {
         type: "p",
-        text: "Digitals Minds is a complete business growth and brand development initiative. Our philosophy is simple: Learn, Grow, Earn. We help founders and businesses build the knowledge, brand and systems they need to grow.",
+        text: "WEDOSELL is a complete business growth and brand development initiative. We help founders and businesses build the knowledge, brand and systems they need to grow.",
       },
       { type: "h2", text: "Five divisions, one team" },
       {

@@ -200,7 +200,7 @@ async function alertTeam(ticketId: string, kind: "new" | "reply") {
           dict,
           locale: "en",
           to: address,
-          name: "Digitals Minds team",
+          name: "WEDOSELL team",
           subject: kind === "new" ? `Support request: ${t.subject}` : `New reply on support request: ${t.subject}`,
           intro: `${t.user.name} (${t.user.email}) ${kind === "new" ? "opened a support request" : "replied"}${about}: “${excerpt(t.messages[0]?.body ?? "")}”`,
           buttonLabel: "Open the ticket",

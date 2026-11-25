@@ -16,7 +16,7 @@ export function AdminNav({ items }: { items: { label: string; href: string }[] }
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={`block whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-                active ? "bg-sun-400 text-charcoal-900 shadow-[0_6px_16px_-8px_rgb(244_192_26/0.9)]" : "text-charcoal-700 hover:bg-white/75 hover:text-charcoal-900"
+                active ? "bg-sun-400 text-charcoal-900 shadow-[0_6px_16px_-8px_rgb(232_98_16/0.9)]" : "text-charcoal-700 hover:bg-white/75 hover:text-charcoal-900"
               }`}
             >
               {item.label}

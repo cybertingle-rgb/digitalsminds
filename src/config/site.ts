@@ -7,18 +7,38 @@
  * decision). Do not add one without approval.
  */
 
+/**
+ * WEDOSELL brand: the single place for the name, colours and official logo
+ * files. Visible wording lives in the dictionaries; colour tokens for the UI
+ * are defined in src/app/globals.css from these values.
+ */
+export const brand = {
+  name: "WEDOSELL",
+  colors: {
+    primary: "#FF741F",
+    secondary: "#000000",
+    background: "#F7F7F7",
+  },
+} as const;
+
 export const siteConfig = {
   url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
 
-  /** Official logos supplied by Digitals Minds (originals in assets/brand/originals). */
+  /**
+   * Official WEDOSELL logos (originals in assets/brand/originals-wedosell).
+   * light = black lettering for light backgrounds; dark = white lettering for dark backgrounds;
+   * mark = the square orange-on-black symbol (app icon, preloader).
+   */
   logo: {
-    light: { src: "/brand/logo.png", width: 720, height: 349 },
-    dark: { src: "/brand/logo-on-dark.png", width: 720, height: 350 },
+    light: { src: "/brand/logo.png", width: 370, height: 72 },
+    dark: { src: "/brand/logo-on-dark.png", width: 370, height: 72 },
+    mark: { src: "/brand/logo-mark.png", width: 500, height: 500 },
   },
   ogImage: { src: "/brand/og-image.png", width: 1200, height: 630 },
 
   /**
-   * The owner's Super Admin account. It can only be created through the
+   * The owner's Super Admin account (an operational address on the existing domain; kept
+   * until a new one is provided). It can only be created through the
    * one-time /setup page (protected by ADMIN_SETUP_CODE), never by sign-up.
    */
   superAdminEmail: "info@digitalsminds.com",

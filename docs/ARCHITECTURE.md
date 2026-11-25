@@ -53,7 +53,7 @@ src/
 
 ## Enrollment platform (Phases 15-19)
 
-Digitals Minds is a paid enrollment and student administration platform; online lessons were retired
+WEDOSELL is a paid enrollment and student administration platform; online lessons were retired
 (docs/ENROLLMENT.md has the full workflow and permission table).
 
 - `src/modules/batches/`: batches, seat counting (`SEAT_STAGES`), availability rules (`rules.ts`, pure and unit-tested), coordinator scope (`canCoordinate`).
@@ -180,7 +180,7 @@ Browser ── authClient (better-auth/react) ──▶ /api/auth/[...all]
 - `src/modules/support/service.ts`: tickets + threaded messages; `supportScope` = all tickets (`support.manage.all`) or tickets
   about the instructor's courses (`support.manage.own`). Internal notes never reach students. New tickets/replies email the
   lead-alert address and the course's instructors; staff replies email + notify the student. Per-account rate limits.
-- `src/modules/certificates/service.ts`: staff review queue (`certificates.issue`); IDs `DM-XXXX-XXXX` (no look-alike
+- `src/modules/certificates/service.ts`: staff review queue (`certificates.issue`); IDs `WDS-XXXX-XXXX` (certificates issued before the rebrand keep `DM-` and still verify; no look-alike
   characters); a re-issue after revocation gets a new ID. Public page `/certificates/[code]` (name, course, date, ID only;
   noindex) is also the printable A4 certificate (print CSS); `/verify` looks IDs up.
 - `src/modules/newsletter/service.ts`: double opt-in. Pending sign-ups live in `Verification` (keyed by a hash of the emailed

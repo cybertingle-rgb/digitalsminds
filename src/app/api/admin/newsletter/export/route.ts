@@ -20,7 +20,7 @@ export async function GET() {
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="digitalsminds-newsletter-${pkDay()}.csv"`,
+      "Content-Disposition": `attachment; filename="wedosell-newsletter-${pkDay()}.csv"`,
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
     },

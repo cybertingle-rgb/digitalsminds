@@ -50,6 +50,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // The welcome post was renamed with the rebrand to WEDOSELL; old links keep working.
+  async redirects() {
+    return [
+      { source: "/blog/welcome-to-digitals-minds", destination: "/blog/welcome-to-wedosell", permanent: true },
+      { source: "/ur/blog/welcome-to-digitals-minds", destination: "/ur/blog/welcome-to-wedosell", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

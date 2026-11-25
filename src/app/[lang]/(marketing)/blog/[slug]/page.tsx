@@ -56,7 +56,7 @@ export default async function BlogPostPage({ params }: Props) {
             mainEntityOfPage: url,
             ...(post.cover && { image: absolute(post.cover.url) }),
             ...(post.tags.length && { keywords: post.tags.join(", ") }),
-            author: /digitals minds/i.test(post.author) ? org : { "@type": "Person", name: post.author },
+            author: /wedosell|digitals minds/i.test(post.author) ? org : { "@type": "Person", name: post.author },
             publisher: org,
           },
           breadcrumbs(lang, [

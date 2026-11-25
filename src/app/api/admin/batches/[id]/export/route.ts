@@ -35,7 +35,7 @@ export async function GET(_req: Request, { params }: RouteContext<"/api/admin/ba
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="digitalsminds-${batch.code.toLowerCase()}-${pkDay()}.csv"`,
+      "Content-Disposition": `attachment; filename="wedosell-${batch.code.toLowerCase()}-${pkDay()}.csv"`,
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
     },

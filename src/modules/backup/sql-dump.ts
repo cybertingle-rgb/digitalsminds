@@ -71,7 +71,7 @@ async function columns(table: string): Promise<string[]> {
 /** Streams the SQL text, table by table, in batches (memory stays small). */
 export async function* sqlDump(meta: { createdAt: Date; site: string }): AsyncGenerator<string> {
   yield [
-    `-- Digitals Minds database backup`,
+    `-- WEDOSELL database backup`,
     `-- Site: ${meta.site.replace(/[\r\n]/g, "")}`,
     `-- Created (UTC): ${meta.createdAt.toISOString()}`,
     `-- Restore: phpMyAdmin → select the (empty) database → Import → this file. Or: gunzip -c file.sql.gz | mysql -u USER -p DATABASE`,

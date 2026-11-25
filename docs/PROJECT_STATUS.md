@@ -1,6 +1,6 @@
 # Project Status: Decisions, Open Items, Progress
 
-Living record for the Digitals Minds platform. Updated at every phase.
+Living record for the WEDOSELL platform (named Digitals Minds until 2026-11-25; earlier entries keep the old name as history). Updated at every phase.
 Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administration platform; see docs/ENROLLMENT.md).
 
 ## Confirmed decisions
@@ -91,6 +91,7 @@ Last updated: 2026-10-21 (Phases 15-19: paid enrollment and student administrati
 | 82 | Attendance | Optional per batch (off by default, matching decision 7): coordinators/managers mark present/late/absent/excused after a class; students see their own record and summary |
 | 83 | Preloader | First visit per session: official logo in an orbit of nine SVG learning/business icons with sparks, 1.1-2.8 s, still with reduced motion; page changes show a slim progress bar instead |
 | 84 | eBay fee | Rs 1,500 (owner, 2026-11-08; was Rs 3,500 from 2026-10-27), set by migration; applications made before keep the fee they were given |
+| 85 | Rebrand (2026-11-25) | **Digitals Minds → WEDOSELL** everywhere users see it: official WEDOSELL logos (black lettering on light, white lettering on dark, orange-on-black mark for icons), palette orange #FF741F / black #000000 / background #F7F7F7, new references and certificate IDs start with WDS- (old DM- ones keep working), old slogan removed ("E-commerce & Business Growth" used as descriptor), stored content renamed by migration `20261125000000_rebrand_wedosell`. Kept: domain digitalsminds.com and its email addresses (no replacement given), upload folder, encryption salt, history records |
 
 ## Open items (waiting on owner)
 

@@ -34,23 +34,23 @@ Restoring replaces the live data with the backup. Take a fresh backup first if t
 
 **With phpMyAdmin (no SSH needed):**
 1. hPanel → Databases → phpMyAdmin → open the website's database.
-2. Import → choose the `digitalsminds-database-YYYY-MM-DD.sql.gz` file → Import. The file drops and recreates
+2. Import → choose the `wedosell-database-YYYY-MM-DD.sql.gz` file → Import. The file drops and recreates
    each table, so the database does not need to be emptied first.
 3. If phpMyAdmin reports the file is too large, ask Hostinger support to import it, or use SSH below.
 
 **With SSH or any MySQL client:**
 ```bash
-gunzip -c digitalsminds-database-YYYY-MM-DD.sql.gz | mysql -h HOST -u USER -p DATABASE
+gunzip -c wedosell-database-YYYY-MM-DD.sql.gz | mysql -h HOST -u USER -p DATABASE
 ```
 
 ### Uploaded files
 
 **With File Manager:** hPanel → File Manager → open the upload folder (shown at the bottom of Admin → Backups)
-→ upload `digitalsminds-media-YYYY-MM-DD.tar.gz` → right-click → Extract (into the same folder) → delete the archive.
+→ upload `wedosell-media-YYYY-MM-DD.tar.gz` → right-click → Extract (into the same folder) → delete the archive.
 
 **With SSH:**
 ```bash
-tar -xzf digitalsminds-media-YYYY-MM-DD.tar.gz -C ~/digitalsminds-uploads
+tar -xzf wedosell-media-YYYY-MM-DD.tar.gz -C ~/digitalsminds-uploads
 ```
 
 ### After restoring
