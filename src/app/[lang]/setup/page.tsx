@@ -5,16 +5,37 @@ import { brand, siteConfig } from "@/config/site";
 import { getLogos } from "@/modules/content/settings";
 import { isAuthConfigured } from "@/lib/env";
 import { isSetupComplete, setupCodeConfigured } from "@/modules/auth/setup";
+import { OwnerResetForm } from "./OwnerResetForm";
 import { SetupForm } from "./SetupForm";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Setup", robots: { index: false, follow: false } };
 
-/** One-time owner setup. Disappears (404) once a Super Admin exists. */
+/**
+ * One-time owner setup. Once a Super Admin exists the page is hidden (404), unless
+ * ADMIN_SETUP_CODE is set again: then it offers owner password recovery instead.
+ */
 export default async function SetupPage({ params }: PageProps<"/[lang]/setup">) {
   const logo = (await getLogos()).light;
   if ((await params).lang !== "en") redirect("/setup");
-  if (await isSetupComplete()) notFound();
+  if (await isSetupComplete()) {
+    if (!isAuthConfigured() || !setupCodeConfigured()) notFound();
+    return (
+      <main className="flex min-h-dvh items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md glass-strong rounded-3xl !border-t-4 !border-t-sun-400 p-6 sm:p-8">
+          <Image src={logo.src} alt={brand.name} width={logo.width} height={logo.height} className="h-9 w-auto" priority />
+          <h1 className="mt-6 text-2xl font-bold text-charcoal-900">Reset the owner password</h1>
+          <p className="mt-2 text-sm text-muted">
+            For when you can&apos;t receive the reset email. Only the owner&apos;s password changes; all accounts and data stay as they are. Remove
+            ADMIN_SETUP_CODE in Hostinger afterwards.
+          </p>
+          <div className="mt-6">
+            <OwnerResetForm email={siteConfig.superAdminEmail} />
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex min-h-dvh items-center justify-center px-4 py-12">

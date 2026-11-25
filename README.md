@@ -94,7 +94,7 @@ No testimonials, client logos or statistics are included. Add them only from ver
 
 - Authentication: Better Auth (email/password with email verification, password reset, optional Google sign-in), sessions in MySQL.
 - Roles: Super Admin, Content Manager, Instructor, Student (`src/modules/auth/permissions.ts`); every admin page and action checks permissions on the server.
-- The Super Admin (`info@wedosell.com`) is created once at `/setup` using `ADMIN_SETUP_CODE`; the page then disappears.
+- The Super Admin (`info@wedosell.com`) is created once at `/setup` using `ADMIN_SETUP_CODE`; the page then disappears. Owner password lost and no reset email? Add `ADMIN_SETUP_CODE` again, redeploy, open `/setup` (it now offers "Reset the owner password"), then remove the variable.
 - Email (SMTP) and Google sign-in are configured in **Admin → Integrations**; passwords/secrets are encrypted with a key derived from `BETTER_AUTH_SECRET`.
 - Rate limits (per client IP): login 15/min, sign-up 5/10 min, password reset 3/10 min.
 - Sensitive admin actions are written to the `AuditLog` table and shown in **Admin → Activity**.

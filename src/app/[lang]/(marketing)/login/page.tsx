@@ -45,6 +45,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
     >
       <div className="space-y-4">
         {sp.setup && <FormAlert tone="success">Super Admin account created. Log in with {siteConfig.superAdminEmail}.</FormAlert>}
+        {sp.ownerReset && <FormAlert tone="success">Owner password changed. Log in with {siteConfig.superAdminEmail}, then remove ADMIN_SETUP_CODE in Hostinger.</FormAlert>}
         {sp.verified && <FormAlert tone="success">{t.verifiedNotice}</FormAlert>}
         {sp.reset && <FormAlert tone="success">{t.resetNotice}</FormAlert>}
         {sp.error && <FormAlert>{sp.error === "signup_disabled" ? t.googleNoAccount : t.errors.generic}</FormAlert>}
