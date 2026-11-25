@@ -11,9 +11,11 @@
 
 export const LEGAL_EFFECTIVE_DATE = "2026-10-22";
 
+import { siteConfig } from "@/config/site";
+
 const contact = `WEDOSELL
 4th Floor, GM Plaza, Kohinoor Jaranwala Road, Faisalabad, Pakistan
-Email: info@digitalsminds.com`;
+Email: ${siteConfig.contact.email}`;
 
 const privacy = `This Privacy Policy explains what personal information WEDOSELL ("we", "us") collects through our website, how we use it, who we share it with and the choices you have. By using the website you agree to this policy.
 

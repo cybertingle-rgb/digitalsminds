@@ -45,16 +45,16 @@ Point an uptime monitor at it.
 1. In Hostinger → Environment variables, add:
    - `BETTER_AUTH_SECRET`: 32+ random characters (a password manager can generate one). **Keep it forever**; changing it logs everyone out and requires re-entering the saved email password and Google secret.
    - `ADMIN_SETUP_CODE`: 16+ random characters, used once.
-2. Redeploy, then open `https://digitalsminds.com/setup`: enter your name, a strong password and the setup code. This creates the Super Admin `info@digitalsminds.com`.
+2. Redeploy, then open `https://wedosell.com/setup`: enter your name, a strong password and the setup code. This creates the Super Admin `info@wedosell.com`.
 3. Remove `ADMIN_SETUP_CODE` from Hostinger and redeploy (the page is already disabled, this is extra hygiene).
-4. Log in at `/login` → **Admin → Integrations → Email**: create `noreply@digitalsminds.com` in hPanel → Emails, then enter
+4. Log in at `/login` → **Admin → Integrations → Email**: create `noreply@wedosell.com` in hPanel → Emails, then enter
    host `smtp.hostinger.com`, port `465`, SSL on, the mailbox and its password. Click **Save & check connection**, then **Send test email**.
 5. **Admin → Integrations → Google** (optional): follow the on-page steps to create an OAuth client in Google Cloud, paste the Client ID and secret,
    **Connect & test**, then switch on "Show Continue with Google".
 
 6. **File storage (before uploading anything):** Admin → Integrations → File storage → **Run check**, then redeploy in Hostinger,
    then **Run check** again. When it says "Confirmed", uploads are switched on. If it never confirms, files in that folder are
-   being wiped on deploy: set `UPLOAD_DIR` to another folder outside the app (e.g. `/home/<user>/domains/digitalsminds.com/uploads`)
+   being wiped on deploy: set `UPLOAD_DIR` to another folder outside the app (e.g. `/home/<user>/domains/wedosell.com/uploads`)
    and repeat.
 7. **Backups:** make sure Hostinger's file backups include the upload folder (download a backup once and check), and keep database backups on.
 

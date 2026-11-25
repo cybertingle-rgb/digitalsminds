@@ -22,7 +22,7 @@ support → profile, plus "lost your link", FAQ and contact pages.
 | `screenshots/annotated/` | The same with numbered markers (used in the PDF) |
 | `screenshots/manifest.json` | What each screenshot shows and which elements are marked |
 
-All people, CNIC numbers, phone numbers, payment accounts, transaction IDs and the class link in
+All people, CNIC numbers, payment accounts, transaction IDs and the class link in
 the screenshots are **fictional test data**. The payment page uses example accounts and no QR code.
 Private links in the emails are masked. Nothing was captured from the live site or its database.
 

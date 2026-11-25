@@ -2,21 +2,21 @@ import { describe, expect, it } from "vitest";
 import { clientIp, isSameOrigin } from "./request";
 
 describe("isSameOrigin", () => {
-  const allowed = ["https://digitalsminds.com"];
+  const allowed = ["https://wedosell.com"];
 
   it("allows requests without an Origin header (non-browser clients)", () => {
     expect(isSameOrigin(new Headers(), allowed)).toBe(true);
   });
 
   it("allows the configured site origin and the request host", () => {
-    expect(isSameOrigin(new Headers({ origin: "https://digitalsminds.com" }), allowed)).toBe(true);
+    expect(isSameOrigin(new Headers({ origin: "https://wedosell.com" }), allowed)).toBe(true);
     expect(
       isSameOrigin(new Headers({ origin: "http://localhost:3000", host: "localhost:3000", "x-forwarded-proto": "http" }), allowed),
     ).toBe(true);
   });
 
   it("rejects foreign origins", () => {
-    expect(isSameOrigin(new Headers({ origin: "https://evil.example", host: "digitalsminds.com" }), allowed)).toBe(false);
+    expect(isSameOrigin(new Headers({ origin: "https://evil.example", host: "wedosell.com" }), allowed)).toBe(false);
   });
 });
 

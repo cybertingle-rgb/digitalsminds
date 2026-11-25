@@ -35,7 +35,7 @@ fs.mkdirSync(`${OUT}/annotated`, { recursive: true });
 const manifest = [];
 
 // --- Test data (fictional) -------------------------------------------------------------------
-const OWNER = { email: "info@digitalsminds.com", password: "Guide-owner-pass-2026" };
+const OWNER = { email: "info@wedosell.com", password: "Guide-owner-pass-2026" };
 const STUDENT = { name: "Ayesha Khan", email: "ayesha.khan@example.com", phone: "0300 1234567", city: "Lahore", cnic: "35202-1234567-1", password: "Ayesha-guide-2026" };
 const SECOND = { name: "Bilal Ahmed", email: "bilal.ahmed@example.com", phone: "0321 7654321", city: "Karachi", cnic: "42101-7654321-3" };
 const PROGRAM = "eBay Training";
@@ -81,8 +81,46 @@ async function login(page, email, password, next) {
  * Screenshot of the area around `area` (a selector, or "top" for the top of the page),
  * once plain and once with numbered markers on `marks` ([selector, number] pairs).
  */
+/**
+ * No phone numbers in the guide: every phone-like number on the page (text and form fields)
+ * shows as dots while the screenshots are taken, and is put back afterwards so the flow goes on.
+ */
+async function maskPhones(page) {
+  await page.evaluate(() => {
+    const RE = /(?:\+92[\s-]?|\b0)3\d{2}[\s-]?\d{7}\b/g;
+    const DOTS = "•••• •••••••";
+    const undo = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (RE.test(n.nodeValue)) {
+        undo.push([n, "text", n.nodeValue]);
+        n.nodeValue = n.nodeValue.replace(RE, DOTS);
+      }
+      RE.lastIndex = 0;
+    }
+    for (const el of document.querySelectorAll("input, textarea")) {
+      if (el.type !== "file" && RE.test(el.value)) {
+        undo.push([el, "value", el.value]);
+        el.value = el.value.replace(RE, DOTS);
+      }
+      RE.lastIndex = 0;
+    }
+    window.__guidePhoneUndo = undo;
+  });
+}
+async function unmaskPhones(page) {
+  await page.evaluate(() => {
+    for (const [node, kind, original] of window.__guidePhoneUndo ?? []) {
+      if (kind === "text") node.nodeValue = original;
+      else node.value = original;
+    }
+    window.__guidePhoneUndo = [];
+  });
+}
+
 async function shot(page, name, { area = "top", pad = 28, height, marks = [], title, step }) {
   await settle(page);
+  await maskPhones(page);
   const docBox = async (sel) =>
     page.locator(sel).first().evaluate((el) => {
       const r = el.getBoundingClientRect();
@@ -121,6 +159,7 @@ async function shot(page, name, { area = "top", pad = 28, height, marks = [], ti
   }, placed);
   await page.screenshot({ path: `${OUT}/annotated/${name}.png`, clip, fullPage: true });
   await page.evaluate(() => document.getElementById("guide-marks")?.remove());
+  await unmaskPhones(page);
   manifest.push({ name, title, step, url: page.url().replace(B, ""), marks: marks.map(([s, n]) => ({ n, target: s })) });
   console.log("captured", name);
 }
@@ -148,17 +187,17 @@ const linkIn = (m) => m.html.match(/href="([^"]*(?:applications\/open\?t=|reset-
 async function emailShot(name, m, { title, step, marks = [] }) {
   const page = await open({ width: 760, height: 900 });
   const masked = m.html
-    .replace(/(https?:\/\/[^"<\s]*?)(\?t=|\?token=)[A-Za-z0-9_-]+/g, (_, base, q) => `${base.replace(/^https?:\/\/localhost:\d+/, "https://digitalsminds.com")}${q}••••••••••••`)
-    .replace(/http:\/\/localhost:\d+/g, "https://digitalsminds.com");
+    .replace(/(https?:\/\/[^"<\s]*?)(\?t=|\?token=)[A-Za-z0-9_-]+/g, (_, base, q) => `${base.replace(/^https?:\/\/localhost:\d+/, "https://wedosell.com")}${q}••••••••••••`)
+    .replace(/http:\/\/localhost:\d+/g, "https://wedosell.com");
   // Images in the email (the logo) come from the local site, so they match the build being captured.
-  await page.route(/^https:\/\/digitalsminds\.com\/(brand|media)\//, async (route) => {
-    const res = await page.request.get(route.request().url().replace("https://digitalsminds.com", B));
+  await page.route(/^https:\/\/wedosell\.com\/(brand|media)\//, async (route) => {
+    const res = await page.request.get(route.request().url().replace("https://wedosell.com", B));
     await route.fulfill({ response: res });
   });
   await page.setContent(
     `<!doctype html><meta charset="utf-8"><body style="margin:0;background:#efefef;font-family:Inter,system-ui,sans-serif">
       <div style="padding:22px 28px 10px;color:#111111">
-        <div style="font-size:13px;color:#5c5c5c">From: WEDOSELL &lt;noreply@digitalsminds.com&gt; · To: ${m.to.replace(/</g, "&lt;")}</div>
+        <div style="font-size:13px;color:#5c5c5c">From: WEDOSELL &lt;noreply@wedosell.com&gt; · To: ${m.to.replace(/</g, "&lt;")}</div>
         <div id="subject" style="font-size:20px;font-weight:700;margin-top:6px">${m.subject.replace(/</g, "&lt;")}</div>
       </div>
       <div id="mail">${masked}</div></body>`,

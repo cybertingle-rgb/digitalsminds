@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-11-25T19:37:04.673Z",
+  "capturedAt": "2026-11-25T20:11:29.826Z",
   "base": "http://localhost:3000",
   "screenshots": [
     {
@@ -74,7 +74,7 @@
       "name": "05-apply-form",
       "title": "Application form: your details",
       "step": "Apply",
-      "url": "/courses/ebay-training/apply?batch=cmwwit4lo000z4h7dh8bozidp",
+      "url": "/courses/ebay-training/apply?batch=cmwwk1erl000hl27dk84j86fk",
       "marks": [
         {
           "n": 1,
@@ -102,7 +102,7 @@
       "name": "06-apply-terms-error",
       "title": "Application form: CV, terms and the send button",
       "step": "Apply",
-      "url": "/courses/ebay-training/apply?batch=cmwwit4lo000z4h7dh8bozidp",
+      "url": "/courses/ebay-training/apply?batch=cmwwk1erl000hl27dk84j86fk",
       "marks": [
         {
           "n": 1,
@@ -122,7 +122,7 @@
       "name": "07-application-sent",
       "title": "Application sent",
       "step": "Apply",
-      "url": "/courses/ebay-training/apply?batch=cmwwit4lo000z4h7dh8bozidp",
+      "url": "/courses/ebay-training/apply?batch=cmwwk1erl000hl27dk84j86fk",
       "marks": [
         {
           "n": 1,
@@ -269,7 +269,7 @@
       "name": "17-set-password",
       "title": "Set your password",
       "step": "Activate",
-      "url": "/reset-password?token=8bffc18c0b50496d8edb78718c7755344329f53886f74b9eaacea26bdf4ef165",
+      "url": "/reset-password?token=000b6c5cdf6b444399383e9b9fe96d1a9af977fab8994813995fad588d542a97",
       "marks": [
         {
           "n": 1,
@@ -440,7 +440,7 @@
       "name": "27-support-reply",
       "title": "Support: the team's reply",
       "step": "Help",
-      "url": "/account/support/cmwwix6x3002b4h7dqr9mlvie",
+      "url": "/account/support/cmwwk5h7f001tl27dv1m65ra6",
       "marks": [
         {
           "n": 1,

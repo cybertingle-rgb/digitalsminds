@@ -77,7 +77,7 @@ export function GoogleCard({ status, origin, redirectUri, flash }: Props) {
             </a>{" "}
             and sign in with the Google account that should own this setup. Create a project if asked (e.g. “WEDOSELL”).
           </li>
-          <li>Open “OAuth consent screen”: choose <strong>External</strong>, app name “WEDOSELL”, support email info@digitalsminds.com, then publish the app.</li>
+          <li>Open “OAuth consent screen”: choose <strong>External</strong>, app name “WEDOSELL”, support email info@wedosell.com, then publish the app.</li>
           <li>Back in Credentials: <strong>Create credentials → OAuth client ID</strong>, type <strong>Web application</strong>.</li>
           <li>Add the two values below (Authorized JavaScript origin and Authorized redirect URI) and click Create.</li>
           <li>Copy the <strong>Client ID</strong> and <strong>Client secret</strong> into this form, Save, then click <strong>Connect &amp; test</strong>.</li>

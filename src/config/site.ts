@@ -37,14 +37,14 @@ export const siteConfig = {
   ogImage: { src: "/brand/og-image.png", width: 1200, height: 630 },
 
   /**
-   * The owner's Super Admin account (an operational address on the existing domain; kept
-   * until a new one is provided). It can only be created through the
-   * one-time /setup page (protected by ADMIN_SETUP_CODE), never by sign-up.
+   * The owner's Super Admin account. It can only be created through the one-time /setup
+   * page (protected by ADMIN_SETUP_CODE), never by sign-up. (Until 2026-11-26 it was
+   * info@digitalsminds.com; the migration 20261126000000_wedosell_domain moved that account.)
    */
-  superAdminEmail: "info@digitalsminds.com",
+  superAdminEmail: "info@wedosell.com",
 
   contact: {
-    email: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "info@digitalsminds.com",
+    email: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "info@wedosell.com",
   },
 
   /** Office address for search engines (structured data). The address shown on the site is editable in Admin → Website. */

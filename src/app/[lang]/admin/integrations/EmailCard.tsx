@@ -19,7 +19,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="email-title" className="text-lg font-semibold text-charcoal-900">Email (SMTP)</h2>
-          <p className="mt-1 text-sm text-muted">Sends account verification, password reset and notification emails, e.g. from noreply@digitalsminds.com.</p>
+          <p className="mt-1 text-sm text-muted">Sends account verification, password reset and notification emails, e.g. from noreply@wedosell.com.</p>
         </div>
         {status.configured && !status.secretReadable ? (
           <StatusBadge tone="warn">Password needed</StatusBadge>
@@ -43,7 +43,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
       <details className="mt-5 glass-subtle rounded-xl p-4" open={!status.configured}>
         <summary className="cursor-pointer text-sm font-semibold text-charcoal-900">Hostinger mailbox settings</summary>
         <ol className="mt-3 list-decimal space-y-2 ps-5 text-sm text-charcoal-800">
-          <li>In hPanel → Emails, create the mailbox <strong>noreply@digitalsminds.com</strong> with a strong password.</li>
+          <li>In hPanel → Emails, create the mailbox <strong>noreply@wedosell.com</strong> with a strong password.</li>
           <li>Use host <strong>smtp.hostinger.com</strong>, port <strong>465</strong> with SSL on, and the full mailbox address as the username.</li>
           <li>Save, then send a test email. If students report missing emails, ask them to check spam.</li>
         </ol>
@@ -63,7 +63,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
           </label>
         </div>
         <Field label="Mailbox (username)" name="username" error={f.username}>
-          <input id="username" name="username" dir="ltr" required autoComplete="off" defaultValue={status.username ?? "noreply@digitalsminds.com"} className={inputClass} aria-invalid={!!f.username} />
+          <input id="username" name="username" dir="ltr" required autoComplete="off" defaultValue={status.username ?? "noreply@wedosell.com"} className={inputClass} aria-invalid={!!f.username} />
         </Field>
         <Field
           label="Mailbox password"
@@ -77,7 +77,7 @@ export function EmailCard({ status, adminEmail }: { status: SmtpStatus; adminEma
           <input id="fromName" name="fromName" required defaultValue={status.fromName ?? "WEDOSELL"} className={inputClass} aria-invalid={!!f.fromName} />
         </Field>
         <Field label="Sender email" name="fromEmail" error={f.fromEmail}>
-          <input id="fromEmail" name="fromEmail" type="email" dir="ltr" required defaultValue={status.fromEmail ?? "noreply@digitalsminds.com"} className={inputClass} aria-invalid={!!f.fromEmail} />
+          <input id="fromEmail" name="fromEmail" type="email" dir="ltr" required defaultValue={status.fromEmail ?? "noreply@wedosell.com"} className={inputClass} aria-invalid={!!f.fromEmail} />
         </Field>
         <div className="flex flex-wrap gap-3 sm:col-span-2">
           <Button type="submit" variant="dark" disabled={saving}>

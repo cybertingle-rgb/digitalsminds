@@ -12,12 +12,12 @@ describe("actionEmail", () => {
       subject: en.emails.verifySubject,
       intro: en.emails.verifyIntro,
       buttonLabel: en.emails.verifyButton,
-      url: "https://digitalsminds.com/api/auth/verify-email?token=abc&callbackURL=/login",
+      url: "https://wedosell.com/api/auth/verify-email?token=abc&callbackURL=/login",
     });
     expect(mail.html).not.toContain("<script>");
     expect(mail.html).toContain("&lt;script&gt;");
     expect(mail.html).toContain("token=abc&amp;callbackURL");
-    expect(mail.text).toContain("https://digitalsminds.com/api/auth/verify-email?token=abc&callbackURL=/login");
+    expect(mail.text).toContain("https://wedosell.com/api/auth/verify-email?token=abc&callbackURL=/login");
     expect(mail.subject).toBe("Verify your email for WEDOSELL");
   });
 

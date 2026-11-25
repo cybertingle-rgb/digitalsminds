@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { serverEnv } from "@/lib/env";
 
 /**
- * One-time creation of the owner's Super Admin account (info@digitalsminds.com).
+ * One-time creation of the owner's Super Admin account (info@wedosell.com).
  * Proof of ownership is the ADMIN_SETUP_CODE set in Hostinger's environment, so
  * the account is trusted without an email (email sending is configured later,
  * from the admin panel).

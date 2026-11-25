@@ -60,11 +60,11 @@ run("content management (integration)", async () => {
 
   it("validates contact details and SEO overrides", async () => {
     expect(() => settings.contactInput.parse({ email: "nope", address: [], addressUr: [] })).toThrow();
-    await settings.saveSetting("site.contact", settings.contactInput.parse({ email: "hello@digitalsminds.com", address: ["Line 1", "Line 2"], addressUr: [] }), actor);
-    expect(await settings.contactDetails("ur", dict)).toEqual({ email: "hello@digitalsminds.com", address: ["Line 1", "Line 2"], whatsapp: null });
+    await settings.saveSetting("site.contact", settings.contactInput.parse({ email: "hello@wedosell.com", address: ["Line 1", "Line 2"], addressUr: [] }), actor);
+    expect(await settings.contactDetails("ur", dict)).toEqual({ email: "hello@wedosell.com", address: ["Line 1", "Line 2"], whatsapp: null });
     // A WhatsApp number shows only once it's added; local numbers get Pakistan's country code.
     expect(() => settings.contactInput.parse({ email: "a@b.co", address: [], addressUr: [], whatsapp: "call me" })).toThrow();
-    await settings.saveSetting("site.contact", settings.contactInput.parse({ email: "hello@digitalsminds.com", address: [], addressUr: [], whatsapp: "0300 123-4567" }), actor);
+    await settings.saveSetting("site.contact", settings.contactInput.parse({ email: "hello@wedosell.com", address: [], addressUr: [], whatsapp: "0300 123-4567" }), actor);
     expect((await settings.contactDetails("en", dict)).whatsapp).toBe("923001234567");
     expect(settings.whatsappDigits("+92 300 1234567")).toBe("923001234567");
     expect(settings.whatsappDigits("12")).toBeNull();

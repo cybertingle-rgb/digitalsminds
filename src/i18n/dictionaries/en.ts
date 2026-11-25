@@ -67,7 +67,7 @@ export const en = {
     faqTitle: "Frequently asked questions",
     faq: [
       { q: "What does WEDOSELL do?", a: "We help businesses grow through five divisions: Digital Marketing & Growth, Product Sourcing & Logistics, Media & Content Production, Startup & Brand Setup, and Web & E-Commerce. You can use one division or combine several." },
-      { q: "How do I start a project with you?", a: "Send us an inquiry through the contact page or email info@digitalsminds.com. Tell us about your business and goals, and we'll get back to you with recommended next steps." },
+      { q: "How do I start a project with you?", a: "Send us an inquiry through the contact page or email info@wedosell.com. Tell us about your business and goals, and we'll get back to you with recommended next steps." },
       { q: "Do you work with new businesses and startups?", a: "Yes. Our Startup & Brand Setup division helps turn an idea into a ready-to-launch business, from validating the idea to naming, branding and setup." },
       { q: "How do I enroll in a course?", a: "Open the course page, choose an open batch and send your application. We email you a link to confirm your email and pay the enrollment fee by bank transfer, JazzCash or EasyPaisa. Once our team has verified your payment, your seat is confirmed and we email you a link to set up your student account." },
       { q: "How are the classes taught?", a: "Classes are taught live online on Zoom or Google Meet, in batches with fixed dates and class times. Your student portal shows your schedule, joining links, onboarding steps and notices from our team." },
@@ -666,7 +666,7 @@ export const en = {
     signedInWith: "Email address",
     completeProfile: "Please add your phone / WhatsApp number and city to your profile, so our team can reach you about your batch.",
     completeProfileLink: "Complete my profile",
-    deleteNote: "Want your account and data deleted? Email info@digitalsminds.com from this address and we'll take care of it (see our Privacy Policy).",
+    deleteNote: "Want your account and data deleted? Email info@wedosell.com from this address and we'll take care of it (see our Privacy Policy).",
     hoursMinutes: "{hours} h {minutes} min",
     minutesOnly: "{minutes} min",
   },

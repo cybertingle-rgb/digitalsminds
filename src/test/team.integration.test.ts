@@ -45,9 +45,9 @@ run("team service (integration)", async () => {
   });
 
   it("never lets anyone change the owner account", async () => {
-    const owner = await db().user.findUnique({ where: { email: "info@digitalsminds.com" } });
+    const owner = await db().user.findUnique({ where: { email: "info@wedosell.com" } });
     const actor = await mk("superD", "SUPER_ADMIN");
-    const target = owner ?? (await mk("owner", "SUPER_ADMIN", "info@digitalsminds.com"));
+    const target = owner ?? (await mk("owner", "SUPER_ADMIN", "info@wedosell.com"));
     await expect(team.setSuspended(target.id, true, null, actor.id)).rejects.toThrow(/owner account/);
     await expect(team.changeRole(target.id, "INSTRUCTOR", actor.id)).rejects.toThrow(/owner account/);
   });

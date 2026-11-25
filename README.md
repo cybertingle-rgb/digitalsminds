@@ -63,12 +63,12 @@ See `.env.example`. **Never commit `.env`**; it is git-ignored.
 | Variable | Required | Notes |
 | --- | --- | --- |
 | `DATABASE_URL` | Yes (runtime) | `mysql://USER:PASSWORD@HOST:3306/DATABASE` (URL-encode special characters in the password). Not needed for `next build`. |
-| `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical URL, e.g. `https://digitalsminds.com`. Used for SEO, sitemap and origin checks. Set at **build** time. |
+| `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical URL, e.g. `https://wedosell.com`. Used for SEO, sitemap and origin checks. Set at **build** time. |
 | `BETTER_AUTH_SECRET` | **Yes** (runtime) | 32+ random characters. Signs sessions and encrypts secrets saved in the admin panel. Never change it once live. |
 | `ADMIN_SETUP_CODE` | Only for first setup | 16+ random characters for the one-time `/setup` page. Remove after setup. |
 | `UPLOAD_DIR` | No | Upload folder outside the app (default `~/digitalsminds-uploads`). Verified in Admin → Integrations → File storage. |
 | `TRUSTED_PROXY_HOPS` | No | Proxies in front of the app, for rate-limit IPs (default 1). |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | No | Public email shown on the site; defaults to `info@digitalsminds.com`. Set at build time. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | No | Public email shown on the site; defaults to `info@wedosell.com`. Set at build time. |
 
 No phone or WhatsApp number is displayed anywhere on the site (owner decision); there is no setting for one.
 | `INQUIRY_WEBHOOK_URL` | No | Receives `{type:"inquiry.created", data}` JSON for each lead (Zapier/Make/Slack/CRM). |
@@ -94,7 +94,7 @@ No testimonials, client logos or statistics are included. Add them only from ver
 
 - Authentication: Better Auth (email/password with email verification, password reset, optional Google sign-in), sessions in MySQL.
 - Roles: Super Admin, Content Manager, Instructor, Student (`src/modules/auth/permissions.ts`); every admin page and action checks permissions on the server.
-- The Super Admin (`info@digitalsminds.com`) is created once at `/setup` using `ADMIN_SETUP_CODE`; the page then disappears.
+- The Super Admin (`info@wedosell.com`) is created once at `/setup` using `ADMIN_SETUP_CODE`; the page then disappears.
 - Email (SMTP) and Google sign-in are configured in **Admin → Integrations**; passwords/secrets are encrypted with a key derived from `BETTER_AUTH_SECRET`.
 - Rate limits (per client IP): login 15/min, sign-up 5/10 min, password reset 3/10 min.
 - Sensitive admin actions are written to the `AuditLog` table and shown in **Admin → Activity**.
@@ -163,7 +163,7 @@ description, share image per page), Contact & social links, and Logo (Super Admi
   follow-up (overdue / today / upcoming, Pakistan time); detail page with status, assignee, follow-up date and a notes timeline.
 - Each inquiry records the page it came from, the site language and campaign tags (`utm_source/medium/campaign`, kept in the
   visitor's sessionStorage only, no cookies).
-- **Lead alert emails** for every new inquiry (default `info@digitalsminds.com`, changeable on the Inquiries page; needs Email set up).
+- **Lead alert emails** for every new inquiry (default `info@wedosell.com`, changeable on the Inquiries page; needs Email set up).
 - **CSV export** (Super Admin only, honours filters, logged in Activity; formula cells are neutralised). Deleting a lead is Super Admin only.
 - `INQUIRY_WEBHOOK_URL` can still forward each lead to Zapier/Make/a CRM.
 

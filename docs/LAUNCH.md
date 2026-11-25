@@ -1,6 +1,6 @@
 # Launch checklist and maintenance runbook
 
-## 1. Production settings (Hostinger → Websites → digitalsminds.com)
+## 1. Production settings (Hostinger → Websites → wedosell.com)
 
 **Deployments → Build and output settings**
 - [ ] Node.js **22**
@@ -11,7 +11,7 @@
 | Variable | Value | Notes |
 | --- | --- | --- |
 | `DATABASE_URL` | `mysql://USER:PASSWORD@localhost:3306/DATABASE` | Hostinger database |
-| `NEXT_PUBLIC_SITE_URL` | `https://digitalsminds.com` | Exactly this (https, no trailing slash); used for links, sitemap, sign-in |
+| `NEXT_PUBLIC_SITE_URL` | `https://wedosell.com` | Exactly this (https, no trailing slash); used for links, sitemap, sign-in |
 | `BETTER_AUTH_SECRET` | 32+ random characters | Never change after launch (signs everyone out, breaks saved email/Google passwords) |
 | `UPLOAD_DIR` | optional | Default `~/digitalsminds-uploads` (survives redeploys) |
 | `TRUSTED_PROXY_HOPS` | optional, default 1 | Only change if Hostinger support says requests pass through more than one proxy |
@@ -20,7 +20,7 @@
 
 ## 2. Before going live
 
-- [ ] Deploy succeeds; `https://digitalsminds.com/api/health` returns `{"status":"ok","database":"ok"}`
+- [ ] Deploy succeeds; `https://wedosell.com/api/health` returns `{"status":"ok","database":"ok"}`
 - [ ] `http://` redirects to `https://`, and `www.` redirects to the main domain (Hostinger → Domains / SSL)
 - [ ] Admin → Integrations: Email saved and **Send test email** arrives (check spam); Google sign-in (optional)
 - [ ] Admin → Integrations → File storage → **Run check**, redeploy, **Run check** again: "survives redeploys"
@@ -40,9 +40,9 @@
 ## 3. Uptime monitoring
 
 Create a free monitor (for example UptimeRobot or Better Stack):
-- URL: `https://digitalsminds.com/api/health`, every 5 minutes
+- URL: `https://wedosell.com/api/health`, every 5 minutes
 - Alert when the status code is not 200 (the endpoint returns 503 when the database is unreachable)
-- Alerts to info@digitalsminds.com (and a second person if possible)
+- Alerts to info@wedosell.com (and a second person if possible)
 
 ## 4. Maintenance runbook
 
