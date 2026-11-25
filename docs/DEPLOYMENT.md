@@ -19,6 +19,13 @@ npm start              # or the standalone server, see below
 If the build log shows `[migrate] WARNING: database not reachable`, run `npm run db:deploy` from a
 machine that can reach the database (never use `migrate dev` in production).
 
+Some hosts (Hostinger) won't execute Prisma's schema-engine binary (`spawn ... EACCES`). The build
+then applies the pending `prisma/migrations/*/migration.sql` files itself through the MariaDB driver
+and records them in `_prisma_migrations` the same way Prisma does (log line: `[migrate] Prisma's
+schema engine can't run here; applying migrations through the database driver instead.`), so
+`prisma migrate deploy`/`status` keep working wherever the engine can run. A migration whose SQL
+fails still stops the build.
+
 Set at **build** time: `NEXT_PUBLIC_SITE_URL` (and any `NEXT_PUBLIC_CONTACT_*`).
 Set at **runtime**: `DATABASE_URL`, `INQUIRY_WEBHOOK_URL` (optional).
 
